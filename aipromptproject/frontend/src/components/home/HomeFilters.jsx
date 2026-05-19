@@ -1,5 +1,6 @@
-import React from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { CATEGORIES, LANGUAGE_MODELS } from "../../constants/filters.js";
+import { ChevronIcon, FilterIcon } from "../Icon.jsx";
 import FilterPill from "./FilterPill.jsx";
 
 function StarRating({ minRating, onChange }) {
@@ -24,6 +25,17 @@ function StarRating({ minRating, onChange }) {
   );
 }
 
+function FilterSection({ title, children }) {
+  return (
+    <div>
+      <p className="mb-2 text-xs font-bold uppercase tracking-wider text-slate-500">
+        {title}
+      </p>
+      <div className="flex flex-wrap gap-2">{children}</div>
+    </div>
+  );
+}
+
 export default function HomeFilters({
   selectedModels,
   selectedCategories,
@@ -33,78 +45,97 @@ export default function HomeFilters({
   onRatingChange,
   onClearAll,
 }) {
-  const hasFilters =
-    selectedModels.length > 0 ||
-    selectedCategories.length > 0 ||
-    minRating > 0;
+  const [menuOpen, setMenuOpen] = useState(false);
+  const menuRef = useRef(null);
+
+  const selectedCount =
+    selectedModels.length + selectedCategories.length + (minRating > 0 ? 1 : 0);
+
+  useEffect(() => {
+    function handleClickOutside(event) {
+      if (menuRef.current && !menuRef.current.contains(event.target)) {
+        setMenuOpen(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
   return (
-    <section className="surface-strong space-y-5 p-6">
-      <div className="flex flex-wrap items-start justify-between gap-4">
-        <div>
-          <p className="text-[10px] font-black uppercase tracking-[0.2em] text-violet-300">
-            Home Filters
-          </p>
-          <h2 className="mt-1 text-xl font-black text-white">
-            Filter Home Prompts
-          </h2>
-          <p className="mt-1 max-w-xl text-sm text-slate-400">
-            These filters work on Home only, not inside the sidebar.
-          </p>
-        </div>
+    <header className="flex items-start justify-between gap-4">
+      <h1 className="text-lg font-black text-white">Home</h1>
 
-        {hasFilters && (
-          <button
-            type="button"
-            onClick={onClearAll}
-            className="rounded-xl bg-slate-800 px-3 py-2 text-xs font-bold text-slate-300 transition hover:bg-slate-700"
-          >
-            Clear all
-          </button>
+      <div className="relative" ref={menuRef}>
+        <button
+          type="button"
+          onClick={() => setMenuOpen((prev) => !prev)}
+          className="inline-flex items-center gap-2 rounded-2xl border px-4 py-2 text-sm font-black transition"
+          style={{
+            background: menuOpen
+              ? "rgba(139, 92, 246, 0.16)"
+              : "rgba(15, 20, 44, 0.75)",
+            borderColor: menuOpen
+              ? "rgba(139, 92, 246, 0.36)"
+              : "rgba(148, 163, 184, 0.16)",
+            color: "#f8fafc",
+          }}
+        >
+          <FilterIcon />
+          Filter
+          {selectedCount > 0 && (
+            <span className="rounded-full bg-violet-600 px-2 py-0.5 text-[10px] font-black text-white">
+              {selectedCount}
+            </span>
+          )}
+          <ChevronIcon open={menuOpen} />
+        </button>
+
+        {menuOpen && (
+          <div className="surface-strong absolute right-0 top-full z-20 mt-3 w-[min(340px,calc(100vw-3rem))] space-y-4 p-5">
+            <div className="flex items-center justify-between gap-3">
+              <p className="text-xs font-black uppercase tracking-widest text-violet-300">
+                Home filters
+              </p>
+              {selectedCount > 0 && (
+                <button
+                  type="button"
+                  onClick={onClearAll}
+                  className="rounded-xl bg-slate-800 px-3 py-2 text-xs font-bold text-slate-300 transition hover:bg-slate-700"
+                >
+                  Clear
+                </button>
+              )}
+            </div>
+
+            <FilterSection title="Language Models">
+              {LANGUAGE_MODELS.map((model) => (
+                <FilterPill
+                  key={model}
+                  label={model}
+                  selected={selectedModels.includes(model)}
+                  onClick={() => onToggleModel(model)}
+                />
+              ))}
+            </FilterSection>
+
+            <FilterSection title="Categories">
+              {CATEGORIES.map((category) => (
+                <FilterPill
+                  key={category}
+                  label={category}
+                  selected={selectedCategories.includes(category)}
+                  onClick={() => onToggleCategory(category)}
+                />
+              ))}
+            </FilterSection>
+
+            <FilterSection title="Minimum Rating">
+              <StarRating minRating={minRating} onChange={onRatingChange} />
+            </FilterSection>
+          </div>
         )}
       </div>
-
-      <div className="space-y-4">
-        <div>
-          <p className="mb-2 text-xs font-bold uppercase tracking-wider text-slate-500">
-            Language Models
-          </p>
-          <div className="flex flex-wrap gap-2">
-            {LANGUAGE_MODELS.map((model) => (
-              <FilterPill
-                key={model}
-                label={model}
-                selected={selectedModels.includes(model)}
-                onClick={() => onToggleModel(model)}
-              />
-            ))}
-          </div>
-        </div>
-
-        <div>
-          <p className="mb-2 text-xs font-bold uppercase tracking-wider text-slate-500">
-            Categories
-          </p>
-          <div className="flex flex-wrap gap-2">
-            {CATEGORIES.map((category) => (
-              <FilterPill
-                key={category}
-                label={category}
-                selected={selectedCategories.includes(category)}
-                onClick={() => onToggleCategory(category)}
-              />
-            ))}
-          </div>
-        </div>
-
-        <div>
-          <p className="mb-2 text-xs font-bold uppercase tracking-wider text-slate-500">
-            Minimum Rating
-          </p>
-          <StarRating minRating={minRating} onChange={onRatingChange} />
-        </div>
-      </div>
-    </section>
+    </header>
   );
 }
 

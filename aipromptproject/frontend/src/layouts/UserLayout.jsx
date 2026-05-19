@@ -2,9 +2,12 @@ import React, { useEffect, useState } from "react";
 import { Outlet, useNavigate } from "react-router";
 import Navbar from "../components/layout/Navbar.jsx";
 import Sidebar from "../components/layout/Sidebar.jsx";
-import { fetchPurchasedPrompts } from "../services/promptService.js";
 import {
-  fetchCartCount,
+  fetchBuyerRatings,
+  fetchCreatorRatings,
+  fetchPurchasedPrompts,
+} from "../services/promptService.js";
+import {
   fetchCurrentUser,
   fetchUnreadNotificationCount,
 } from "../services/userService.js";
@@ -13,9 +16,10 @@ export default function UserLayout() {
   const navigate = useNavigate();
 
   const [user, setUser] = useState(null);
-  const [cartCount, setCartCount] = useState(0);
   const [notificationCount, setNotificationCount] = useState(0);
   const [libraryCount, setLibraryCount] = useState(0);
+  const [buyerRatingCount, setBuyerRatingCount] = useState(0);
+  const [creatorRatingCount, setCreatorRatingCount] = useState(0);
   const [searchQuery, setSearchQuery] = useState("");
   const [isCreatorMode, setIsCreatorMode] = useState(false);
   const [showCreatorConfirm, setShowCreatorConfirm] = useState(false);
@@ -23,17 +27,20 @@ export default function UserLayout() {
 
   useEffect(() => {
     async function loadLayoutData() {
-      const [userData, cart, notifications, purchased] = await Promise.all([
-        fetchCurrentUser(),
-        fetchCartCount(),
-        fetchUnreadNotificationCount(),
-        fetchPurchasedPrompts(),
-      ]);
+      const [userData, notifications, purchased, buyerRatings, creatorRatings] =
+        await Promise.all([
+          fetchCurrentUser(),
+          fetchUnreadNotificationCount(),
+          fetchPurchasedPrompts(),
+          fetchBuyerRatings(),
+          fetchCreatorRatings(),
+        ]);
 
       setUser(userData);
-      setCartCount(cart);
       setNotificationCount(notifications);
       setLibraryCount(purchased.length);
+      setBuyerRatingCount(buyerRatings.length);
+      setCreatorRatingCount(creatorRatings.length);
       setIsCreatorMode(userData.isCreator ?? false);
     }
 
@@ -57,7 +64,6 @@ export default function UserLayout() {
     <div className="app-shell min-h-screen text-slate-100">
       <Navbar
         user={user}
-        cartCount={cartCount}
         notificationCount={notificationCount}
         searchQuery={searchQuery}
         onSearchChange={setSearchQuery}
@@ -67,7 +73,12 @@ export default function UserLayout() {
       />
 
       <div className="flex">
-        <Sidebar libraryCount={libraryCount} isCreatorMode={isCreatorMode} />
+        <Sidebar
+          libraryCount={libraryCount}
+          isCreatorMode={isCreatorMode}
+          buyerRatingCount={buyerRatingCount}
+          creatorRatingCount={creatorRatingCount}
+        />
 
         <main className="app-scrollbar flex-1 overflow-y-auto p-6">
           <Outlet context={{ isCreatorMode, searchQuery }} />

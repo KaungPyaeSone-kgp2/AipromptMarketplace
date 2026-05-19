@@ -2,7 +2,7 @@ import React, { useRef, useState } from "react";
 import { ChevronIcon } from "../Icon.jsx";
 import { useOutsideClick } from "../../hooks/useOutsideClick.js";
 
-export default function ProfileMenu({ user, onSignOut }) {
+export default function ProfileMenu({ user, onSignOut, onOpenWishlist }) {
   const [open, setOpen] = useState(false);
   const ref = useRef(null);
 
@@ -55,6 +55,10 @@ export default function ProfileMenu({ user, onSignOut }) {
           </button>
           <button
             type="button"
+            onClick={() => {
+              setOpen(false);
+              onOpenWishlist?.();
+            }}
             className="w-full px-4 py-2.5 text-left text-sm text-slate-300 transition hover:bg-slate-800"
           >
             Wishlist

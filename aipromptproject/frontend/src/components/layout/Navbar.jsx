@@ -1,19 +1,22 @@
-import React from "react";
+import React, { useState } from "react";
 import { Link } from "react-router";
+import { useShop } from "../../context/ShopContext.jsx";
 import {
   BellIcon,
   CartIcon,
   ExchangeIcon,
+  HeartIcon,
   LogoIcon,
   MagicIcon,
   SearchIcon,
 } from "../Icon.jsx";
+import CartPanel from "../shop/CartPanel.jsx";
+import WishlistPanel from "../shop/WishlistPanel.jsx";
 import NavIconButton from "./NavIconButton.jsx";
 import ProfileMenu from "./ProfileMenu.jsx";
 
 export default function Navbar({
   user,
-  cartCount = 0,
   notificationCount = 0,
   searchQuery = "",
   onSearchChange,
@@ -21,6 +24,23 @@ export default function Navbar({
   onSwitchToCreator,
   onSignOut,
 }) {
+  const { cartUnseenCount, wishlistUnseenCount, markCartSeen, markWishlistSeen } =
+    useShop();
+  const [cartOpen, setCartOpen] = useState(false);
+  const [wishlistOpen, setWishlistOpen] = useState(false);
+
+  const openCart = () => {
+    setWishlistOpen(false);
+    setCartOpen(true);
+    markCartSeen();
+  };
+
+  const openWishlist = () => {
+    setCartOpen(false);
+    setWishlistOpen(true);
+    markWishlistSeen();
+  };
+
   return (
     <nav
       className="sticky top-0 z-40 flex h-16 items-center gap-3 border-b border-slate-700/30 px-4 backdrop-blur-xl"
@@ -60,9 +80,29 @@ export default function Navbar({
           </button>
         )}
 
-        <NavIconButton badge={cartCount} badgeVariant="blue" label="Cart">
-          <CartIcon />
-        </NavIconButton>
+        <div className="relative">
+          <NavIconButton
+            badge={wishlistUnseenCount}
+            badgeVariant="violet"
+            label="Wishlist"
+            onClick={openWishlist}
+          >
+            <HeartIcon className="h-5 w-5" />
+          </NavIconButton>
+          <WishlistPanel open={wishlistOpen} onClose={() => setWishlistOpen(false)} />
+        </div>
+
+        <div className="relative">
+          <NavIconButton
+            badge={cartUnseenCount}
+            badgeVariant="blue"
+            label="Cart"
+            onClick={openCart}
+          >
+            <CartIcon />
+          </NavIconButton>
+          <CartPanel open={cartOpen} onClose={() => setCartOpen(false)} />
+        </div>
 
         <button
           type="button"
@@ -76,7 +116,7 @@ export default function Navbar({
           <BellIcon />
         </NavIconButton>
 
-        {user && <ProfileMenu user={user} onSignOut={onSignOut} />}
+        {user && <ProfileMenu user={user} onSignOut={onSignOut} onOpenWishlist={openWishlist} />}
       </div>
     </nav>
   );

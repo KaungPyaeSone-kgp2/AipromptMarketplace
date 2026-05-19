@@ -5,13 +5,10 @@ export default function BuyerRating() {
   return (
     <div className="space-y-5">
       <div>
-        <p className="text-xs font-black uppercase tracking-widest text-violet-300">
-          Buyer Rating
+        <h1 className="text-lg font-black text-white">My ratings given</h1>
+        <p className="mt-1 text-sm text-slate-400">
+          Ratings you gave to creator prompt posts.
         </p>
-
-        <h1 className="mt-1 text-2xl font-black text-white">
-          Ratings You Gave to Creator Prompt Posts
-        </h1>
       </div>
 
       <div className="space-y-3">

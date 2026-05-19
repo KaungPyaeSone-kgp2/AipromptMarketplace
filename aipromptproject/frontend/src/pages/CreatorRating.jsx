@@ -5,13 +5,10 @@ export default function CreatorRating() {
   return (
     <div className="space-y-5">
       <div>
-        <p className="text-xs font-black uppercase tracking-widest text-violet-300">
-          Creator Rating
+        <h1 className="text-lg font-black text-white">Ratings I received</h1>
+        <p className="mt-1 text-sm text-slate-400">
+          Ratings buyers gave to your posted prompts.
         </p>
-
-        <h1 className="mt-1 text-2xl font-black text-white">
-          How Buyers Rated Your Prompt Posts
-        </h1>
       </div>
 
       <div className="space-y-3">

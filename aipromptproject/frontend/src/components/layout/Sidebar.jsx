@@ -4,13 +4,15 @@ import {
   CreatorIcon,
   HomeIcon,
   LibraryIcon,
-  StarIcon,
 } from "../Icon.jsx";
 import SidebarItem from "./SidebarItem.jsx";
+import SidebarRatingMenu from "./SidebarRatingMenu.jsx";
 
 export default function Sidebar({
   libraryCount = 0,
   isCreatorMode = false,
+  buyerRatingCount = 0,
+  creatorRatingCount = 0,
 }) {
   return (
     <aside
@@ -31,15 +33,15 @@ export default function Sidebar({
       />
 
       <SidebarItem
-        to="/community"
+        to="/followings"
         icon={<CommunityIcon />}
-        label="Community"
+        label="Followings"
       />
 
-      <SidebarItem
-        to="/favorites"
-        icon={<StarIcon />}
-        label="Favorites"
+      <SidebarRatingMenu
+        isCreatorMode={isCreatorMode}
+        buyerRatingCount={buyerRatingCount}
+        creatorRatingCount={creatorRatingCount}
       />
 
       {isCreatorMode && (

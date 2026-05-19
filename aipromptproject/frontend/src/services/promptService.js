@@ -1,56 +1,65 @@
 import { CATEGORIES, LANGUAGE_MODELS } from "../constants/filters.js";
-import {
-  mockBuyerRatings,
-  mockCreatorPrompts,
-  mockCreatorRatings,
-  mockHomePrompts,
-  mockPurchasedPrompts,
-} from "../data/mock/index.js";
-// import { apiGet } from "./apiClient.js";
+import { mapPromptListFromApi } from "../utils/mapPrompt.js";
+import { apiGet } from "./apiClient.js";
+
+let cachedPrompts = null;
+
+async function loadAllPrompts() {
+  if (cachedPrompts) return cachedPrompts;
+
+  const response = await apiGet("prompt/getAllprompts.php");
+  const mapped = mapPromptListFromApi(response);
+  cachedPrompts = mapped;
+  return mapped;
+}
 
 /**
  * @param {import("../types/models.js").HomePromptFilters} filters
- * @returns {Promise<import("../types/models.js").Prompt[]>}
  */
 export async function fetchHomePrompts(filters = {}) {
-  // When DB is ready: return apiGet(`/prompts?${new URLSearchParams(filters)}`);
-  await simulateNetwork();
-
+  const all = await loadAllPrompts();
   const { models = [], categories = [], minRating = 0, search = "" } = filters;
   const query = search.trim().toLowerCase();
 
-  return mockHomePrompts.filter((prompt) => {
+  return all.filter((prompt) => {
     const modelMatch = models.length === 0 || models.includes(prompt.model);
     const categoryMatch =
       categories.length === 0 || categories.includes(prompt.category);
-    const ratingMatch = minRating === 0 || prompt.rating >= minRating;
+    const ratingMatch = minRating === 0 || (prompt.rating ?? 0) >= minRating;
     const searchMatch =
       !query ||
-      prompt.title.toLowerCase().includes(query) ||
-      prompt.model.toLowerCase().includes(query) ||
-      prompt.category.toLowerCase().includes(query);
+      prompt.title?.toLowerCase().includes(query) ||
+      prompt.model?.toLowerCase().includes(query) ||
+      prompt.category?.toLowerCase().includes(query) ||
+      prompt.creatorName?.toLowerCase().includes(query) ||
+      prompt.description?.toLowerCase().includes(query);
 
     return modelMatch && categoryMatch && ratingMatch && searchMatch;
   });
 }
 
+export async function fetchPromptById(id) {
+  const all = await loadAllPrompts();
+  return all.find((p) => String(p.id) === String(id)) ?? null;
+}
+
 export async function fetchPurchasedPrompts() {
-  await simulateNetwork();
+  const { mockPurchasedPrompts } = await import("../data/mock/prompts.js");
   return mockPurchasedPrompts;
 }
 
 export async function fetchBuyerRatings() {
-  await simulateNetwork();
+  const { mockBuyerRatings } = await import("../data/mock/prompts.js");
   return mockBuyerRatings;
 }
 
 export async function fetchCreatorRatings() {
-  await simulateNetwork();
+  const { mockCreatorRatings } = await import("../data/mock/prompts.js");
   return mockCreatorRatings;
 }
 
 export async function fetchCreatorPrompts() {
-  await simulateNetwork();
+  const { mockCreatorPrompts } = await import("../data/mock/prompts.js");
   return mockCreatorPrompts;
 }
 
@@ -58,6 +67,6 @@ export function getFilterOptions() {
   return { languageModels: LANGUAGE_MODELS, categories: CATEGORIES };
 }
 
-function simulateNetwork() {
-  return new Promise((resolve) => setTimeout(resolve, 0));
+export function clearPromptCache() {
+  cachedPrompts = null;
 }

@@ -2,10 +2,10 @@ import React from "react";
 import { Navigate, Route, Routes, useOutletContext } from "react-router";
 import UserLayout from "./layouts/UserLayout.jsx";
 import BuyerRating from "./pages/BuyerRating.jsx";
-import Community from "./pages/Community.jsx";
 import CreatorHome from "./pages/CreatorHome.jsx";
 import CreatorRating from "./pages/CreatorRating.jsx";
-import Favorites from "./pages/Favorites.jsx";
+import CreatorProfile from "./pages/CreatorProfile.jsx";
+import Followings from "./pages/Followings.jsx";
 import PurchasedPrompt from "./pages/PurchasedPrompt.jsx";
 import UserHome from "./pages/UserHome.jsx";
 
@@ -25,8 +25,8 @@ export default function App() {
       <Route element={<UserLayout />}>
         <Route index element={<UserHome />} />
         <Route path="purchased" element={<PurchasedPrompt />} />
-        <Route path="community" element={<Community />} />
-        <Route path="favorites" element={<Favorites />} />
+        <Route path="followings" element={<Followings />} />
+        <Route path="creator/:creatorId" element={<CreatorProfile />} />
         <Route path="rating/buyer" element={<BuyerRating />} />
 
         <Route
@@ -46,6 +46,10 @@ export default function App() {
             </CreatorOnly>
           }
         />
+
+        {/* Legacy redirects */}
+        <Route path="community" element={<Navigate to="/followings" replace />} />
+        <Route path="favorites" element={<Navigate to="/rating/buyer" replace />} />
       </Route>
 
       <Route path="*" element={<Navigate to="/" replace />} />
