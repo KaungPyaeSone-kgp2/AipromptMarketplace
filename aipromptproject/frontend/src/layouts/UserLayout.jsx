@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Outlet, useNavigate } from "react-router";
+import { Outlet, useLocation, useNavigate } from "react-router";
 import Navbar from "../components/layout/Navbar.jsx";
 import Sidebar from "../components/layout/Sidebar.jsx";
 import {
@@ -13,6 +13,7 @@ import {
 } from "../services/userService.js";
 
 export default function UserLayout() {
+  const location = useLocation();
   const navigate = useNavigate();
 
   const [user, setUser] = useState(null);
@@ -26,32 +27,46 @@ export default function UserLayout() {
   const [showCreatorSuccess, setShowCreatorSuccess] = useState(false);
 
   useEffect(() => {
+    let cancelled = false;
+
     async function loadLayoutData() {
       const [userData, notifications, purchased, buyerRatings, creatorRatings] =
         await Promise.all([
-          fetchCurrentUser(),
+          fetchCurrentUser({ creatorMode: isCreatorMode }),
           fetchUnreadNotificationCount(),
           fetchPurchasedPrompts(),
           fetchBuyerRatings(),
           fetchCreatorRatings(),
         ]);
 
+      if (cancelled) return;
+
       setUser(userData);
       setNotificationCount(notifications);
       setLibraryCount(purchased.length);
       setBuyerRatingCount(buyerRatings.length);
       setCreatorRatingCount(creatorRatings.length);
-      setIsCreatorMode(userData.isCreator ?? false);
+      if ((userData.isCreator ?? false) !== isCreatorMode) {
+        setIsCreatorMode(userData.isCreator ?? false);
+      }
     }
 
     loadLayoutData();
-  }, []);
+    return () => {
+      cancelled = true;
+    };
+  }, [isCreatorMode]);
 
-  const handleSubscribeCreator = () => {
+  const handleSubscribeCreator = async () => {
     setShowCreatorConfirm(false);
     setIsCreatorMode(true);
     setShowCreatorSuccess(true);
-    if (user) setUser({ ...user, isCreator: true });
+    try {
+      const creatorUser = await fetchCurrentUser({ creatorMode: true });
+      setUser(creatorUser);
+    } catch {
+      if (user) setUser({ ...user, isCreator: true });
+    }
     navigate("/creator");
   };
 
@@ -60,13 +75,20 @@ export default function UserLayout() {
     navigate("/");
   };
 
+  const handleSearchChange = (value) => {
+    setSearchQuery(value);
+    if (value.trim() && location.pathname !== "/") {
+      navigate("/");
+    }
+  };
+
   return (
     <div className="app-shell min-h-screen text-slate-100">
       <Navbar
         user={user}
         notificationCount={notificationCount}
         searchQuery={searchQuery}
-        onSearchChange={setSearchQuery}
+        onSearchChange={handleSearchChange}
         isCreatorMode={isCreatorMode}
         onSwitchToCreator={() => setShowCreatorConfirm(true)}
         onSignOut={handleSignOut}
@@ -136,5 +158,3 @@ export default function UserLayout() {
     </div>
   );
 }
-
-

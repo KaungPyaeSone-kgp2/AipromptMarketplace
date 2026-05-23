@@ -7,6 +7,7 @@ import CreatorRating from "./pages/CreatorRating.jsx";
 import CreatorProfile from "./pages/CreatorProfile.jsx";
 import Followings from "./pages/Followings.jsx";
 import PurchasedPrompt from "./pages/PurchasedPrompt.jsx";
+import PromptDetail from "./pages/PromptDetail.jsx";
 import UserHome from "./pages/UserHome.jsx";
 
 function CreatorOnly({ children }) {
@@ -26,6 +27,7 @@ export default function App() {
         <Route index element={<UserHome />} />
         <Route path="purchased" element={<PurchasedPrompt />} />
         <Route path="followings" element={<Followings />} />
+        <Route path="prompt/:promptId" element={<PromptDetail />} />
         <Route path="creator/:creatorId" element={<CreatorProfile />} />
         <Route path="rating/buyer" element={<BuyerRating />} />
 

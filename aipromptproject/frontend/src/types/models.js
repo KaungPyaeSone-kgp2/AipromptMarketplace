@@ -22,6 +22,13 @@
  * @property {string} avatarUrl
  * @property {number} points
  * @property {boolean} isCreator
+ * @property {number} [followingCount]
+ * @property {number} [purchasedPromptsCount]
+ * @property {number} [followersCount]
+ * @property {number} [postedPromptCount]
+ * @property {number} [totalSalesCount]
+ * @property {number} [totalEarningCoins]
+ * @property {string|null} [joinedAt]
  */
 
 /**

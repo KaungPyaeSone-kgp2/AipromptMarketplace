@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import { CATEGORIES, LANGUAGE_MODELS } from "../../constants/filters.js";
+import { getFilterOptions } from "../../services/promptService.js";
 import { ChevronIcon, FilterIcon } from "../Icon.jsx";
 import FilterPill from "./FilterPill.jsx";
 
@@ -46,6 +47,10 @@ export default function HomeFilters({
   onClearAll,
 }) {
   const [menuOpen, setMenuOpen] = useState(false);
+  const [filterOptions, setFilterOptions] = useState({
+    languageModels: LANGUAGE_MODELS,
+    categories: CATEGORIES,
+  });
   const menuRef = useRef(null);
 
   const selectedCount =
@@ -59,6 +64,29 @@ export default function HomeFilters({
     }
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    async function loadFilterOptions() {
+      try {
+        const options = await getFilterOptions();
+        if (!cancelled) setFilterOptions(options);
+      } catch {
+        if (!cancelled) {
+          setFilterOptions({
+            languageModels: LANGUAGE_MODELS,
+            categories: CATEGORIES,
+          });
+        }
+      }
+    }
+
+    loadFilterOptions();
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   return (
@@ -108,7 +136,7 @@ export default function HomeFilters({
             </div>
 
             <FilterSection title="Language Models">
-              {LANGUAGE_MODELS.map((model) => (
+              {filterOptions.languageModels.map((model) => (
                 <FilterPill
                   key={model}
                   label={model}
@@ -119,7 +147,7 @@ export default function HomeFilters({
             </FilterSection>
 
             <FilterSection title="Categories">
-              {CATEGORIES.map((category) => (
+              {filterOptions.categories.map((category) => (
                 <FilterPill
                   key={category}
                   label={category}
@@ -138,4 +166,3 @@ export default function HomeFilters({
     </header>
   );
 }
-

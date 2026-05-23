@@ -57,6 +57,7 @@ export default function UserHome() {
         loading={loading}
         error={error}
         variant="grid"
+        searchQuery={searchQuery}
       />
     </div>
   );

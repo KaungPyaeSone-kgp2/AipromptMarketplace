@@ -5,6 +5,7 @@ import { useOutsideClick } from "../../hooks/useOutsideClick.js";
 export default function ProfileMenu({ user, onSignOut, onOpenWishlist }) {
   const [open, setOpen] = useState(false);
   const ref = useRef(null);
+  const points = Number(user.points ?? 0);
 
   useOutsideClick(ref, () => setOpen(false));
 
@@ -42,9 +43,67 @@ export default function ProfileMenu({ user, onSignOut, onOpenWishlist }) {
               </p>
               <p className="truncate text-xs text-slate-400">{user.email}</p>
               <p className="mt-1 text-xs font-bold text-emerald-300">
-                {user.points.toLocaleString()} pts
+                {points.toLocaleString()} pts
               </p>
             </div>
+          </div>
+
+          <div className="grid grid-cols-2 gap-2 border-b border-slate-700/80 px-4 py-3">
+            {user.isCreator ? (
+              <>
+                <div>
+                  <p className="text-[11px] font-bold uppercase text-slate-500">
+                    Followers
+                  </p>
+                  <p className="text-sm font-black text-white">
+                    {(user.followersCount ?? 0).toLocaleString()}
+                  </p>
+                </div>
+                <div>
+                  <p className="text-[11px] font-bold uppercase text-slate-500">
+                    Posts
+                  </p>
+                  <p className="text-sm font-black text-white">
+                    {(user.postedPromptCount ?? 0).toLocaleString()}
+                  </p>
+                </div>
+                <div>
+                  <p className="text-[11px] font-bold uppercase text-slate-500">
+                    Sales
+                  </p>
+                  <p className="text-sm font-black text-white">
+                    {(user.totalSalesCount ?? 0).toLocaleString()}
+                  </p>
+                </div>
+                <div>
+                  <p className="text-[11px] font-bold uppercase text-slate-500">
+                    Earned
+                  </p>
+                  <p className="text-sm font-black text-white">
+                    {(user.totalEarningCoins ?? 0).toLocaleString()}
+                  </p>
+                </div>
+              </>
+            ) : (
+              <>
+                <div>
+                  <p className="text-[11px] font-bold uppercase text-slate-500">
+                    Following
+                  </p>
+                  <p className="text-sm font-black text-white">
+                    {(user.followingCount ?? 0).toLocaleString()}
+                  </p>
+                </div>
+                <div>
+                  <p className="text-[11px] font-bold uppercase text-slate-500">
+                    Purchased
+                  </p>
+                  <p className="text-sm font-black text-white">
+                    {(user.purchasedPromptsCount ?? 0).toLocaleString()}
+                  </p>
+                </div>
+              </>
+            )}
           </div>
 
           <button
@@ -61,7 +120,7 @@ export default function ProfileMenu({ user, onSignOut, onOpenWishlist }) {
             }}
             className="w-full px-4 py-2.5 text-left text-sm text-slate-300 transition hover:bg-slate-800"
           >
-            Wishlist
+            Exchange History
           </button>
           <button
             type="button"
@@ -78,5 +137,4 @@ export default function ProfileMenu({ user, onSignOut, onOpenWishlist }) {
     </div>
   );
 }
-
 

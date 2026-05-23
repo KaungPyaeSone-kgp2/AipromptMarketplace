@@ -1,12 +1,17 @@
 import { resolveAssetUrl } from "./assets.js";
 
 const MODEL_MAP = {
+  chatgpt: "ChatGPT",
   gpt: "GPT",
   openai: "GPT",
   gemini: "Gemini",
   grok: "Grok",
   claude: "Claude",
   llama: "Llama",
+  midjourney: "Midjourney",
+  stablediffusion: "StableDiffusion",
+  stable_diffusion: "StableDiffusion",
+  "stable diffusion": "StableDiffusion",
 };
 
 export function normalizeModelType(modelType) {
@@ -43,6 +48,10 @@ export function mapPromptFromApi(row) {
     category: normalizeCategory(row.category_name),
     rating: Number(row.rating ?? row.avg_rating ?? row.average_rating ?? 0),
     price: Number(row.sale_coin ?? row.price ?? 0),
+    wishlistCount: Number(row.wish_list_count ?? row.wishlist_count ?? 0),
+    reviewCount: Number(row.review_count ?? 0),
+    salesCount: Number(row.sales_count ?? 0),
+    viewCount: Number(row.view_count ?? row.views_count ?? row.views ?? 0),
     creator: creatorName,
     creatorId,
     creatorName,

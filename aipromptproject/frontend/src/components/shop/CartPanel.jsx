@@ -4,7 +4,7 @@ import { useOutsideClick } from "../../hooks/useOutsideClick.js";
 
 export default function CartPanel({ open, onClose }) {
   const ref = useRef(null);
-  const { cart, cartTotal, removeFromCart, purchaseCart } = useShop();
+  const { cart, cartTotal, removeFromCart, clearCart, purchaseCart } = useShop();
 
   useOutsideClick(ref, () => {
     if (open) onClose?.();
@@ -75,13 +75,22 @@ export default function CartPanel({ open, onClose }) {
             <span className="text-slate-400">Total</span>
             <span className="font-black text-violet-300">{cartTotal} coins</span>
           </div>
-          <button
-            type="button"
-            onClick={handleBuyAll}
-            className="w-full rounded-xl bg-violet-600 py-2.5 text-sm font-bold text-white transition hover:bg-violet-500"
-          >
-            Buy all
-          </button>
+          <div className="grid grid-cols-2 gap-3">
+            <button
+              type="button"
+              onClick={clearCart}
+              className="rounded-xl border border-rose-400/30 bg-rose-500/10 py-2.5 text-sm font-bold text-rose-300 transition hover:bg-rose-500/20"
+            >
+              Remove all
+            </button>
+            <button
+              type="button"
+              onClick={handleBuyAll}
+              className="rounded-xl bg-violet-600 py-2.5 text-sm font-bold text-white transition hover:bg-violet-500"
+            >
+              Buy all
+            </button>
+          </div>
         </div>
       )}
     </div>

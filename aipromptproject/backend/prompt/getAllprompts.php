@@ -1,7 +1,7 @@
 <?php
 header("Content-Type: application/json; charset=UTF-8");
 header("Access-Control-Allow-Origin: *");
-header("Access-Control-Allow-Methods: GET, OPTIONS");
+header("Access-Control-Allow-Methods: GET, POST, OPTIONS");
 header("Access-Control-Allow-Headers: Content-Type");
 
 if ($_SERVER["REQUEST_METHOD"] === "OPTIONS") {
@@ -10,7 +10,7 @@ if ($_SERVER["REQUEST_METHOD"] === "OPTIONS") {
 }
 
 require_once __DIR__ . "/../database/Database.php";
-require_once __DIR__ . "/../dao/BasicDAO.php";
+require_once __DIR__ . "/../dao/BaseDAO.php";
 
 try {
     $db = new Database();
@@ -25,6 +25,8 @@ try {
 }
 
 $dao = new BaseDAO($pdo);
+// NOTE: BasicDAO.php defines class BaseDAO (despite filename). Keep instantiation as BaseDAO.
+
 
 try {
     $select_query = "SELECT 
@@ -38,9 +40,24 @@ try {
     p.slug,
     p.prompt_description,
     p.full_prompt_content,
-    p.average_rating,
+    COALESCE((
+        SELECT AVG(r.rating)
+        FROM reviews r
+        WHERE r.prompt_id = p.id
+    ), p.average_rating, 0) AS average_rating,
     p.thumbnail,
-    p.sale_coin
+    p.sale_coin,
+    p.sales_count,
+    COALESCE((
+        SELECT COUNT(*)
+        FROM wishlists w
+        WHERE w.prompt_id = p.id
+    ), p.wish_list_count, 0) AS wish_list_count,
+    COALESCE((
+        SELECT COUNT(*)
+        FROM reviews r
+        WHERE r.prompt_id = p.id
+    ), p.review_count, 0) AS review_count
 FROM 
     prompts p
 JOIN 

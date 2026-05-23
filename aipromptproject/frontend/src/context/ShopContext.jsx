@@ -1,4 +1,4 @@
-import React, {
+import {
   createContext,
   useCallback,
   useContext,
@@ -6,9 +6,13 @@ import React, {
   useMemo,
   useState,
 } from "react";
+import {
+  addWishlistPrompt,
+  deleteWishlistPrompt,
+  fetchWishlist,
+} from "../services/wishlistService.js";
 
 const CART_KEY = "promptai_cart";
-const WISHLIST_KEY = "promptai_wishlist";
 
 const ShopContext = createContext(null);
 
@@ -23,7 +27,7 @@ function loadJson(key, fallback) {
 
 export function ShopProvider({ children }) {
   const [cart, setCart] = useState(() => loadJson(CART_KEY, []));
-  const [wishlist, setWishlist] = useState(() => loadJson(WISHLIST_KEY, []));
+  const [wishlist, setWishlist] = useState([]);
   const [cartUnseen, setCartUnseen] = useState(0);
   const [wishlistUnseen, setWishlistUnseen] = useState(0);
 
@@ -32,8 +36,23 @@ export function ShopProvider({ children }) {
   }, [cart]);
 
   useEffect(() => {
-    localStorage.setItem(WISHLIST_KEY, JSON.stringify(wishlist));
-  }, [wishlist]);
+    let cancelled = false;
+
+    async function loadWishlist() {
+      try {
+        const savedWishlist = await fetchWishlist();
+        if (!cancelled) setWishlist(savedWishlist);
+      } catch (error) {
+        console.error("Failed to load wishlist", error);
+      }
+    }
+
+    loadWishlist();
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   const isInCart = useCallback(
     (promptId) => cart.some((item) => item.prompt.id === String(promptId)),
@@ -49,7 +68,7 @@ export function ShopProvider({ children }) {
     const id = String(prompt.id);
     setCart((prev) => {
       if (prev.some((item) => item.prompt.id === id)) return prev;
-      setCartUnseen((c) => c + 1);
+      setCartUnseen((count) => count + 1);
       return [...prev, { prompt, addedAt: Date.now() }];
     });
   }, []);
@@ -58,19 +77,56 @@ export function ShopProvider({ children }) {
     setCart((prev) => prev.filter((item) => item.prompt.id !== String(promptId)));
   }, []);
 
-  const toggleWishlist = useCallback((prompt) => {
-    const id = String(prompt.id);
-    setWishlist((prev) => {
-      const exists = prev.some((p) => p.id === id);
-      if (exists) return prev.filter((p) => p.id !== id);
-      setWishlistUnseen((c) => c + 1);
-      return [...prev, prompt];
-    });
+  const clearCart = useCallback(() => {
+    setCart([]);
   }, []);
 
-  const removeFromWishlist = useCallback((promptId) => {
-    setWishlist((prev) => prev.filter((p) => p.id !== String(promptId)));
-  }, []);
+  const toggleWishlist = useCallback(async (prompt) => {
+    const id = String(prompt.id);
+    const exists = wishlist.some((p) => p.id === id);
+
+    setWishlist((prev) =>
+      exists ? prev.filter((p) => p.id !== id) : [...prev, prompt]
+    );
+    if (!exists) {
+      setWishlistUnseen((count) => count + 1);
+    }
+
+    try {
+      if (exists) {
+        await deleteWishlistPrompt(id);
+      } else {
+        await addWishlistPrompt(id);
+      }
+    } catch (error) {
+      console.error("Failed to update wishlist", error);
+      setWishlist((prev) =>
+        exists
+          ? prev.some((p) => p.id === id)
+            ? prev
+            : [...prev, prompt]
+          : prev.filter((p) => p.id !== id)
+      );
+    }
+  }, [wishlist]);
+
+  const removeFromWishlist = useCallback(async (promptId) => {
+    const id = String(promptId);
+    const removedPrompt = wishlist.find((p) => p.id === id);
+
+    setWishlist((prev) => prev.filter((p) => p.id !== id));
+
+    try {
+      await deleteWishlistPrompt(id);
+    } catch (error) {
+      console.error("Failed to remove wishlist item", error);
+      if (removedPrompt) {
+        setWishlist((prev) =>
+          prev.some((p) => p.id === id) ? prev : [...prev, removedPrompt]
+        );
+      }
+    }
+  }, [wishlist]);
 
   const markCartSeen = useCallback(() => setCartUnseen(0), []);
   const markWishlistSeen = useCallback(() => setWishlistUnseen(0), []);
@@ -100,6 +156,7 @@ export function ShopProvider({ children }) {
       isInWishlist,
       addToCart,
       removeFromCart,
+      clearCart,
       toggleWishlist,
       removeFromWishlist,
       markCartSeen,
@@ -116,6 +173,7 @@ export function ShopProvider({ children }) {
       isInWishlist,
       addToCart,
       removeFromCart,
+      clearCart,
       toggleWishlist,
       removeFromWishlist,
       markCartSeen,

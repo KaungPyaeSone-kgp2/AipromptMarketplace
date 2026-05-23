@@ -1,8 +1,9 @@
 import { CATEGORIES, LANGUAGE_MODELS } from "../constants/filters.js";
-import { mapPromptListFromApi } from "../utils/mapPrompt.js";
+import { mapPromptListFromApi, normalizeCategory } from "../utils/mapPrompt.js";
 import { apiGet } from "./apiClient.js";
 
 let cachedPrompts = null;
+let cachedCategories = null;
 
 async function loadAllPrompts() {
   if (cachedPrompts) return cachedPrompts;
@@ -11,6 +12,23 @@ async function loadAllPrompts() {
   const mapped = mapPromptListFromApi(response);
   cachedPrompts = mapped;
   return mapped;
+}
+
+async function loadAllCategories() {
+  if (cachedCategories) return cachedCategories;
+
+  const response = await apiGet("categories/getAllcategories.php");
+  const rows = Array.isArray(response?.data)
+    ? response.data
+    : Array.isArray(response)
+      ? response
+      : [];
+
+  cachedCategories = rows
+    .map((row) => normalizeCategory(row.category_name ?? row.name ?? row))
+    .filter(Boolean);
+
+  return cachedCategories;
 }
 
 /**
@@ -26,13 +44,20 @@ export async function fetchHomePrompts(filters = {}) {
     const categoryMatch =
       categories.length === 0 || categories.includes(prompt.category);
     const ratingMatch = minRating === 0 || (prompt.rating ?? 0) >= minRating;
-    const searchMatch =
-      !query ||
-      prompt.title?.toLowerCase().includes(query) ||
-      prompt.model?.toLowerCase().includes(query) ||
-      prompt.category?.toLowerCase().includes(query) ||
-      prompt.creatorName?.toLowerCase().includes(query) ||
-      prompt.description?.toLowerCase().includes(query);
+    const searchableText = [
+      prompt.title,
+      prompt.slug,
+      prompt.model,
+      prompt.category,
+      prompt.creator,
+      prompt.creatorName,
+      prompt.description,
+      prompt.promptText,
+    ]
+      .filter(Boolean)
+      .join(" ")
+      .toLowerCase();
+    const searchMatch = !query || searchableText.includes(query);
 
     return modelMatch && categoryMatch && ratingMatch && searchMatch;
   });
@@ -63,10 +88,29 @@ export async function fetchCreatorPrompts() {
   return mockCreatorPrompts;
 }
 
-export function getFilterOptions() {
-  return { languageModels: LANGUAGE_MODELS, categories: CATEGORIES };
+export async function getFilterOptions() {
+  const [prompts, categoriesFromApi] = await Promise.all([
+    loadAllPrompts(),
+    loadAllCategories(),
+  ]);
+
+  const languageModels = [
+    ...new Set([
+      ...LANGUAGE_MODELS,
+      ...prompts.map((prompt) => prompt.model).filter(Boolean),
+    ]),
+  ];
+  const categories = [
+    ...new Set([
+      ...CATEGORIES,
+      ...categoriesFromApi,
+    ]),
+  ];
+
+  return { languageModels, categories };
 }
 
 export function clearPromptCache() {
   cachedPrompts = null;
+  cachedCategories = null;
 }

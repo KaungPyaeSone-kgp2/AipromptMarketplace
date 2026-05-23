@@ -24,8 +24,12 @@ export default function Navbar({
   onSwitchToCreator,
   onSignOut,
 }) {
-  const { cartUnseenCount, wishlistUnseenCount, markCartSeen, markWishlistSeen } =
-    useShop();
+  const {
+    cartUnseenCount,
+    markCartSeen,
+    markWishlistSeen,
+    wishlistUnseenCount,
+  } = useShop();
   const [cartOpen, setCartOpen] = useState(false);
   const [wishlistOpen, setWishlistOpen] = useState(false);
 

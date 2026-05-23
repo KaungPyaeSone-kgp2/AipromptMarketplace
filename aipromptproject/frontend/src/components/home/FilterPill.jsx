@@ -8,11 +8,11 @@ export default function FilterPill({ label, selected, onClick }) {
     <button
       type="button"
       onClick={onClick}
-      className="rounded-full px-4 py-2 text-sm font-bold transition"
+      className="rounded-full px-4 py-2 text-sm font-bold transition hover:-translate-y-0.5"
       style={{
-        background: selected ? color.bg : "rgba(15, 23, 42, 0.62)",
-        border: `1px solid ${selected ? color.border : "rgba(148, 163, 184, 0.16)"}`,
-        color: selected ? color.text : "#94a3b8",
+        background: selected ? color.bg : color.bg.replace("0.16", "0.08").replace("0.12", "0.08"),
+        border: `1px solid ${selected ? color.border : color.border.replace("0.36", "0.20").replace("0.28", "0.18").replace("0.24", "0.18")}`,
+        color: selected ? color.text : "#cbd5e1",
       }}
     >
       {label}

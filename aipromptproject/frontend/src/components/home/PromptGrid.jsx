@@ -1,7 +1,13 @@
 import React from "react";
 import PromptCard from "../PromptCard.jsx";
 
-export default function PromptGrid({ prompts, loading, error, variant = "grid" }) {
+export default function PromptGrid({
+  prompts,
+  loading,
+  error,
+  variant = "grid",
+  searchQuery = "",
+}) {
   if (loading) {
     return (
       <div className="glass-panel flex min-h-[280px] items-center justify-center p-8">
@@ -19,10 +25,14 @@ export default function PromptGrid({ prompts, loading, error, variant = "grid" }
   }
 
   if (!prompts?.length) {
+    const trimmedSearch = searchQuery.trim();
+
     return (
       <div className="glass-panel flex min-h-[280px] flex-col items-center justify-center gap-3 p-8 text-center">
         <p className="text-sm font-semibold text-slate-300">
-          No prompts match the current filters.
+          {trimmedSearch
+            ? `No prompts match "${trimmedSearch}".`
+            : "No prompts match the current filters."}
         </p>
         <p className="text-xs text-slate-500">
           Try different models, categories, or rating options above.
