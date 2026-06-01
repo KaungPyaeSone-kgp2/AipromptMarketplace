@@ -80,7 +80,7 @@ export default function Navbar({
       return;
     }
     try {
-      const res = await fetch(`/api/notification/getNotifications.php?user_id=${user.id}`);
+      const res = await fetch(`/api/users/notification/getNotifications.php?user_id=${user.id}`);
       const json = await res.json();
       if (json.success) setNotifications(json.data);
     } catch (error) {
@@ -95,7 +95,7 @@ export default function Navbar({
 
     // Mark as read in backend
     if (user) {
-      fetch("/api/notification/markRead.php", {
+      fetch("/api/users/notification/markRead.php", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ user_id: Number(user.id), notification_id: id }),
@@ -122,7 +122,7 @@ export default function Navbar({
 
     // Mark all as read in backend
     if (user) {
-      fetch("/api/notification/markRead.php", {
+      fetch("/api/users/notification/markRead.php", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ user_id: Number(user.id), mark_all: true }),

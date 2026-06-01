@@ -122,7 +122,7 @@ export async function fetchCartCount() {
 export async function fetchUnreadNotificationCount() {
   const userId = getCurrentUserId();
   try {
-    const res = await fetch(`/api/notification/getUnreadCount.php?user_id=${userId}`);
+    const res = await fetch(`/api/users/notification/getUnreadCount.php?user_id=${userId}`);
     const data = await res.json();
     if (data.success) return data.count;
     return 0;

@@ -2,6 +2,7 @@ import React from "react";
 import {
   CommunityIcon,
   CreatorIcon,
+  DashboardIcon,
   HomeIcon,
   LibraryIcon,
 } from "../Icon.jsx";
@@ -46,6 +47,11 @@ export default function Sidebar({
       {isCreatorMode && (
         <>
           <div className="my-1 w-8 border-t border-slate-700/70" />
+          <SidebarItem
+            to="/creator/creatordashboard"
+            icon={<DashboardIcon />}
+            label="Dashboard"
+          />
           <SidebarItem
             to="/creator"
             icon={<CreatorIcon />}

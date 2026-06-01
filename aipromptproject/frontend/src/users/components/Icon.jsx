@@ -51,6 +51,17 @@ export function CreatorIcon() {
   );
 }
 
+export function DashboardIcon() {
+  return (
+    <Icon>
+      <path d="M4 5a1 1 0 0 1 1-1h5v7H4Z" />
+      <path d="M14 4h5a1 1 0 0 1 1 1v4h-6Z" />
+      <path d="M4 15h6v5H5a1 1 0 0 1-1-1Z" />
+      <path d="M14 13h6v6a1 1 0 0 1-1 1h-5Z" />
+    </Icon>
+  );
+}
+
 export function SearchIcon() {
   return (
     <Icon className="h-4 w-4">
