@@ -65,7 +65,7 @@ export default function App() {
         />
 
         <Route
-          path="creator/promptcreate"
+          path="creator/promptcreate/:promptId?"
           element={
             <CreatorOnly>
               <CreatePrompt />

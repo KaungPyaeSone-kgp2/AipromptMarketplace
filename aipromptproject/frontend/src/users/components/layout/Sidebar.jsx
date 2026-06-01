@@ -54,6 +54,7 @@ export default function Sidebar({
           />
           <SidebarItem
             to="/creator"
+            end
             icon={<CreatorIcon />}
             label="Creator Home"
           />

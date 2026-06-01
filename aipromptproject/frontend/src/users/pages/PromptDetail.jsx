@@ -9,6 +9,7 @@ import {
   updatePromptInCache,
 } from "../services/promptService.js";
 import { addPromptReview, fetchPromptReviews } from "../services/reviewService.js";
+import { getCurrentUserId } from "../services/currentUser.js";
 
 function formatDate(value) {
   if (!value) return "";
@@ -88,6 +89,7 @@ export default function PromptDetail() {
   const rating = reviewSummary.averageRating || prompt?.rating || 0;
   const reviewCount = reviewSummary.count || prompt?.reviewCount || 0;
   const priceLabel = Number(prompt?.price) > 0 ? `${prompt.price} coins` : "Free";
+  const currentUserId = String(getCurrentUserId());
   const getAccountPath = (accountId, isCreator) =>
     isCreator ? `/creator/${accountId}` : `/user/${accountId}`;
   const inWishlist = useMemo(
@@ -319,7 +321,9 @@ export default function PromptDetail() {
                             <Stars value={review.rating} />
                           </span>
                         </div>
-                        <ReportButton targetType="comment" targetId={review.id} />
+                        {String(review.userId) !== currentUserId && (
+                          <ReportButton targetType="comment" targetId={review.id} />
+                        )}
                       </div>
                       {review.createdAt && (
                         <p className="mt-0.5 text-xs text-slate-500">
@@ -359,7 +363,9 @@ export default function PromptDetail() {
               >
                 <HeartIcon filled={inWishlist} className="h-5 w-5" />
               </button>
-              <ReportButton targetType="prompt" targetId={prompt.id} />
+              {String(prompt.creatorId) !== currentUserId && (
+                <ReportButton targetType="prompt" targetId={prompt.id} />
+              )}
             </div>
           </div>
 
