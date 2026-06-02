@@ -159,6 +159,19 @@ export async function getFilterOptions() {
   return { languageModels, categories };
 }
 
+export async function checkoutCart(items, totalCoinPaid) {
+  const userId = getCurrentUserId();
+
+  return apiPost("purchases/createPurchase.php", {
+    user_id: userId,
+    total_coin_paid: totalCoinPaid,
+    items: items.map((item) => ({
+      prompt_id: item.prompt.id,
+      price: Number(item.prompt.price) || 0,
+    })),
+  });
+}
+
 export function clearPromptCache() {
   cachedPrompts = null;
   cachedCategories = null;
@@ -222,16 +235,3 @@ export async function updatePrompt(formData) {
   clearPromptCache();
   return data;
 }
-export async function checkoutCart(items, totalCoinPaid) {
-  const userId = getCurrentUserId();
-  const response = await apiPost("purchases/createPurchase.php", {
-    user_id: userId,
-    total_coin_paid: totalCoinPaid,
-    items: items.map(item => ({
-      prompt_id: item.prompt.id,
-      price: Number(item.prompt.price) || 0
-    }))
-  });
-  return response;
-}
-

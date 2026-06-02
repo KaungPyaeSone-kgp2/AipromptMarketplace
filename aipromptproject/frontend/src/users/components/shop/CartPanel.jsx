@@ -1,20 +1,44 @@
 import React, { useRef } from "react";
-import { useState } from "react";
 import { useShop } from "../../context/ShopContext.jsx";
 import { useOutsideClick } from "../../hooks/useOutsideClick.js";
+import { CartIcon } from "../Icon.jsx";
 
 export default function CartPanel({ open, onClose }) {
   const ref = useRef(null);
   const { cart, cartTotal, removeFromCart, clearCart, purchaseCart } = useShop();
+  const [buyingPromptId, setBuyingPromptId] = React.useState(null);
 
   const [isCheckingOut, setIsCheckingOut] = React.useState(false);
   const [showSuccessModal, setShowSuccessModal] = React.useState(false);
-
   useOutsideClick(ref, () => {
     if (open) onClose?.();
   });
 
   if (!open) return null;
+
+  const handleBuyItem = async (item) => {
+  if (!item?.prompt) return;
+
+  const promptId = String(item.prompt.id);
+  const price = Number(item.prompt.price) || 0;
+
+  setBuyingPromptId(promptId);
+
+  try {
+    const { checkoutCart } = await import("../../services/promptService.js");
+
+    await checkoutCart([item], price);
+
+    removeFromCart(item.prompt.id);
+    window.dispatchEvent(new CustomEvent("promptai:purchase-success"));
+    setShowSuccessModal(true);
+  } catch (error) {
+    console.error("Single item checkout failed", error);
+    alert(error.message || "Checkout failed. Please try again.");
+  } finally {
+    setBuyingPromptId(null);
+  }
+};
 
   const handleBuyAll = async () => {
     if (cart.length === 0) return;
@@ -38,7 +62,7 @@ export default function CartPanel({ open, onClose }) {
   return (
     <div
       ref={ref}
-      className="absolute right-0 top-full z-50 mt-2 w-[min(380px,calc(100vw-2rem))] overflow-hidden rounded-2xl border border-slate-700 bg-slate-900 shadow-2xl"
+      className="absolute right-0 top-full z-50 mt-2 w-[min(300px,calc(100vw-2rem))] overflow-hidden rounded-2xl border border-slate-700 bg-slate-900 shadow-2xl"
     >
       <div className="border-b border-slate-700 px-4 py-3">
         <h3 className="text-sm font-black text-white">Cart</h3>
@@ -51,7 +75,11 @@ export default function CartPanel({ open, onClose }) {
             Your cart is empty.
           </p>
         ) : (
-          cart.map(({ prompt }) => (
+          cart.map((item) => {
+          const { prompt } = item;
+          const isBuyingThis = buyingPromptId === String(prompt.id);
+
+  return (
             <div
               key={prompt.id}
               className="flex gap-3 border-b border-slate-800 px-4 py-3 last:border-0"
@@ -66,22 +94,41 @@ export default function CartPanel({ open, onClose }) {
                 ) : null}
               </div>
               <div className="min-w-0 flex-1">
-                <p className="line-clamp-1 text-sm font-bold text-white">
-                  {prompt.title}
-                </p>
-                <p className="text-xs text-violet-300">
-                  {Number(prompt.price) || 0} coins
-                </p>
+                <div className="flex items-start justify-between gap-3"> 
+                   <div className="min-w-0">
+                    <p className="line-clamp-1 text-sm font-bold text-white">
+                      {prompt.title}
+                    </p>
+                    <p className="text-xs text-violet-300">
+                      {Number(prompt.price) || 0} coins
+                    </p>
+                    <button
+                      type="button"
+                      onClick={() => removeFromCart(prompt.id)}
+                      className="mt-1 text-xs font-semibold text-rose-400 hover:text-rose-300"
+                    >
+                      Remove
+                    </button>
+                </div>
                 <button
                   type="button"
-                  onClick={() => removeFromCart(prompt.id)}
-                  className="mt-1 text-xs font-semibold text-rose-400 hover:text-rose-300"
+                  onClick={() => handleBuyItem(item)}
+                  disabled={isBuyingThis || isCheckingOut}
+                  title="Buy this prompt"
+                  aria-label="Buy this prompt"
+                  className="mt-0.5 flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-sky-500/15 text-sky-300 ring-1 ring-sky-400/30 transition hover:bg-sky-500 hover:text-white disabled:cursor-not-allowed disabled:opacity-50"
                 >
-                  Remove
+                  {isBuyingThis ? (
+                    <span className="text-xs font-black">...</span>
+                  ) : (
+                    <CartIcon />
+                  )}
                 </button>
+               </div>
               </div>
             </div>
-          ))
+          );
+          })
         )}
       </div>
 
