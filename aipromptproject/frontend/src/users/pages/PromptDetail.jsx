@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link, useParams } from "react-router";
-import { HeartIcon } from "../components/Icon.jsx";
+import { HeartIcon, TrashIcon } from "../components/Icon.jsx";
 import ReportButton from "../components/ReportButton.jsx";
 import { useShop } from "../context/ShopContext.jsx";
 import {
@@ -8,7 +8,11 @@ import {
   PROMPTS_UPDATED_EVENT,
   updatePromptInCache,
 } from "../services/promptService.js";
-import { addPromptReview, fetchPromptReviews } from "../services/reviewService.js";
+import {
+  addPromptReview,
+  deletePromptReview,
+  fetchPromptReviews,
+} from "../services/reviewService.js";
 import { getCurrentUserId } from "../services/currentUser.js";
 
 function formatDate(value) {
@@ -50,6 +54,7 @@ export default function PromptDetail() {
   const [commentText, setCommentText] = useState("");
   const [commentSubmitting, setCommentSubmitting] = useState(false);
   const [commentError, setCommentError] = useState("");
+  const [deletingReviewId, setDeletingReviewId] = useState(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -97,6 +102,23 @@ export default function PromptDetail() {
     [isInWishlist, prompt]
   );
 
+  const syncReviewSummary = (updatedReviews) => {
+    setReviewSummary(updatedReviews);
+    updatePromptInCache(prompt.id, {
+      rating: updatedReviews.averageRating,
+      reviewCount: updatedReviews.count,
+    });
+    setPrompt((currentPrompt) =>
+      currentPrompt
+        ? {
+            ...currentPrompt,
+            reviewCount: updatedReviews.count,
+            rating: updatedReviews.averageRating,
+          }
+        : currentPrompt
+    );
+  };
+
   const handleSubmitComment = async (event) => {
     event.preventDefault();
 
@@ -116,20 +138,7 @@ export default function PromptDetail() {
       });
 
       const updatedReviews = await fetchPromptReviews(prompt.id);
-      setReviewSummary(updatedReviews);
-      updatePromptInCache(prompt.id, {
-        rating: updatedReviews.averageRating,
-        reviewCount: updatedReviews.count,
-      });
-      setPrompt((currentPrompt) =>
-        currentPrompt
-          ? {
-              ...currentPrompt,
-              reviewCount: updatedReviews.count,
-              rating: updatedReviews.averageRating,
-            }
-          : currentPrompt
-      );
+      syncReviewSummary(updatedReviews);
       setCommentText("");
       setCommentRating(5);
     } catch (error) {
@@ -146,6 +155,23 @@ export default function PromptDetail() {
 
     event.preventDefault();
     event.currentTarget.form?.requestSubmit();
+  };
+
+  const handleDeleteReview = async (reviewId) => {
+    if (!prompt || deletingReviewId) return;
+
+    setDeletingReviewId(reviewId);
+    setCommentError("");
+
+    try {
+      await deletePromptReview(reviewId);
+      const updatedReviews = await fetchPromptReviews(prompt.id);
+      syncReviewSummary(updatedReviews);
+    } catch (error) {
+      setCommentError(error.message || "Failed to delete comment.");
+    } finally {
+      setDeletingReviewId(null);
+    }
   };
 
   const updateWishlistCount = (delta) => {
@@ -313,7 +339,7 @@ export default function PromptDetail() {
                         <div className="flex flex-wrap items-center gap-2">
                           <Link
                             to={getAccountPath(review.userId, review.reviewerIsCreator)}
-                            className="font-bold text-white transition hover:text-violet-300"
+                             className="font-bold text-white transition hover:text-violet-300"
                           >
                             {review.reviewerName}
                           </Link>
@@ -321,7 +347,17 @@ export default function PromptDetail() {
                             <Stars value={review.rating} />
                           </span>
                         </div>
-                        {String(review.userId) !== currentUserId && (
+                        {String(review.userId) === currentUserId ? (
+                          <button
+                            type="button"
+                            onClick={() => handleDeleteReview(review.id)}
+                            disabled={deletingReviewId === review.id}
+                            className="inline-flex items-center gap-1.5 rounded-lg px-2 py-1 text-xs font-bold text-rose-300 transition hover:bg-rose-500/10 hover:text-rose-200 disabled:cursor-not-allowed disabled:opacity-60"
+                          >
+                            <TrashIcon />
+                            <span>{deletingReviewId === review.id ? "Deleting..." : "Delete"}</span>
+                          </button>
+                        ) : (
                           <ReportButton targetType="comment" targetId={review.id} />
                         )}
                       </div>

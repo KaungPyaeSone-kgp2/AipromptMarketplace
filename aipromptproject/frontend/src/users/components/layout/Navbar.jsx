@@ -149,7 +149,7 @@ export default function Navbar({
           <LogoIcon />
         </div>
         <span className="text-lg font-black tracking-tight text-white">
-          PromptAI
+          Dream Key
         </span>
       </Link>
 

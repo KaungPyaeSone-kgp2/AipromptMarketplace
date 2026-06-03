@@ -91,3 +91,10 @@ export async function addPromptReview(promptId, { rating, comment }) {
     review_text: comment,
   });
 }
+
+export async function deletePromptReview(reviewId) {
+  return apiPost("reviews/deleteReview.php", {
+    user_id: Number(getCurrentUserId()),
+    review_id: Number(reviewId),
+  });
+}
