@@ -13,6 +13,7 @@ import {
   fetchUnreadNotificationCount,
   subscribeCreatorMode,
 } from "../services/userService.js";
+import { RATINGS_UPDATED_EVENT } from "../services/reviewService.js";
 
 export default function UserLayout() {
   const location = useLocation();
@@ -139,6 +140,27 @@ export default function UserLayout() {
       window.removeEventListener("promptai:purchase-success", handleNewpurchase);
     };
   }, [reloadCurrentUser]);
+
+  useEffect(() => {
+    const handleRatingsUpdated = (event) => {
+      const buyerDelta = Number(event.detail?.buyerDelta ?? 0);
+      const creatorDelta = Number(event.detail?.creatorDelta ?? 0);
+
+      if (buyerDelta) {
+        setBuyerRatingCount((prev) => Math.max(0, prev + buyerDelta));
+      }
+
+      if (creatorDelta) {
+        setCreatorRatingCount((prev) => Math.max(0, prev + creatorDelta));
+      }
+    };
+
+    window.addEventListener(RATINGS_UPDATED_EVENT, handleRatingsUpdated);
+
+    return () => {
+      window.removeEventListener(RATINGS_UPDATED_EVENT, handleRatingsUpdated);
+    };
+  }, []);
 
   const handleSubscribeCreator = async () => {
     setShowCreatorConfirm(false);

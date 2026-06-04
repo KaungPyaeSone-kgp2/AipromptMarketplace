@@ -49,6 +49,8 @@ try {
         ]);
         exit;
     }
+    
+    
 
     $reviews = $dao->select(
         "SELECT id, prompt_id, user_id FROM reviews WHERE id = :review_id LIMIT 1",
@@ -83,9 +85,11 @@ try {
         ]
     );
 
-    if ($deletedCount > 0) {
-        $promptId = (int)$review["prompt_id"];
+    $promptId = (int)$review["prompt_id"];
+    $reviewCount = null;
+    $averageRating = null;
 
+    if ($deletedCount > 0) {
         $dao->update(
             "UPDATE prompts
              SET
@@ -106,12 +110,26 @@ try {
                 ":update_prompt_id" => $promptId,
             ]
         );
+
+        $summary = $dao->select(
+            "SELECT
+                COUNT(*) AS review_count,
+                COALESCE(AVG(rating), 0) AS average_rating
+             FROM reviews
+             WHERE prompt_id = :prompt_id",
+            [":prompt_id" => $promptId]
+        );
+
+        $reviewCount = (int)($summary[0]["review_count"] ?? 0);
+        $averageRating = (float)($summary[0]["average_rating"] ?? 0);
     }
 
     echo json_encode([
         "success" => true,
         "message" => "Review deleted successfully",
         "deleted_count" => $deletedCount,
+        "review_count" => $reviewCount,
+        "average_rating" => $averageRating,
     ]);
 } catch (Exception $e) {
     http_response_code(500);

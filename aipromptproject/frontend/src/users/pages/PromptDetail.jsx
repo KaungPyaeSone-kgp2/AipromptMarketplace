@@ -12,6 +12,7 @@ import {
   addPromptReview,
   deletePromptReview,
   fetchPromptReviews,
+  RATINGS_UPDATED_EVENT,
 } from "../services/reviewService.js";
 import { getCurrentUserId } from "../services/currentUser.js";
 
@@ -91,8 +92,8 @@ export default function PromptDetail() {
     };
   }, [promptId]);
 
-  const rating = reviewSummary.averageRating || prompt?.rating || 0;
-  const reviewCount = reviewSummary.count || prompt?.reviewCount || 0;
+  const rating = reviewSummary.averageRating ?? prompt?.rating ?? 0;
+  const reviewCount = reviewSummary.count ?? prompt?.reviewCount ?? 0;
   const priceLabel = Number(prompt?.price) > 0 ? `${prompt.price} coins` : "Free";
   const currentUserId = String(getCurrentUserId());
   const getAccountPath = (accountId, isCreator) =>
@@ -160,14 +161,47 @@ export default function PromptDetail() {
   const handleDeleteReview = async (reviewId) => {
     if (!prompt || deletingReviewId) return;
 
+    const previousSummary = reviewSummary;
+    const nextReviews = reviewSummary.reviews.filter(
+      (review) => String(review.id) !== String(reviewId)
+    );
+    const nextCount = Math.max(0, reviewSummary.count - 1);
+    const nextAverageRating =
+      nextReviews.length > 0
+        ? nextReviews.reduce(
+            (sum, review) => sum + Number(review.rating || 0),
+            0
+          ) / nextReviews.length
+        : 0;
+
     setDeletingReviewId(reviewId);
     setCommentError("");
+    syncReviewSummary({
+      count: nextCount,
+      averageRating: nextAverageRating,
+      reviews: nextReviews,
+    });
+    window.dispatchEvent(
+      new CustomEvent(RATINGS_UPDATED_EVENT, {
+        detail: { buyerDelta: -1 },
+      })
+    );
 
     try {
-      await deletePromptReview(reviewId);
-      const updatedReviews = await fetchPromptReviews(prompt.id);
-      syncReviewSummary(updatedReviews);
+      const result = await deletePromptReview(reviewId);
+
+      syncReviewSummary({
+        count: Number(result.review_count ?? nextCount),
+        averageRating: Number(result.average_rating ?? nextAverageRating),
+        reviews: nextReviews,
+      });
     } catch (error) {
+      syncReviewSummary(previousSummary);
+      window.dispatchEvent(
+        new CustomEvent(RATINGS_UPDATED_EVENT, {
+          detail: { buyerDelta: 1 },
+        })
+      );
       setCommentError(error.message || "Failed to delete comment.");
     } finally {
       setDeletingReviewId(null);
