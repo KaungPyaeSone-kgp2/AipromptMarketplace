@@ -362,7 +362,7 @@ export default function CreatorDashboard() {
     );
   }
 
-  const totalEarnings = user?.totalEarningCoins ?? 0;
+  const totalEarnings = chartData?.total_net_income ?? user?.totalEarningCoins ?? 0;
   const totalSales = user?.totalSalesCount ?? 0;
   const totalPosts = user?.postedPromptCount ?? prompts.length;
   const followers = user?.followersCount ?? 0;
