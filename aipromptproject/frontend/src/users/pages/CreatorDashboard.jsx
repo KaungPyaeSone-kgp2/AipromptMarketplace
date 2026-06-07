@@ -382,13 +382,6 @@ export default function CreatorDashboard() {
           </div>
 
           <div className="flex flex-wrap gap-3">
-            <button
-              type="button"
-              className="inline-flex h-12 items-center gap-2 rounded-xl border border-slate-600/70 bg-slate-900/60 px-5 text-sm font-semibold text-slate-100 transition hover:bg-slate-800"
-            >
-              <span aria-hidden="true">□</span>
-              Last 30 Days
-            </button>
             <Link
               to="/creator/promptcreate"
               className="inline-flex h-12 items-center justify-center rounded-xl bg-violet-600 px-6 text-sm font-bold text-white shadow-xl shadow-violet-950/30 transition hover:bg-violet-500"
@@ -405,21 +398,21 @@ export default function CreatorDashboard() {
             sublabel="Coins"
             iconType="income"
             accent="amber"
-            trend="+12.5%"
+            // trend="+12.5%"
           />
           <StatCard
             label="Total Purchased"
             value={totalSales.toLocaleString()}
             iconType="cart"
             accent="cyan"
-            trend="+8.2%"
+            // trend="+8.2%"
           />
           <StatCard
             label="Total Followers"
             value={followers.toLocaleString()}
             iconType="users"
             accent="fuchsia"
-            trend="-2.1%"
+            // trend="-2.1%"
             tone="down"
           />
           <StatCard
@@ -427,7 +420,7 @@ export default function CreatorDashboard() {
             value={totalPosts.toLocaleString()}
             iconType="prompt"
             accent="violet"
-            trend="0%"
+            // trend="0%"
             tone="flat"
           />
         </div>

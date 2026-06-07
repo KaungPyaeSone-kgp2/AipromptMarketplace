@@ -20,7 +20,20 @@ try {
     $db = new Database();
     $pdo = $db->connect();
     
-    $stmt = $pdo->prepare("SELECT id, user_id, type, title, message, is_read, created_at FROM notifications WHERE user_id = ? AND is_read = 0 ORDER BY created_at DESC LIMIT 20");
+    $query = "
+        SELECT 
+            n.id, n.user_id, n.type, n.title, n.message, n.is_read, n.created_at, n.reference_id, n.reference_type,
+            COALESCE(pr.status, ur.status, br.status) AS report_status,
+            COALESCE(pr.report_description, ur.report_description, br.report_description) AS report_description
+        FROM notifications n
+        LEFT JOIN prompt_reports pr ON n.reference_type = 'prompt_report' AND n.reference_id = pr.id
+        LEFT JOIN user_reports ur ON n.reference_type = 'user_report' AND n.reference_id = ur.id
+        LEFT JOIN bad_review_reports br ON n.reference_type = 'review_report' AND n.reference_id = br.id
+        WHERE n.user_id = ? AND n.is_read = 0 
+        ORDER BY n.created_at DESC 
+        LIMIT 20
+    ";
+    $stmt = $pdo->prepare($query);
     $stmt->execute([$userId]);
     $notifications = $stmt->fetchAll(PDO::FETCH_ASSOC);
     

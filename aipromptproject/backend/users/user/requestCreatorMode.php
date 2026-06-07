@@ -32,6 +32,7 @@ if (!$userId || $userId <= 0) {
     exit;
 }
 
+// Validate withdraw password
 if (strlen($withdrawPassword) < 8) {
     http_response_code(400);
     echo json_encode(["success" => false, "message" => "Withdraw password must be at least 8 characters"]);
@@ -56,70 +57,33 @@ if (!preg_match('/[!@#$%^&*()_+\-=\[\]{};\':"\\|,.<>\/?]/', $withdrawPassword)) 
     exit;
 }
 
-function normalizeProfileImagePath(?string $path): ?string
-{
-    if (!$path) {
-        return null;
-    }
-
-    $path = str_replace("\\", "/", $path);
-    $path = ltrim($path, "/");
-    $path = preg_replace("#^backend/users/#", "", $path);
-    $path = preg_replace("#^users/uploads/#", "uploads/", $path);
-
-    return $path;
-}
-
-function moveUserProfileImageToCreatorFolder(int $userId, ?string $path): ?string
-{
-    $path = normalizeProfileImagePath($path);
-
-    if (!$path || !str_starts_with($path, "uploads/users/profile/")) {
-        return $path;
-    }
-
-    $uploadsRoot = realpath(__DIR__ . "/../uploads");
-    $oldImagePath = realpath(__DIR__ . "/../" . $path);
-
-    if (!$uploadsRoot || !$oldImagePath || !str_starts_with($oldImagePath, $uploadsRoot) || !is_file($oldImagePath)) {
-        return $path;
-    }
-
-    $extension = pathinfo($oldImagePath, PATHINFO_EXTENSION);
-    $extension = $extension ? "." . $extension : "";
-    $creatorUploadDir = __DIR__ . "/../uploads/creators/profile";
-
-    if (!is_dir($creatorUploadDir)) {
-        mkdir($creatorUploadDir, 0777, true);
-    }
-
-    $newFileName = "creator_" . $userId . "_" . time() . $extension;
-    $newRelativePath = "uploads/creators/profile/" . $newFileName;
-    $newImagePath = $creatorUploadDir . "/" . $newFileName;
-
-    if (!rename($oldImagePath, $newImagePath)) {
-        return $path;
-    }
-
-    return $newRelativePath;
-}
-
 try {
     $db = new Database();
     $pdo = $db->connect();
     $dao = new BaseDAO($pdo);
 
-    // Auto-migrate: add withdraw_password column if it doesn't exist
+    // Auto-create request_creator_mode table if it doesn't exist
+    $pdo->exec("
+        CREATE TABLE IF NOT EXISTS request_creator_mode (
+            id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+            user_id BIGINT UNSIGNED NOT NULL,
+            request_status ENUM('pending', 'approved', 'rejected') DEFAULT 'pending',
+            rejected_message TEXT NULL,
+            requested_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            approved_at TIMESTAMP NULL,
+            FOREIGN KEY (user_id) REFERENCES users(id)
+        )
+    ");
+
+    // Auto-migrate: add withdraw_password column to users table if it doesn't exist
     $columns = $pdo->query("SHOW COLUMNS FROM users LIKE 'withdraw_password'")->fetchAll();
     if (count($columns) === 0) {
         $pdo->exec("ALTER TABLE users ADD COLUMN withdraw_password VARCHAR(255) NULL AFTER creator_mode");
     }
 
+    // Check if user exists
     $users = $dao->select(
-        "SELECT id, profile_image
-         FROM users
-         WHERE id = :user_id
-         LIMIT 1",
+        "SELECT id, creator_mode FROM users WHERE id = :user_id LIMIT 1",
         [":user_id" => $userId]
     );
 
@@ -129,41 +93,51 @@ try {
         exit;
     }
 
-    $profileImagePath = moveUserProfileImageToCreatorFolder(
-        $userId,
-        $users[0]["profile_image"] ?? null
+    // Check if already a creator
+    if ($users[0]["creator_mode"]) {
+        http_response_code(400);
+        echo json_encode(["success" => false, "message" => "You are already a creator"]);
+        exit;
+    }
+
+    // Check if there's already a pending request
+    $existing = $dao->select(
+        "SELECT id, request_status FROM request_creator_mode
+         WHERE user_id = :user_id AND request_status = 'pending'
+         LIMIT 1",
+        [":user_id" => $userId]
     );
 
+    if (count($existing) > 0) {
+        http_response_code(400);
+        echo json_encode(["success" => false, "message" => "You already have a pending request"]);
+        exit;
+    }
+
+    // Hash the withdraw password and store in users table
     $hashedPassword = password_hash($withdrawPassword, PASSWORD_DEFAULT);
 
     $dao->update(
-        "UPDATE users
-         SET creator_mode = TRUE,
-             profile_image = :profile_image,
-             withdraw_password = :withdraw_password
-         WHERE id = :user_id",
+        "UPDATE users SET withdraw_password = :withdraw_password WHERE id = :user_id",
         [
-            ":profile_image" => $profileImagePath,
             ":withdraw_password" => $hashedPassword,
             ":user_id" => $userId,
         ]
     );
 
-    $dao->insert(
-        "INSERT INTO creator_data (user_id)
-         VALUES (:user_id)
-         ON DUPLICATE KEY UPDATE updated_at = updated_at",
+    // Insert the request
+    $requestId = $dao->insert(
+        "INSERT INTO request_creator_mode (user_id)
+         VALUES (:user_id)",
         [":user_id" => $userId]
     );
 
     echo json_encode([
         "success" => true,
-        "message" => "You become the creator.",
-        "creator_mode" => true,
+        "message" => "Your creator request has been submitted and is pending approval.",
         "data" => [
-            "id" => $userId,
-            "creator_mode" => true,
-            "profile_image" => $profileImagePath,
+            "request_id" => $requestId,
+            "request_status" => "pending",
         ],
     ]);
 } catch (Exception $e) {

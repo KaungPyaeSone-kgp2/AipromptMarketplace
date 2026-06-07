@@ -103,22 +103,52 @@ export default function PromptDetail() {
     [isInWishlist, prompt]
   );
 
-  const syncReviewSummary = (updatedReviews) => {
-    setReviewSummary(updatedReviews);
-    updatePromptInCache(prompt.id, {
-      rating: updatedReviews.averageRating,
-      reviewCount: updatedReviews.count,
-    });
-    setPrompt((currentPrompt) =>
-      currentPrompt
-        ? {
-            ...currentPrompt,
-            reviewCount: updatedReviews.count,
-            rating: updatedReviews.averageRating,
-          }
-        : currentPrompt
-    );
-  };
+  // const syncReviewSummary = (updatedReviews) => {
+  //   setReviewSummary(updatedReviews);
+  //   updatePromptInCache(prompt.id, {
+  //     rating: updatedReviews.averageRating,
+  //     reviewCount: updatedReviews.count,
+  //   });
+  //   setPrompt((currentPrompt) =>
+  //     currentPrompt
+  //       ? {
+  //           ...currentPrompt,
+  //           reviewCount: updatedReviews.count,
+  //           rating: updatedReviews.averageRating,
+  //         }
+  //       : currentPrompt
+  //   );
+  // };
+  const getCurrentScrollTop = () => {
+  const scrollContainer = document.querySelector(".app-scrollbar");
+  return scrollContainer ? scrollContainer.scrollTop : window.scrollY;
+};
+
+const restoreScrollTop = (scrollTop) => {
+  requestAnimationFrame(() => {
+    const scrollContainer = document.querySelector(".app-scrollbar");
+
+    if (scrollContainer) {
+      scrollContainer.scrollTop = scrollTop;
+      return;
+    }
+
+    window.scrollTo({ top: scrollTop, left: 0, behavior: "auto" });
+  });
+};
+
+const syncReviewSummary = (updatedReviews) => {
+  setReviewSummary(updatedReviews);
+  setPrompt((currentPrompt) =>
+    currentPrompt
+      ? {
+          ...currentPrompt,
+          reviewCount: updatedReviews.count,
+          rating: updatedReviews.averageRating,
+        }
+      : currentPrompt
+  );
+};
 
   const handleSubmitComment = async (event) => {
     event.preventDefault();
@@ -129,6 +159,7 @@ export default function PromptDetail() {
       return;
     }
 
+    const scrollTop = getCurrentScrollTop();
     setCommentSubmitting(true);
     setCommentError("");
 
@@ -140,10 +171,12 @@ export default function PromptDetail() {
 
       const updatedReviews = await fetchPromptReviews(prompt.id);
       syncReviewSummary(updatedReviews);
+      restoreScrollTop(scrollTop);
       setCommentText("");
       setCommentRating(5);
     } catch (error) {
       setCommentError(error.message || "Failed to add comment.");
+      restoreScrollTop(scrollTop);
     } finally {
       setCommentSubmitting(false);
     }
@@ -160,7 +193,7 @@ export default function PromptDetail() {
 
   const handleDeleteReview = async (reviewId) => {
     if (!prompt || deletingReviewId) return;
-
+    const scrollTop = getCurrentScrollTop();
     const previousSummary = reviewSummary;
     const nextReviews = reviewSummary.reviews.filter(
       (review) => String(review.id) !== String(reviewId)
@@ -181,6 +214,7 @@ export default function PromptDetail() {
       averageRating: nextAverageRating,
       reviews: nextReviews,
     });
+    restoreScrollTop(scrollTop);
     window.dispatchEvent(
       new CustomEvent(RATINGS_UPDATED_EVENT, {
         detail: { buyerDelta: -1 },
@@ -195,6 +229,7 @@ export default function PromptDetail() {
         averageRating: Number(result.average_rating ?? nextAverageRating),
         reviews: nextReviews,
       });
+      restoreScrollTop(scrollTop);
     } catch (error) {
       syncReviewSummary(previousSummary);
       window.dispatchEvent(
@@ -202,6 +237,7 @@ export default function PromptDetail() {
           detail: { buyerDelta: 1 },
         })
       );
+      restoreScrollTop(scrollTop);
       setCommentError(error.message || "Failed to delete comment.");
     } finally {
       setDeletingReviewId(null);

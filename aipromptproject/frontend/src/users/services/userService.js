@@ -95,7 +95,7 @@ export async function updateCurrentUserProfile({ name, email, bio, imageBlob }) 
   return mapUserFromApi(data);
 }
 
-export async function subscribeCreatorMode() {
+export async function subscribeCreatorMode(withdrawPassword) {
   const response = await fetch(`${getApiBaseUrl()}/user/updatecreatormode.php`, {
     method: "POST",
     headers: {
@@ -104,6 +104,7 @@ export async function subscribeCreatorMode() {
     },
     body: JSON.stringify({
       user_id: Number(getCurrentUserId()),
+      withdraw_password: withdrawPassword,
     }),
   });
   const data = await response.json();
@@ -113,6 +114,37 @@ export async function subscribeCreatorMode() {
   }
 
   return data;
+}
+
+export async function requestCreatorMode(withdrawPassword) {
+  const response = await fetch(`${getApiBaseUrl()}/user/requestCreatorMode.php`, {
+    method: "POST",
+    headers: {
+      Accept: "application/json",
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      user_id: Number(getCurrentUserId()),
+      withdraw_password: withdrawPassword,
+    }),
+  });
+  const data = await response.json();
+
+  if (!response.ok || data?.success === false) {
+    throw new Error(data?.message ?? "Creator request failed");
+  }
+
+  return data;
+}
+
+export async function fetchCreatorRequestStatus() {
+  const userId = getCurrentUserId();
+  try {
+    const response = await apiGet(`user/getCreatorRequestStatus.php?user_id=${userId}`);
+    return response?.data ?? null;
+  } catch {
+    return null;
+  }
 }
 
 export async function fetchCartCount() {

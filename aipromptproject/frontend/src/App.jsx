@@ -12,6 +12,7 @@ import UserHome from "./users/pages/UserHome.jsx";
 import CreatePrompt from "./users/pages/CreatePrompt.jsx";
 import FullPromptContent from "./users/pages/FullPromptContent.jsx";
 import CreatorDashboard from "./users/pages/CreatorDashboard.jsx";
+import ExchangePage from "./users/pages/Exchange.jsx";
 
 function CreatorOnly({ children }) {
   const { isCreatorMode } = useOutletContext();
@@ -36,6 +37,7 @@ export default function App() {
         <Route path="user/:userId" element={<CreatorProfile />} />
         <Route path="settings/profile" element={<ProfileSettings />} />
         <Route path="rating/buyer" element={<BuyerRating />} />
+        <Route path="exchange" element={<ExchangePage />} />
 
         <Route
           path="rating/creator"
