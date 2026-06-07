@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { Link, useOutletContext } from "react-router";
+import { Link } from "react-router";
 import Chart from "react-apexcharts";
 import { fetchCreatorPrompts, fetchCreatorRatings } from "../services/promptService.js";
 import { fetchCurrentUser } from "../services/userService.js";
@@ -7,139 +7,203 @@ import { apiGet } from "../services/apiClient.js";
 import { getCurrentUserId } from "../services/currentUser.js";
 import { useOutsideClick } from "../hooks/useOutsideClick.js";
 
-/* ── Stat Card ─────────────────────────────────────────────── */
-
-function StatCard({ label, value, icon, accent = "violet" }) {
-  const accentMap = {
-    violet: "from-violet-500/20 to-violet-600/5 border-violet-500/25 text-violet-300",
-    emerald: "from-emerald-500/20 to-emerald-600/5 border-emerald-500/25 text-emerald-300",
-    amber: "from-amber-500/20 to-amber-600/5 border-amber-500/25 text-amber-300",
-    cyan: "from-cyan-500/20 to-cyan-600/5 border-cyan-500/25 text-cyan-300",
-    rose: "from-rose-500/20 to-rose-600/5 border-rose-500/25 text-rose-300",
-    fuchsia: "from-fuchsia-500/20 to-fuchsia-600/5 border-fuchsia-500/25 text-fuchsia-300",
-  };
-
-  const iconBgMap = {
-    violet: "bg-violet-500/15 text-violet-300",
-    emerald: "bg-emerald-500/15 text-emerald-300",
-    amber: "bg-amber-500/15 text-amber-300",
-    cyan: "bg-cyan-500/15 text-cyan-300",
-    rose: "bg-rose-500/15 text-rose-300",
-    fuchsia: "bg-fuchsia-500/15 text-fuchsia-300",
+function DashboardGlyph({ type }) {
+  const paths = {
+    income: (
+      <>
+        <path d="M8 7.5a4 4 0 1 0 0 8" />
+        <path d="M14 7.5a4 4 0 1 1 0 8" />
+        <path d="M8 7.5h6" />
+        <path d="M8 15.5h6" />
+      </>
+    ),
+    cart: (
+      <>
+        <path d="M5 5h2l1.2 8.1a2 2 0 0 0 2 1.7h5.7a2 2 0 0 0 1.9-1.4L19 8H8" />
+        <circle cx="10.5" cy="19" r="1.2" />
+        <circle cx="17" cy="19" r="1.2" />
+      </>
+    ),
+    users: (
+      <>
+        <circle cx="9" cy="8" r="3" />
+        <path d="M3.5 19a5.5 5.5 0 0 1 11 0" />
+        <path d="M16 10a2.5 2.5 0 0 1 0 5" />
+        <path d="M18 18a4 4 0 0 0-2-3.4" />
+      </>
+    ),
+    prompt: (
+      <>
+        <path d="M7 3.5h7l3.5 3.5v13.5h-11V3.5Z" />
+        <path d="M14 3.5V7h3.5" />
+        <path d="M9 11h5" />
+        <path d="M9 15h4" />
+      </>
+    ),
   };
 
   return (
-    <div
-      className={`relative overflow-hidden rounded-2xl border bg-gradient-to-br p-5 transition hover:scale-[1.02] ${accentMap[accent]}`}
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.9"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className="h-5 w-5"
+      aria-hidden="true"
     >
-      <div className="flex items-start justify-between">
-        <div>
-          <p className="text-[11px] font-bold uppercase tracking-widest text-slate-400">
-            {label}
-          </p>
-          <p className="mt-2 text-3xl font-black text-white">{value}</p>
-        </div>
+      {paths[type]}
+    </svg>
+  );
+}
+
+function TrendBadge({ tone = "up", label }) {
+  const toneClass =
+    tone === "down"
+      ? "border-amber-400/25 bg-amber-400/10 text-amber-300"
+      : tone === "flat"
+        ? "border-slate-400/20 bg-slate-300/10 text-slate-300"
+        : "border-cyan-400/25 bg-cyan-400/10 text-cyan-300";
+
+  return (
+    <span
+      className={`inline-flex h-8 items-center gap-1 rounded-full border px-3 text-xs font-bold ${toneClass}`}
+    >
+      <span>{tone === "down" ? "down" : tone === "flat" ? "-" : "up"}</span>
+      {label}
+    </span>
+  );
+}
+
+function StatCard({ label, value, sublabel, iconType, accent = "violet", trend, tone }) {
+  const accentMap = {
+    violet: {
+      line: "from-violet-300 to-violet-500",
+      icon: "border-violet-400/25 bg-violet-400/10 text-violet-300",
+      glow: "rgba(139, 92, 246, 0.16)",
+    },
+    amber: {
+      line: "from-amber-300 to-orange-500",
+      icon: "border-amber-400/25 bg-amber-400/10 text-amber-300",
+      glow: "rgba(245, 158, 11, 0.16)",
+    },
+    cyan: {
+      line: "from-cyan-300 to-sky-500",
+      icon: "border-cyan-400/25 bg-cyan-400/10 text-cyan-300",
+      glow: "rgba(34, 211, 238, 0.16)",
+    },
+    fuchsia: {
+      line: "from-fuchsia-300 to-purple-500",
+      icon: "border-fuchsia-400/25 bg-fuchsia-400/10 text-fuchsia-300",
+      glow: "rgba(217, 70, 239, 0.16)",
+    },
+  };
+  const selected = accentMap[accent] ?? accentMap.violet;
+
+  return (
+    <div
+      className="relative min-h-[170px] overflow-hidden rounded-2xl border border-slate-700/60 bg-slate-950/70 p-6 shadow-xl shadow-black/15 transition hover:-translate-y-0.5 hover:border-slate-500/60"
+      style={{
+        backgroundImage: `radial-gradient(circle at 80% 30%, ${selected.glow}, transparent 38%), linear-gradient(135deg, rgba(15, 23, 42, 0.88), rgba(17, 18, 34, 0.78))`,
+      }}
+    >
+      <div className={`absolute inset-x-0 top-0 h-[3px] bg-gradient-to-r ${selected.line}`} />
+      <div className="flex items-start justify-between gap-4">
         <div
-          className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl text-lg ${iconBgMap[accent]}`}
+          className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border ${selected.icon}`}
         >
-          {icon}
+          <DashboardGlyph type={iconType} />
+        </div>
+        {trend && <TrendBadge tone={tone} label={trend} />}
+      </div>
+      <div className="mt-7">
+        <p className="text-sm font-medium text-slate-300">{label}</p>
+        <div className="mt-2 flex items-end gap-2">
+          <p className="text-3xl font-black leading-none text-white drop-shadow">
+            {value}
+          </p>
+          {sublabel && <span className="text-sm font-medium text-slate-300">{sublabel}</span>}
         </div>
       </div>
     </div>
   );
 }
 
-/* ── Chart Filter Dropdown ─────────────────────────────────── */
-
 function ChartFilterDropdown({ value, onChange }) {
   const [open, setOpen] = useState(false);
   const ref = useRef(null);
-  
-  useOutsideClick(ref, () => setOpen(false));
+  const labels = { year: "Year", month: "Month", week: "Week" };
 
-  const labels = {
-    year: "Year",
-    month: "Month",
-    week: "Week"
-  };
+  useOutsideClick(ref, () => setOpen(false));
 
   return (
     <div ref={ref} className="relative z-10">
       <button
         type="button"
         onClick={() => setOpen((prev) => !prev)}
-        className="inline-flex min-w-[100px] items-center justify-between gap-3 rounded-lg bg-slate-900/80 px-3 py-1.5 text-xs font-black text-violet-300 transition hover:bg-slate-800 border border-slate-700/50"
+        className="inline-flex min-w-[88px] items-center justify-between gap-3 rounded-xl border border-slate-600/70 bg-slate-900/70 px-3 py-2 text-sm font-medium text-slate-100 transition hover:bg-slate-800"
       >
         <span>{labels[value] || "Year"}</span>
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-3 w-3 text-cyan-300">
-          <polyline points="6 9 12 15 18 9"></polyline>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-3 w-3 text-slate-300">
+          <polyline points="6 9 12 15 18 9" />
         </svg>
       </button>
 
       {open && (
-        <div className="absolute right-0 top-full mt-1 w-32 overflow-hidden rounded-lg border border-slate-700 bg-slate-900 shadow-xl">
-          <button
-            type="button"
-            onClick={() => { onChange("year"); setOpen(false); }}
-            className={`block w-full px-3 py-2 text-left text-xs font-bold transition ${value === "year" ? "bg-cyan-500/20 text-cyan-300" : "text-slate-300 hover:bg-slate-800"}`}
-          >
-            Year
-          </button>
-          <button
-            type="button"
-            onClick={() => { onChange("month"); setOpen(false); }}
-            className={`block w-full px-3 py-2 text-left text-xs font-bold transition ${value === "month" ? "bg-cyan-500/20 text-cyan-300" : "text-slate-300 hover:bg-slate-800"}`}
-          >
-            Month
-          </button>
-          <button
-            type="button"
-            onClick={() => { onChange("week"); setOpen(false); }}
-            className={`block w-full px-3 py-2 text-left text-xs font-bold transition ${value === "week" ? "bg-cyan-500/20 text-cyan-300" : "text-slate-300 hover:bg-slate-800"}`}
-          >
-            Week
-          </button>
+        <div className="absolute right-0 top-full mt-1 w-32 overflow-hidden rounded-xl border border-slate-700 bg-slate-900 shadow-xl">
+          {Object.entries(labels).map(([key, label]) => (
+            <button
+              key={key}
+              type="button"
+              onClick={() => {
+                onChange(key);
+                setOpen(false);
+              }}
+              className={`block w-full px-3 py-2 text-left text-xs font-bold transition ${
+                value === key ? "bg-violet-500/20 text-violet-300" : "text-slate-300 hover:bg-slate-800"
+              }`}
+            >
+              {label}
+            </button>
+          ))}
         </div>
       )}
     </div>
   );
 }
 
-/* ── Fill in missing data helper ─────────────────────────── */
-
 function fillData(rows, valueKey, period, weekOffset = 0) {
   const now = new Date();
   const points = [];
 
   if (period === "week") {
-    // Current month divided into 4 weeks. Week 4 extends to end of month.
     const year = now.getFullYear();
     const month = now.getMonth();
     const daysInMonth = new Date(year, month + 1, 0).getDate();
-    
-    let startDay = weekOffset * 7 + 1;
-    let endDay = weekOffset === 3 ? daysInMonth : startDay + 6;
-    
+    const startDay = weekOffset * 7 + 1;
+    const endDay = weekOffset === 3 ? daysInMonth : startDay + 6;
+
     for (let i = startDay; i <= endDay; i++) {
       const d = new Date(year, month, i);
-      const key = `${year}-${String(month + 1).padStart(2, "0")}-${String(i).padStart(2, "0")}`;
-      const label = d.toLocaleDateString("en-US", { weekday: "short" });
-      points.push({ key, label });
+      points.push({
+        key: `${year}-${String(month + 1).padStart(2, "0")}-${String(i).padStart(2, "0")}`,
+        label: d.toLocaleDateString("en-US", { weekday: "short" }),
+      });
     }
   } else if (period === "month") {
-    // Month filter = 12 months of the current year (Jan to Dec)
     for (let i = 0; i < 12; i++) {
       const d = new Date(now.getFullYear(), i, 1);
-      const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`;
-      const label = d.toLocaleDateString("en-US", { month: "short" });
-      points.push({ key, label });
+      points.push({
+        key: `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`,
+        label: d.toLocaleDateString("en-US", { month: "short" }),
+      });
     }
   } else {
-    // Year filter = last 5 years
     const currentYear = now.getFullYear();
     for (let i = 4; i >= 0; i--) {
-      const y = currentYear - i;
-      points.push({ key: String(y), label: String(y) });
+      const year = currentYear - i;
+      points.push({ key: String(year), label: String(year) });
     }
   }
 
@@ -149,177 +213,80 @@ function fillData(rows, valueKey, period, weekOffset = 0) {
   }
 
   return {
-    categories: points.map((p) => p.label),
-    data: points.map((p) => lookup[p.key] ?? 0),
+    categories: points.map((point) => point.label),
+    data: points.map((point) => lookup[point.key] ?? 0),
   };
 }
-
-/* ── Shared chart theme options ────────────────────────────── */
 
 function buildAreaOptions({ categories, color, yTitle }) {
   return {
     chart: {
       type: "area",
-      height: 280,
+      height: 300,
       fontFamily: "Inter, system-ui, sans-serif",
       toolbar: { show: false },
       background: "transparent",
-      foreColor: "#94a3b8",
-      sparkline: { enabled: false },
-      animations: {
-        enabled: true,
-        easing: "easeinout",
-        speed: 800,
-      },
+      foreColor: "#cbd5e1",
+      animations: { enabled: true, easing: "easeinout", speed: 800 },
     },
     colors: [color],
     fill: {
       type: "gradient",
-      gradient: {
-        shadeIntensity: 1,
-        opacityFrom: 0.45,
-        opacityTo: 0.05,
-        stops: [0, 90, 100],
-      },
+      gradient: { shadeIntensity: 1, opacityFrom: 0.55, opacityTo: 0.04, stops: [0, 90, 100] },
     },
-    stroke: {
-      curve: "smooth",
-      width: 3,
-    },
+    stroke: { curve: "smooth", width: 5, lineCap: "round" },
     dataLabels: { enabled: false },
     grid: {
-      borderColor: "#1e293b",
-      strokeDashArray: 4,
-      padding: { left: 8, right: 8 },
+      borderColor: "rgba(51, 65, 85, 0.55)",
+      strokeDashArray: 0,
+      padding: { left: 8, right: 8, top: 8 },
     },
     xaxis: {
       categories,
-      labels: {
-        style: { colors: "#64748b", fontSize: "11px", fontWeight: 600 },
-      },
+      labels: { style: { colors: "#d6d3e8", fontSize: "12px", fontWeight: 500 } },
       axisBorder: { show: false },
       axisTicks: { show: false },
     },
     yaxis: {
-      title: {
-        text: yTitle,
-        style: { color: "#64748b", fontSize: "11px", fontWeight: 700 },
-      },
+      title: { text: yTitle, style: { color: "#64748b", fontSize: "11px", fontWeight: 700 } },
       labels: {
         style: { colors: "#64748b", fontSize: "11px" },
         formatter: (val) => (Number.isInteger(val) ? val : val.toFixed(1)),
       },
     },
-    tooltip: {
-      theme: "dark",
-      style: { fontSize: "12px" },
-      y: {
-        formatter: (val) => val.toLocaleString(),
-      },
-    },
+    tooltip: { theme: "dark", y: { formatter: (val) => val.toLocaleString() } },
     legend: { show: false },
   };
 }
 
-function buildBarOptions({ categories, color, yTitle }) {
-  return {
-    chart: {
-      type: "bar",
-      height: 280,
-      fontFamily: "Inter, system-ui, sans-serif",
-      toolbar: { show: false },
-      background: "transparent",
-      foreColor: "#94a3b8",
-      animations: {
-        enabled: true,
-        easing: "easeinout",
-        speed: 800,
-      },
-    },
-    colors: [color],
-    plotOptions: {
-      bar: {
-        borderRadius: 6,
-        columnWidth: "55%",
-      },
-    },
-    fill: {
-      type: "gradient",
-      gradient: {
-        shade: "dark",
-        type: "vertical",
-        shadeIntensity: 0.3,
-        opacityFrom: 0.9,
-        opacityTo: 0.6,
-        stops: [0, 100],
-      },
-    },
-    dataLabels: { enabled: false },
-    grid: {
-      borderColor: "#1e293b",
-      strokeDashArray: 4,
-      padding: { left: 8, right: 8 },
-    },
-    xaxis: {
-      categories,
-      labels: {
-        style: { colors: "#64748b", fontSize: "11px", fontWeight: 600 },
-      },
-      axisBorder: { show: false },
-      axisTicks: { show: false },
-    },
-    yaxis: {
-      title: {
-        text: yTitle,
-        style: { color: "#64748b", fontSize: "11px", fontWeight: 700 },
-      },
-      labels: {
-        style: { colors: "#64748b", fontSize: "11px" },
-        formatter: (val) => (Number.isInteger(val) ? val : val.toFixed(1)),
-      },
-    },
-    tooltip: {
-      theme: "dark",
-      style: { fontSize: "12px" },
-      y: {
-        formatter: (val) => val.toLocaleString(),
-      },
-    },
-    legend: { show: false },
-  };
-}
-
-/* ── Smart Chart Panel ─────────────────────────────────────── */
-
-function ChartPanel({ title, type, color, yTitle, rawData, valueKey, metricKey }) {
-  const [period, setPeriod] = useState("year");
+function ChartPanel({ title, subtitle, color, yTitle, rawData, valueKey, metricKey }) {
+  const [period, setPeriod] = useState("month");
   const [weekOffset, setWeekOffset] = useState(0);
 
   const chartData = useMemo(
     () => fillData(rawData?.[period]?.[metricKey] ?? [], valueKey, period, weekOffset),
     [rawData, period, weekOffset, valueKey, metricKey]
   );
-
-  const options = useMemo(() => {
-    return type === "bar"
-      ? buildBarOptions({ categories: chartData.categories, color, yTitle })
-      : buildAreaOptions({ categories: chartData.categories, color, yTitle });
-  }, [type, chartData, color, yTitle]);
+  const options = useMemo(
+    () => buildAreaOptions({ categories: chartData.categories, color, yTitle }),
+    [chartData.categories, color, yTitle]
+  );
 
   return (
-    <div className="overflow-visible rounded-2xl border border-slate-700/50 bg-slate-900/60 p-5">
-      <div className="flex items-start justify-between mb-4">
-        <h3 className="text-sm font-black uppercase tracking-widest text-slate-300 mt-1">
-          {title}
-        </h3>
+    <div className="overflow-visible rounded-2xl border border-slate-700/60 bg-slate-950/60 p-6 shadow-xl shadow-black/15">
+      <div className="mb-5 flex items-start justify-between gap-4">
+        <div>
+          <h3 className="text-2xl font-black tracking-tight text-white">{title}</h3>
+          <p className="mt-2 text-base text-slate-300">{subtitle}</p>
+        </div>
         <div className="flex items-center gap-2">
           {period === "week" && (
-            <div className="flex items-center gap-1 rounded-lg bg-slate-900/80 px-1 py-1 border border-slate-700/50">
+            <div className="flex items-center gap-1 rounded-lg border border-slate-700/50 bg-slate-900/80 px-1 py-1">
               <button
                 type="button"
                 onClick={() => setWeekOffset(Math.max(0, weekOffset - 1))}
                 disabled={weekOffset === 0}
-                className="rounded px-1.5 py-0.5 text-slate-400 transition hover:bg-slate-700 hover:text-white disabled:opacity-30 disabled:hover:bg-transparent"
+                className="rounded px-1.5 py-0.5 text-slate-400 transition hover:bg-slate-700 hover:text-white disabled:opacity-30"
               >
                 &lt;
               </button>
@@ -330,7 +297,7 @@ function ChartPanel({ title, type, color, yTitle, rawData, valueKey, metricKey }
                 type="button"
                 onClick={() => setWeekOffset(Math.min(3, weekOffset + 1))}
                 disabled={weekOffset === 3}
-                className="rounded px-1.5 py-0.5 text-slate-400 transition hover:bg-slate-700 hover:text-white disabled:opacity-30 disabled:hover:bg-transparent"
+                className="rounded px-1.5 py-0.5 text-slate-400 transition hover:bg-slate-700 hover:text-white disabled:opacity-30"
               >
                 &gt;
               </button>
@@ -339,18 +306,16 @@ function ChartPanel({ title, type, color, yTitle, rawData, valueKey, metricKey }
           <ChartFilterDropdown value={period} onChange={setPeriod} />
         </div>
       </div>
-      <Chart options={options} series={[{ name: title, data: chartData.data }]} type={type} height={280} />
+      <div className="rounded-xl border border-slate-800/80 bg-slate-950/50 p-2">
+        <Chart options={options} series={[{ name: title, data: chartData.data }]} type="area" height={300} />
+      </div>
     </div>
   );
 }
 
-/* ── Main Component ────────────────────────────────────────── */
-
 export default function CreatorDashboard() {
-  const { reloadCurrentUser } = useOutletContext();
   const [user, setUser] = useState(null);
   const [prompts, setPrompts] = useState([]);
-  const [ratings, setRatings] = useState([]);
   const [chartData, setChartData] = useState(null);
   const [loading, setLoading] = useState(true);
 
@@ -361,19 +326,17 @@ export default function CreatorDashboard() {
       setLoading(true);
 
       try {
-        const [userData, creatorPrompts, creatorRatings, statsResponse] =
-          await Promise.all([
-            fetchCurrentUser({ creatorMode: true }),
-            fetchCreatorPrompts(),
-            fetchCreatorRatings(),
-            apiGet(`user/getDashboardStats.php?creator_id=${getCurrentUserId()}`),
-          ]);
+        const [userData, creatorPrompts, , statsResponse] = await Promise.all([
+          fetchCurrentUser({ creatorMode: true }),
+          fetchCreatorPrompts(),
+          fetchCreatorRatings(),
+          apiGet(`user/getDashboardStats.php?creator_id=${getCurrentUserId()}`),
+        ]);
 
         if (cancelled) return;
 
         setUser(userData);
         setPrompts(creatorPrompts);
-        setRatings(creatorRatings);
         setChartData(statsResponse?.data ?? null);
       } catch (error) {
         console.error("Failed to load dashboard data", error);
@@ -391,163 +354,102 @@ export default function CreatorDashboard() {
 
   if (loading) {
     return (
-      <div className="space-y-6 fade-in">
-        <div>
-          <p className="text-xs font-black uppercase tracking-widest text-violet-300">
-            Creator Dashboard
-          </p>
-          <h1 className="mt-1 text-2xl font-black text-white">Dashboard</h1>
-        </div>
-        <div className="glass-panel p-10 text-center text-sm text-slate-400">
+      <div className="-m-6 min-h-[calc(100vh-4rem)] bg-[#100d18] p-10">
+        <div className="rounded-2xl border border-slate-700/60 bg-slate-950/60 p-10 text-center text-sm text-slate-400">
           Loading dashboard...
         </div>
       </div>
     );
   }
 
-  const totalEarnings = user?.totalEarningCoins ?? 0;
+  const totalEarnings = chartData?.total_net_income ?? user?.totalEarningCoins ?? 0;
   const totalSales = user?.totalSalesCount ?? 0;
   const totalPosts = user?.postedPromptCount ?? prompts.length;
   const followers = user?.followersCount ?? 0;
-  const following = user?.followingCount ?? 0;
-  const coinBalance = user?.points ?? 0;
+  const creatorName = user?.displayName ?? "Creator";
 
   return (
-    <div className="space-y-8 fade-in pb-10">
-      {/* Header */}
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <div>
-          <p className="text-xs font-black uppercase tracking-widest text-violet-300">
-            Creator Dashboard
-          </p>
-          <h1 className="mt-1 text-2xl font-black text-white">
-            Welcome back, {user?.displayName ?? "Creator"}
-          </h1>
-          <p className="mt-2 text-sm text-slate-400">
-            Here's an overview of your creator account.
-          </p>
+    <div className="fade-in -m-6 min-h-[calc(100vh-4rem)] bg-[#100d18] px-6 py-8 text-slate-100 sm:px-8 lg:px-10">
+      <div className="mx-auto max-w-[1500px] space-y-10">
+        <div className="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
+          <div>
+            <h1 className="text-5xl font-black leading-none tracking-tight text-white md:text-6xl">
+              Welcome back, <span className="text-violet-300">{creatorName}</span>
+            </h1>
+            <p className="mt-4 text-lg text-slate-300">
+              Here's what's happening with your prompts today.
+            </p>
+          </div>
+
+          <div className="flex flex-wrap gap-3">
+            <Link
+              to="/creator/promptcreate"
+              className="inline-flex h-12 items-center justify-center rounded-xl bg-violet-600 px-6 text-sm font-bold text-white shadow-xl shadow-violet-950/30 transition hover:bg-violet-500"
+            >
+              + New Prompt
+            </Link>
+          </div>
         </div>
 
-        <div className="flex gap-3">
-          <Link
-            to="/creator/promptcreate"
-            className="rounded-xl bg-violet-600 px-4 py-2.5 text-sm font-bold text-white transition hover:bg-violet-500"
-          >
-            + Create Prompt
-          </Link>
-          <Link
-            to="/creator"
-            className="rounded-xl border border-slate-700 bg-slate-800/60 px-4 py-2.5 text-sm font-bold text-slate-300 transition hover:border-violet-500/40 hover:bg-slate-700"
-          >
-            My Prompts
-          </Link>
+        <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-4">
+          <StatCard
+            label="Monthly Income"
+            value={totalEarnings.toLocaleString()}
+            sublabel="Coins"
+            iconType="income"
+            accent="amber"
+            // trend="+12.5%"
+          />
+          <StatCard
+            label="Total Purchased"
+            value={totalSales.toLocaleString()}
+            iconType="cart"
+            accent="cyan"
+            // trend="+8.2%"
+          />
+          <StatCard
+            label="Total Followers"
+            value={followers.toLocaleString()}
+            iconType="users"
+            accent="fuchsia"
+            // trend="-2.1%"
+            tone="down"
+          />
+          <StatCard
+            label="Total Posted Prompts"
+            value={totalPosts.toLocaleString()}
+            iconType="prompt"
+            accent="violet"
+            // trend="0%"
+            tone="flat"
+          />
         </div>
-      </div>
 
-      {/* Stats Grid */}
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        <StatCard
-          label="Coin Balance"
-          value={coinBalance.toLocaleString()}
-          icon="🪙"
-          accent="emerald"
-        />
-        <StatCard
-          label="Total Earned"
-          value={totalEarnings.toLocaleString()}
-          icon="💰"
-          accent="amber"
-        />
-        <StatCard
-          label="Total Sales"
-          value={totalSales.toLocaleString()}
-          icon="🛒"
-          accent="cyan"
-        />
-        <StatCard
-          label="Posted Prompts"
-          value={totalPosts.toLocaleString()}
-          icon="📝"
-          accent="violet"
-        />
-        <StatCard
-          label="Followers"
-          value={followers.toLocaleString()}
-          icon="👥"
-          accent="fuchsia"
-        />
-        <StatCard
-          label="Followings"
-          value={following.toLocaleString()}
-          icon="👥"
-          accent="rose"
-        />
-      </div>
-
-      {/* ── Income: Number + Growth Chart ─────────────────── */}
-      <div className="grid gap-5 lg:grid-cols-2">
-        <ChartPanel
-          title="View Income By Numbers"
-          type="bar"
-          color="#f59e0b"
-          yTitle="Coins Earned"
-          rawData={chartData}
-          valueKey="total_net"
-          metricKey="income"
-        />
-        <ChartPanel
-          title="View Income Growth Chart"
-          type="area"
-          color="#f59e0b"
-          yTitle="Coins Earned"
-          rawData={chartData}
-          valueKey="total_net"
-          metricKey="income"
-        />
-      </div>
-
-      {/* ── Followers: Number + Growth Chart ──────────────── */}
-      <div className="grid gap-5 lg:grid-cols-2">
-        <ChartPanel
-          title="View Total Followers By Numbers"
-          type="bar"
-          color="#d946ef"
-          yTitle="New Followers"
-          rawData={chartData}
-          valueKey="new_followers"
-          metricKey="followers"
-        />
-        <ChartPanel
-          title="View Follower Growth Chart"
-          type="area"
-          color="#d946ef"
-          yTitle="New Followers"
-          rawData={chartData}
-          valueKey="new_followers"
-          metricKey="followers"
-        />
-      </div>
-
-      {/* ── Purchased Prompts + Posted Prompts ────────────── */}
-      <div className="grid gap-5 lg:grid-cols-2">
-        <ChartPanel
-          title="View Total Purchased Prompts By Numbers"
-          type="bar"
-          color="#06b6d4"
-          yTitle="Prompts Sold"
-          rawData={chartData}
-          valueKey="total_sold"
-          metricKey="purchased"
-        />
-        <ChartPanel
-          title="View Total Posted Prompts (For Selling)"
-          type="area"
-          color="#8b5cf6"
-          yTitle="Prompts Posted"
-          rawData={chartData}
-          valueKey="total_posted"
-          metricKey="posted"
-        />
+        <section className="space-y-6">
+          <h2 className="text-3xl font-black tracking-tight text-white">
+            Performance Analytics
+          </h2>
+          <div className="grid gap-6 xl:grid-cols-2">
+            <ChartPanel
+              title="Income Growth"
+              subtitle="Monthly coins earned"
+              color="#f59e0b"
+              yTitle="Coins"
+              rawData={chartData}
+              valueKey="total_net"
+              metricKey="income"
+            />
+            <ChartPanel
+              title="Follower Growth"
+              subtitle="New followers over time"
+              color="#d946ef"
+              yTitle="Followers"
+              rawData={chartData}
+              valueKey="new_followers"
+              metricKey="followers"
+            />
+          </div>
+        </section>
       </div>
     </div>
   );

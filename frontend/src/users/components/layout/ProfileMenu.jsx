@@ -247,15 +247,6 @@ export default function ProfileMenu({ user, onSignOut, onOpenWishlist }) {
             )}
           </div>
 
-          {user.isCreator && (
-            <Link
-              to="/creator/creatordashboard"
-              onClick={() => setOpen(false)}
-              className="block w-full px-4 py-2.5 text-left text-sm text-slate-300 transition hover:bg-slate-800"
-            >
-              Dashboard
-            </Link>
-          )}
           <Link
             to="/settings/profile"
             onClick={() => setOpen(false)}

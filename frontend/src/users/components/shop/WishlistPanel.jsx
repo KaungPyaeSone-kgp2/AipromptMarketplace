@@ -16,7 +16,7 @@ export default function WishlistPanel({ open, onClose }) {
   return (
     <div
       ref={ref}
-      className="absolute right-0 top-full z-50 mt-2 w-[min(380px,calc(100vw-2rem))] overflow-hidden rounded-2xl border border-slate-700 bg-slate-900 shadow-2xl"
+      className="absolute right-0 top-full z-50 mt-2 w-[min(300px,calc(100vw-2rem))] overflow-hidden rounded-2xl border border-slate-700 bg-slate-900 shadow-2xl"
     >
       <div className="border-b border-slate-700 px-4 py-3">
         <h3 className="text-sm font-black text-white">Wishlist</h3>

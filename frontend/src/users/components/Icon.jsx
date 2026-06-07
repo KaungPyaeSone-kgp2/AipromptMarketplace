@@ -51,6 +51,17 @@ export function CreatorIcon() {
   );
 }
 
+export function DashboardIcon() {
+  return (
+    <Icon>
+      <path d="M4 5a1 1 0 0 1 1-1h5v7H4Z" />
+      <path d="M14 4h5a1 1 0 0 1 1 1v4h-6Z" />
+      <path d="M4 15h6v5H5a1 1 0 0 1-1-1Z" />
+      <path d="M14 13h6v6a1 1 0 0 1-1 1h-5Z" />
+    </Icon>
+  );
+}
+
 export function SearchIcon() {
   return (
     <Icon className="h-4 w-4">
@@ -121,6 +132,18 @@ export function LibraryIcon() {
   );
 }
 
+export function TrashIcon() {
+  return (
+    <Icon className="h-3.5 w-3.5">
+      <path d="M3 6h18" />
+      <path d="M8 6V4a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v2" />
+      <path d="M19 6l-1 14a1 1 0 0 1-1 .9H7a1 1 0 0 1-1-.9L5 6" />
+      <path d="M10 11v6" />
+      <path d="M14 11v6" />
+    </Icon>
+  );
+}
+
 export function CommunityIcon() {
   return (
     <Icon>
@@ -168,4 +191,5 @@ export function HeartIcon({ filled = false, className = "h-5 w-5" }) {
       <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
     </svg>
   );
+  
 }

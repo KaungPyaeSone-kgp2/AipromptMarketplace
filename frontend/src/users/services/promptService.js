@@ -44,10 +44,12 @@ async function loadAllCategories() {
  */
 export async function fetchHomePrompts(filters = {}) {
   const all = await loadAllPrompts();
+  const currentUserId = String(getCurrentUserId());
   const { models = [], categories = [], minRating = 0, search = "" } = filters;
   const query = search.trim().toLowerCase();
 
   return all.filter((prompt) => {
+    const isOwnPrompt = String(prompt.creatorId) === currentUserId;
     const modelMatch = models.length === 0 || models.includes(prompt.model);
     const categoryMatch =
       categories.length === 0 || categories.includes(prompt.category);
@@ -67,7 +69,7 @@ export async function fetchHomePrompts(filters = {}) {
       .toLowerCase();
     const searchMatch = !query || searchableText.includes(query);
 
-    return modelMatch && categoryMatch && ratingMatch && searchMatch;
+    return !isOwnPrompt && modelMatch && categoryMatch && ratingMatch && searchMatch;
   });
 }
 
@@ -157,6 +159,19 @@ export async function getFilterOptions() {
   return { languageModels, categories };
 }
 
+export async function checkoutCart(items, totalCoinPaid) {
+  const userId = getCurrentUserId();
+
+  return apiPost("purchases/createPurchase.php", {
+    user_id: userId,
+    total_coin_paid: totalCoinPaid,
+    items: items.map((item) => ({
+      prompt_id: item.prompt.id,
+      price: Number(item.prompt.price) || 0,
+    })),
+  });
+}
+
 export function clearPromptCache() {
   cachedPrompts = null;
   cachedCategories = null;
@@ -206,16 +221,17 @@ export async function createPrompt(formData) {
   return data;
 }
 
-export async function checkoutCart(items, totalCoinPaid) {
-  const userId = getCurrentUserId();
-  const response = await apiPost("purchases/createPurchase.php", {
-    user_id: userId,
-    total_coin_paid: totalCoinPaid,
-    items: items.map(item => ({
-      prompt_id: item.prompt.id,
-      price: Number(item.prompt.price) || 0
-    }))
+export async function updatePrompt(formData) {
+  const response = await fetch('/api/prompt/updatePrompt.php', {
+    method: "POST",
+    body: formData,
   });
-  return response;
-}
+  const data = await response.json();
 
+  if (!response.ok || data?.success === false) {
+    throw new Error(data?.message ?? "Failed to update prompt");
+  }
+
+  clearPromptCache();
+  return data;
+}

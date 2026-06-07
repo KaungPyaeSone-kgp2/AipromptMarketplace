@@ -24,10 +24,35 @@ if (!is_array($payload)) {
 }
 
 $userId = filter_var($payload["user_id"] ?? null, FILTER_VALIDATE_INT);
+$withdrawPassword = trim($payload["withdraw_password"] ?? "");
 
 if (!$userId || $userId <= 0) {
     http_response_code(400);
     echo json_encode(["success" => false, "message" => "A valid user_id is required"]);
+    exit;
+}
+
+if (strlen($withdrawPassword) < 8) {
+    http_response_code(400);
+    echo json_encode(["success" => false, "message" => "Withdraw password must be at least 8 characters"]);
+    exit;
+}
+
+if (!preg_match('/[A-Z]/', $withdrawPassword)) {
+    http_response_code(400);
+    echo json_encode(["success" => false, "message" => "Password must contain at least 1 uppercase letter"]);
+    exit;
+}
+
+if (!preg_match('/[0-9]/', $withdrawPassword)) {
+    http_response_code(400);
+    echo json_encode(["success" => false, "message" => "Password must contain at least 1 number"]);
+    exit;
+}
+
+if (!preg_match('/[!@#$%^&*()_+\-=\[\]{};\':"\\|,.<>\/?]/', $withdrawPassword)) {
+    http_response_code(400);
+    echo json_encode(["success" => false, "message" => "Password must contain at least 1 special character"]);
     exit;
 }
 
@@ -84,6 +109,12 @@ try {
     $pdo = $db->connect();
     $dao = new BaseDAO($pdo);
 
+    // Auto-migrate: add withdraw_password column if it doesn't exist
+    $columns = $pdo->query("SHOW COLUMNS FROM users LIKE 'withdraw_password'")->fetchAll();
+    if (count($columns) === 0) {
+        $pdo->exec("ALTER TABLE users ADD COLUMN withdraw_password VARCHAR(255) NULL AFTER creator_mode");
+    }
+
     $users = $dao->select(
         "SELECT id, profile_image
          FROM users
@@ -103,13 +134,17 @@ try {
         $users[0]["profile_image"] ?? null
     );
 
+    $hashedPassword = password_hash($withdrawPassword, PASSWORD_DEFAULT);
+
     $dao->update(
         "UPDATE users
          SET creator_mode = TRUE,
-             profile_image = :profile_image
+             profile_image = :profile_image,
+             withdraw_password = :withdraw_password
          WHERE id = :user_id",
         [
             ":profile_image" => $profileImagePath,
+            ":withdraw_password" => $hashedPassword,
             ":user_id" => $userId,
         ]
     );

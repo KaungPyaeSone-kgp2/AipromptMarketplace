@@ -35,12 +35,8 @@ export default function CreatorHome() {
     <div className="space-y-5">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <p className="text-xs font-black uppercase tracking-widest text-violet-300">
-            Creator Home
-          </p>
-
-          <h1 className="mt-1 text-2xl font-black text-white">
-            Your Posted Prompts
+          <h1 className="mt-1 text-2xl font-black text-violet-300">
+            Posted Prompts
           </h1>
 
           <p className="mt-2 text-sm text-slate-400">
@@ -63,7 +59,12 @@ export default function CreatorHome() {
       ) : prompts.length > 0 ? (
         <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
           {prompts.map((prompt) => (
-            <PromptCard key={prompt.id} prompt={prompt} actionLabel="Manage" />
+            <PromptCard
+              key={prompt.id}
+              prompt={prompt}
+              actionLabel="Manage"
+              actionTo={`/creator/promptcreate/${prompt.id}`}
+            />
           ))}
         </div>
       ) : (

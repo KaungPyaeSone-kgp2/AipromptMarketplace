@@ -47,6 +47,7 @@ export default function PromptCard({
   showActions = false,
   hideCommerceActions = false,
   onActionClick = null,
+  actionTo = null,
 }) {
   const { addToCart, toggleWishlist, isInCart, isInWishlist } = useShop();
 
@@ -58,6 +59,7 @@ export default function PromptCard({
     ? `/creator/${prompt.creatorId}`
     : null;
   const promptLink = `/prompt/${prompt.id}`;
+  const actionLink = actionTo ?? promptLink;
   const priceLabel =
     Number(prompt.price) > 0 ? `${Number(prompt.price)} coins` : "Free";
   const ratingLabel =
@@ -199,7 +201,7 @@ export default function PromptCard({
               </button>
             ) : (
               <Link
-                to={promptLink}
+                to={actionLink}
                 onClick={(e) => e.stopPropagation()}
                 className="shrink-0 rounded-xl bg-violet-600 px-3 py-2 text-[11px] font-black text-white shadow-lg transition hover:bg-violet-500"
               >
@@ -315,7 +317,7 @@ export default function PromptCard({
           {Number(prompt.price) || 0} coins
         </p>
         <Link
-          to={promptLink}
+          to={actionLink}
           className="rounded-xl bg-violet-600 px-4 py-2 text-xs font-bold text-white transition hover:bg-violet-500"
         >
           {actionLabel}

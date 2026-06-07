@@ -1,4 +1,4 @@
-const API_BASE = import.meta.env.VITE_API_BASE_URL ?? "";
+const API_BASE = import.meta.env.VITE_API_BASE_URL ?? "/api/users";
 const ASSETS_BASE =
   import.meta.env.VITE_ASSETS_BASE_URL ??
   API_BASE.replace(/\/api\/?$/, "");

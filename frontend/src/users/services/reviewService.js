@@ -2,6 +2,14 @@ import { resolveAssetUrl } from "../utils/assets.js";
 import { apiGet, apiPost } from "./apiClient.js";
 import { getCurrentUserId } from "./currentUser.js";
 
+export const RATINGS_UPDATED_EVENT = "promptai:ratings-updated";
+
+function notifyRatingsUpdated(detail) {
+  if (typeof window !== "undefined") {
+    window.dispatchEvent(new CustomEvent(RATINGS_UPDATED_EVENT, { detail }));
+  }
+}
+
 function toBoolean(value) {
   return value === true || value === 1 || value === "1";
 }
@@ -84,10 +92,20 @@ export async function fetchCreatorReceivedRatings(creatorId = getCurrentUserId()
 }
 
 export async function addPromptReview(promptId, { rating, comment }) {
-  return apiPost("reviews/insertreview.php", {
+  const response = await apiPost("reviews/insertreview.php", {
     user_id: Number(getCurrentUserId()),
     prompt_id: Number(promptId),
     rating: Number(rating),
     review_text: comment,
+  });
+
+  notifyRatingsUpdated({ buyerDelta: 1 });
+  return response;
+}
+
+export async function deletePromptReview(reviewId) {
+  return apiPost("reviews/deleteReview.php", {
+    user_id: Number(getCurrentUserId()),
+    review_id: Number(reviewId),
   });
 }

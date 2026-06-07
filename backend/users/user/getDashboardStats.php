@@ -112,14 +112,23 @@ try {
     $db = new Database();
     $pdo = $db->connect();
 
+    $totalIncomeStmt = $pdo->prepare("
+    SELECT COALESCE(SUM(net_coin), 0) AS total_net_income
+    FROM creator_earnings
+    WHERE creator_id = ?
+    ");
+    $totalIncomeStmt->execute([$creatorId]);
+    $totalIncome = $totalIncomeStmt->fetch(PDO::FETCH_ASSOC);
+
     echo json_encode([
-        "success" => true,
-        "data" => [
-            "year" => getStatsForPeriod($pdo, $creatorId, "year"),
-            "month" => getStatsForPeriod($pdo, $creatorId, "month"),
-            "week" => getStatsForPeriod($pdo, $creatorId, "week")
-        ]
-    ]);
+    "success" => true,
+    "data" => [
+        "total_net_income" => (float) ($totalIncome["total_net_income"] ?? 0),
+        "year" => getStatsForPeriod($pdo, $creatorId, "year"),
+        "month" => getStatsForPeriod($pdo, $creatorId, "month"),
+        "week" => getStatsForPeriod($pdo, $creatorId, "week")
+    ]
+]);
 
 } catch (Exception $e) {
     http_response_code(500);

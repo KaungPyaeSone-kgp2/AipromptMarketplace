@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link, useParams } from "react-router";
-import { HeartIcon } from "../components/Icon.jsx";
+import { HeartIcon, TrashIcon } from "../components/Icon.jsx";
 import ReportButton from "../components/ReportButton.jsx";
 import { useShop } from "../context/ShopContext.jsx";
 import {
@@ -8,7 +8,13 @@ import {
   PROMPTS_UPDATED_EVENT,
   updatePromptInCache,
 } from "../services/promptService.js";
-import { addPromptReview, fetchPromptReviews } from "../services/reviewService.js";
+import {
+  addPromptReview,
+  deletePromptReview,
+  fetchPromptReviews,
+  RATINGS_UPDATED_EVENT,
+} from "../services/reviewService.js";
+import { getCurrentUserId } from "../services/currentUser.js";
 
 function formatDate(value) {
   if (!value) return "";
@@ -49,6 +55,7 @@ export default function PromptDetail() {
   const [commentText, setCommentText] = useState("");
   const [commentSubmitting, setCommentSubmitting] = useState(false);
   const [commentError, setCommentError] = useState("");
+  const [deletingReviewId, setDeletingReviewId] = useState(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -85,15 +92,63 @@ export default function PromptDetail() {
     };
   }, [promptId]);
 
-  const rating = reviewSummary.averageRating || prompt?.rating || 0;
-  const reviewCount = reviewSummary.count || prompt?.reviewCount || 0;
+  const rating = reviewSummary.averageRating ?? prompt?.rating ?? 0;
+  const reviewCount = reviewSummary.count ?? prompt?.reviewCount ?? 0;
   const priceLabel = Number(prompt?.price) > 0 ? `${prompt.price} coins` : "Free";
+  const currentUserId = String(getCurrentUserId());
   const getAccountPath = (accountId, isCreator) =>
     isCreator ? `/creator/${accountId}` : `/user/${accountId}`;
   const inWishlist = useMemo(
     () => (prompt ? isInWishlist(prompt.id) : false),
     [isInWishlist, prompt]
   );
+
+  // const syncReviewSummary = (updatedReviews) => {
+  //   setReviewSummary(updatedReviews);
+  //   updatePromptInCache(prompt.id, {
+  //     rating: updatedReviews.averageRating,
+  //     reviewCount: updatedReviews.count,
+  //   });
+  //   setPrompt((currentPrompt) =>
+  //     currentPrompt
+  //       ? {
+  //           ...currentPrompt,
+  //           reviewCount: updatedReviews.count,
+  //           rating: updatedReviews.averageRating,
+  //         }
+  //       : currentPrompt
+  //   );
+  // };
+  const getCurrentScrollTop = () => {
+  const scrollContainer = document.querySelector(".app-scrollbar");
+  return scrollContainer ? scrollContainer.scrollTop : window.scrollY;
+};
+
+const restoreScrollTop = (scrollTop) => {
+  requestAnimationFrame(() => {
+    const scrollContainer = document.querySelector(".app-scrollbar");
+
+    if (scrollContainer) {
+      scrollContainer.scrollTop = scrollTop;
+      return;
+    }
+
+    window.scrollTo({ top: scrollTop, left: 0, behavior: "auto" });
+  });
+};
+
+const syncReviewSummary = (updatedReviews) => {
+  setReviewSummary(updatedReviews);
+  setPrompt((currentPrompt) =>
+    currentPrompt
+      ? {
+          ...currentPrompt,
+          reviewCount: updatedReviews.count,
+          rating: updatedReviews.averageRating,
+        }
+      : currentPrompt
+  );
+};
 
   const handleSubmitComment = async (event) => {
     event.preventDefault();
@@ -104,6 +159,7 @@ export default function PromptDetail() {
       return;
     }
 
+    const scrollTop = getCurrentScrollTop();
     setCommentSubmitting(true);
     setCommentError("");
 
@@ -114,24 +170,13 @@ export default function PromptDetail() {
       });
 
       const updatedReviews = await fetchPromptReviews(prompt.id);
-      setReviewSummary(updatedReviews);
-      updatePromptInCache(prompt.id, {
-        rating: updatedReviews.averageRating,
-        reviewCount: updatedReviews.count,
-      });
-      setPrompt((currentPrompt) =>
-        currentPrompt
-          ? {
-              ...currentPrompt,
-              reviewCount: updatedReviews.count,
-              rating: updatedReviews.averageRating,
-            }
-          : currentPrompt
-      );
+      syncReviewSummary(updatedReviews);
+      restoreScrollTop(scrollTop);
       setCommentText("");
       setCommentRating(5);
     } catch (error) {
       setCommentError(error.message || "Failed to add comment.");
+      restoreScrollTop(scrollTop);
     } finally {
       setCommentSubmitting(false);
     }
@@ -144,6 +189,59 @@ export default function PromptDetail() {
 
     event.preventDefault();
     event.currentTarget.form?.requestSubmit();
+  };
+
+  const handleDeleteReview = async (reviewId) => {
+    if (!prompt || deletingReviewId) return;
+    const scrollTop = getCurrentScrollTop();
+    const previousSummary = reviewSummary;
+    const nextReviews = reviewSummary.reviews.filter(
+      (review) => String(review.id) !== String(reviewId)
+    );
+    const nextCount = Math.max(0, reviewSummary.count - 1);
+    const nextAverageRating =
+      nextReviews.length > 0
+        ? nextReviews.reduce(
+            (sum, review) => sum + Number(review.rating || 0),
+            0
+          ) / nextReviews.length
+        : 0;
+
+    setDeletingReviewId(reviewId);
+    setCommentError("");
+    syncReviewSummary({
+      count: nextCount,
+      averageRating: nextAverageRating,
+      reviews: nextReviews,
+    });
+    restoreScrollTop(scrollTop);
+    window.dispatchEvent(
+      new CustomEvent(RATINGS_UPDATED_EVENT, {
+        detail: { buyerDelta: -1 },
+      })
+    );
+
+    try {
+      const result = await deletePromptReview(reviewId);
+
+      syncReviewSummary({
+        count: Number(result.review_count ?? nextCount),
+        averageRating: Number(result.average_rating ?? nextAverageRating),
+        reviews: nextReviews,
+      });
+      restoreScrollTop(scrollTop);
+    } catch (error) {
+      syncReviewSummary(previousSummary);
+      window.dispatchEvent(
+        new CustomEvent(RATINGS_UPDATED_EVENT, {
+          detail: { buyerDelta: 1 },
+        })
+      );
+      restoreScrollTop(scrollTop);
+      setCommentError(error.message || "Failed to delete comment.");
+    } finally {
+      setDeletingReviewId(null);
+    }
   };
 
   const updateWishlistCount = (delta) => {
@@ -311,7 +409,7 @@ export default function PromptDetail() {
                         <div className="flex flex-wrap items-center gap-2">
                           <Link
                             to={getAccountPath(review.userId, review.reviewerIsCreator)}
-                            className="font-bold text-white transition hover:text-violet-300"
+                             className="font-bold text-white transition hover:text-violet-300"
                           >
                             {review.reviewerName}
                           </Link>
@@ -319,7 +417,19 @@ export default function PromptDetail() {
                             <Stars value={review.rating} />
                           </span>
                         </div>
-                        <ReportButton targetType="comment" targetId={review.id} />
+                        {String(review.userId) === currentUserId ? (
+                          <button
+                            type="button"
+                            onClick={() => handleDeleteReview(review.id)}
+                            disabled={deletingReviewId === review.id}
+                            className="inline-flex items-center gap-1.5 rounded-lg px-2 py-1 text-xs font-bold text-rose-300 transition hover:bg-rose-500/10 hover:text-rose-200 disabled:cursor-not-allowed disabled:opacity-60"
+                          >
+                            <TrashIcon />
+                            <span>{deletingReviewId === review.id ? "Deleting..." : "Delete"}</span>
+                          </button>
+                        ) : (
+                          <ReportButton targetType="comment" targetId={review.id} />
+                        )}
                       </div>
                       {review.createdAt && (
                         <p className="mt-0.5 text-xs text-slate-500">
@@ -359,7 +469,9 @@ export default function PromptDetail() {
               >
                 <HeartIcon filled={inWishlist} className="h-5 w-5" />
               </button>
-              <ReportButton targetType="prompt" targetId={prompt.id} />
+              {String(prompt.creatorId) !== currentUserId && (
+                <ReportButton targetType="prompt" targetId={prompt.id} />
+              )}
             </div>
           </div>
 
