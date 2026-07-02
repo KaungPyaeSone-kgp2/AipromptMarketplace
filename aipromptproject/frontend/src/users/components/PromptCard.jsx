@@ -49,10 +49,11 @@ export default function PromptCard({
   onActionClick = null,
   actionTo = null,
 }) {
-  const { addToCart, toggleWishlist, isInCart, isInWishlist } = useShop();
+  const { addToCart, toggleWishlist, isInCart, isInWishlist, hasPurchased } = useShop();
 
   const inCart = isInCart(prompt.id);
   const inWishlist = isInWishlist(prompt.id);
+  const isPurchased = hasPurchased ? hasPurchased(prompt.id) : false;
   const isMarketplace = variant === "grid" || showActions;
 
   const creatorLink = prompt.creatorId
@@ -162,9 +163,9 @@ export default function PromptCard({
                   e.stopPropagation();
                   addToCart(prompt);
                 }}
-                disabled={inCart}
-                aria-label={inCart ? "Already in cart" : "Add to cart"}
-                title={inCart ? "Already in cart" : "Add to cart"}
+                disabled={inCart || isPurchased}
+                aria-label={isPurchased ? "Already purchased" : inCart ? "Already in cart" : "Add to cart"}
+                title={isPurchased ? "Already purchased" : inCart ? "Already in cart" : "Add to cart"}
                 className="flex h-9 w-9 items-center justify-center rounded-full bg-slate-900/80 text-white shadow-lg ring-1 ring-white/10 backdrop-blur-sm transition-all duration-200 hover:scale-110 hover:bg-sky-500 hover:ring-sky-400/30 disabled:cursor-not-allowed disabled:opacity-50"
               >
                 <CartIcon />

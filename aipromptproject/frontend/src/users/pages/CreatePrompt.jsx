@@ -370,7 +370,7 @@ export default function CreatePrompt() {
           <label htmlFor="content" className="block text-sm font-bold text-slate-300">
             Full Prompt Content <span className="text-rose-400">*</span>
           </label>
-          <div className="group relative w-full rounded-xl border border-slate-700 bg-slate-900/50 focus-within:border-violet-500 focus-within:ring-1 focus-within:ring-violet-500">
+          <div className="group relative w-full overflow-hidden rounded-xl border border-slate-700 bg-slate-900/50 focus-within:border-violet-500 focus-within:ring-1 focus-within:ring-violet-500">
             <div
               ref={backdropRef}
               className="pointer-events-none absolute inset-0 overflow-hidden whitespace-pre-wrap break-words px-4 py-3 font-mono text-sm font-medium text-transparent"
@@ -386,7 +386,7 @@ export default function CreatePrompt() {
               onChange={handleChange}
               onScroll={handleScroll}
               disabled={isEditMode}
-              className="relative z-10 m-0 w-full resize-y rounded-xl border-none bg-transparent px-4 py-3 font-mono text-sm font-medium text-white placeholder-slate-500 focus:outline-none disabled:cursor-not-allowed disabled:opacity-70"
+              className="relative z-10 m-0 w-full resize-y border-none bg-transparent px-4 py-3 font-mono text-sm font-medium text-white placeholder-slate-500 focus:border-transparent focus:outline-none focus:ring-0 disabled:cursor-not-allowed disabled:opacity-70"
               placeholder="Enter the exact prompt here... Use [brackets] for variables."
             />
           </div>

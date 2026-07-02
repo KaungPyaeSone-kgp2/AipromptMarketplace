@@ -43,6 +43,19 @@ try {
     // Start transaction
     $pdo->beginTransaction();
 
+    // Check if buyer has already purchased any of the prompts
+    $checkStmt = $pdo->prepare("
+        SELECT COUNT(*) FROM purchases p
+        JOIN purchases_items pi ON p.id = pi.purchase_id
+        WHERE p.buyer_id = ? AND pi.prompt_id = ?
+    ");
+    foreach ($items as $item) {
+        $checkStmt->execute([$userId, $item['prompt_id']]);
+        if ($checkStmt->fetchColumn() > 0) {
+            throw new Exception("You have already purchased the prompt with ID: " . $item['prompt_id']);
+        }
+    }
+
     // Deduct from buyer
     $buyerStmt = $pdo->prepare("SELECT coin_balance FROM users WHERE id = ? FOR UPDATE");
     $buyerStmt->execute([$userId]);

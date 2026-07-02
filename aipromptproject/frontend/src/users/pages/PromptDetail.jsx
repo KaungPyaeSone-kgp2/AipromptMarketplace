@@ -44,7 +44,7 @@ function Stars({ value = 0 }) {
 
 export default function PromptDetail() {
   const { promptId } = useParams();
-  const { addToCart, toggleWishlist, isInCart, isInWishlist } = useShop();
+  const { addToCart, toggleWishlist, isInCart, isInWishlist, hasPurchased } = useShop();
   const [prompt, setPrompt] = useState(null);
   const [reviewSummary, setReviewSummary] = useState({
     count: 0,
@@ -101,6 +101,10 @@ export default function PromptDetail() {
   const inWishlist = useMemo(
     () => (prompt ? isInWishlist(prompt.id) : false),
     [isInWishlist, prompt]
+  );
+  const isPurchased = useMemo(
+    () => (prompt && hasPurchased ? hasPurchased(prompt.id) : false),
+    [hasPurchased, prompt]
   );
 
   // const syncReviewSummary = (updatedReviews) => {
@@ -503,10 +507,10 @@ const syncReviewSummary = (updatedReviews) => {
           <button
             type="button"
             onClick={() => addToCart(prompt)}
-            disabled={isInCart(prompt.id)}
+            disabled={isInCart(prompt.id) || isPurchased}
             className="mt-6 h-12 w-full rounded-xl bg-violet-600 px-6 text-sm font-black text-white transition hover:bg-violet-500 disabled:cursor-not-allowed disabled:opacity-60"
           >
-            {isInCart(prompt.id) ? "Already in Cart" : "Add to Cart"}
+            {isPurchased ? "Already Purchased" : isInCart(prompt.id) ? "Already in Cart" : "Add to Cart"}
           </button>
           <div className="mt-6 grid grid-cols-2 gap-3 border-y border-slate-700/70 py-5 text-sm">
             <div>
