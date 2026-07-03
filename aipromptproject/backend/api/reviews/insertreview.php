@@ -87,6 +87,11 @@ try {
 
     $pdo->commit();
 
+    $cacheFile = __DIR__ . "/../../cache/home-data.json";
+    if (file_exists($cacheFile)) {
+        unlink($cacheFile);
+    }
+
     emitSocketEvent('prompt_updated', ['promptId' => $promptId]);
 
     echo json_encode(["success" => true, "message" => "Review added successfully", "review_id" => $reviewId]);

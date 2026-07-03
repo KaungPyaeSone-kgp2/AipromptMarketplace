@@ -93,6 +93,11 @@ try {
     $sql = "UPDATE dashboard_daily_stats SET total_prompts = total_prompts + 1, new_prompts_count = new_prompts_count + 1 WHERE stat_date = CURDATE()";
     $dao->update($sql,[]);
 
+    $cacheFile = __DIR__ . "/../../cache/home-data.json";
+    if (file_exists($cacheFile)) {
+        unlink($cacheFile);
+    }
+
     // Trigger Real-Time update to connected React clients
     require_once __DIR__ . "/../../../websocket/socket_helper.php";
     emitSocketEvent('prompt_inserted', ['promptId' => $promptId]);

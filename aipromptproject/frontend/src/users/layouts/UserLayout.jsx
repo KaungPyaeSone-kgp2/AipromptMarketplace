@@ -7,6 +7,7 @@ import {
   fetchBuyerRatings,
   fetchCreatorRatings,
   PROMPTS_UPDATED_EVENT,
+  clearPromptCache,
 } from "../services/promptService.js";
 import {
   fetchCurrentUser,
@@ -212,13 +213,21 @@ export default function UserLayout() {
       }
     };
 
+    const handlePromptUpdated = () => {
+      clearPromptCache();
+    };
+
     socket.on("report_notification", handleReportNotification);
     socket.on("follow_updated", handleFollowUpdated);
+    socket.on("prompt_inserted", handlePromptUpdated);
+    socket.on("prompt_updated", handlePromptUpdated);
 
     return () => {
       socket.emit("leave_room", roomName);
       socket.off("report_notification", handleReportNotification);
       socket.off("follow_updated", handleFollowUpdated);
+      socket.off("prompt_inserted", handlePromptUpdated);
+      socket.off("prompt_updated", handlePromptUpdated);
     };
   }, [socket, user?.id, refreshNotificationCount]);
 

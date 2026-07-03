@@ -56,10 +56,11 @@ function PortalRing({
     group.current.position.y = yRef.current;
     group.current.children.forEach((child, i) => {
       child.rotation.z += dt * rotationSpeed * (layers[i]?.dir ?? 1);
-      const mat = child.material;
-      if (mat) {
-        mat.opacity = opacityRef.current;
-      }
+      child.traverse((o) => {
+        if (o.material && "opacity" in o.material) {
+          o.material.opacity = opacityRef.current;
+        }
+      });
     });
   });
 
@@ -460,7 +461,7 @@ export function DreamKeyLoader() {
     let t1, t2, t3;
     const cycle = () => {
       setPhase("in");
-      t1 = window.setTimeout(() => setPhase("loop"), 1100);
+      t1 = window.setTimeout(() => setPhase("loop"), 1500);
       t2 = window.setTimeout(() => setPhase("out"), 4600);
       t3 = window.setTimeout(() => cycle(), 5800);
     };

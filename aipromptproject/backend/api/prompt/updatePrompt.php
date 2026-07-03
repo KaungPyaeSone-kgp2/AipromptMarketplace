@@ -103,6 +103,11 @@ try {
         $updateParams
     );
 
+    $cacheFile = __DIR__ . "/../../cache/home-data.json";
+    if (file_exists($cacheFile)) {
+        unlink($cacheFile);
+    }
+
     // Trigger Real-Time update to connected React clients
     require_once __DIR__ . "/../../../websocket/socket_helper.php";
     emitSocketEvent('prompt_updated', ['promptId' => $prompt_id]);
