@@ -90,6 +90,11 @@ try {
         $reviewCount = (int)($summary[0]["review_count"] ?? 0);
         $averageRating = (float)($summary[0]["average_rating"] ?? 0);
         
+        $cacheFile = __DIR__ . "/../../cache/home-data.json";
+        if (file_exists($cacheFile)) {
+            unlink($cacheFile);
+        }
+
         emitSocketEvent('prompt_updated', ['promptId' => $promptId]);
     }
 

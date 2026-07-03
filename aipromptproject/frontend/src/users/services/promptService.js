@@ -114,7 +114,21 @@ export async function fetchProfilePrompts(profileUserId, followingIds = []) {
 
 export async function fetchPromptById(id) {
   const all = await loadAllPrompts();
-  return all.find((p) => String(p.id) === String(id)) ?? null;
+  let found = all.find((p) => String(p.id) === String(id));
+  
+  if (!found) {
+    const currentUserId = getCurrentUserId();
+    if (currentUserId) {
+      try {
+        const drafts = await fetchDraftPrompts();
+        found = drafts.find((p) => String(p.id) === String(id));
+      } catch (err) {
+        console.error("Failed to check drafts for prompt lookup:", err);
+      }
+    }
+  }
+  
+  return found ?? null;
 }
 
 export async function fetchPurchaseList(filter = "this_month") {

@@ -99,6 +99,7 @@ try {
         session_regenerate_id(true);
         $_SESSION['user_id'] = $user['id'];
         $_SESSION['user_name'] = $user['user_name'];
+        $_SESSION['user_email'] = $user['user_email'];
         $_SESSION['user_role'] = $user['user_role'];
         $_SESSION['profile_image'] = $profile_image; 
 

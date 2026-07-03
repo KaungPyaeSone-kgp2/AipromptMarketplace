@@ -29,6 +29,17 @@ try {
     $wishListExpr = db_column_expr($pdo, 'prompts', 'save_count', 'p.save_count', '(SELECT COUNT(*) FROM wishlists wc WHERE wc.prompt_id = p.id)');
     $reviewCountExpr = db_column_expr($pdo, 'prompts', 'review_count', 'p.review_count', '(SELECT COUNT(*) FROM reviews rc WHERE rc.prompt_id = p.id AND (rc.is_banned IS NULL OR rc.is_banned = 0))');
 
+    $permissionColumn = prompt_permission_column($pdo);
+    $draftValue = $permissionColumn ? prompt_draft_value($permissionColumn) : 'draft';
+    
+    $whereSql = "w.user_id = :user_id AND (p.is_banned IS NULL OR p.is_banned = 0)";
+    $params = [":user_id" => $userId];
+    
+    if ($permissionColumn) {
+        $whereSql .= " AND p.`{$permissionColumn}` != :draft_value";
+        $params[":draft_value"] = $draftValue;
+    }
+
     $wishlists = $dao->select(
         "SELECT
             w.id AS wishlist_id,
@@ -55,9 +66,9 @@ try {
          INNER JOIN prompts p ON p.id = w.prompt_id
          INNER JOIN users creator ON creator.id = p.creator_id
          LEFT JOIN categories c ON c.id = p.category_id
-         WHERE w.user_id = :user_id
+         WHERE {$whereSql}
          ORDER BY w.created_at DESC",
-        [":user_id" => $userId]
+        $params
     );
 
     echo json_encode(["success" => true, "data" => $wishlists]);

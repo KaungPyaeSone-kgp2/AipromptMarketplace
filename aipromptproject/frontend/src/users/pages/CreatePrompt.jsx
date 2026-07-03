@@ -9,6 +9,109 @@ import {
 import { getCurrentUserId } from "../services/currentUser.js";
 import { GlobeIcon, FollowersIcon, DraftIcon } from "../components/Icon.jsx";
 
+const CustomSelect = ({ options, value, onChange, disabled, name, id }) => {
+  const [isOpen, setIsOpen] = useState(false);
+  const [focusedIndex, setFocusedIndex] = useState(-1);
+  const dropdownRef = useRef(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setIsOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  useEffect(() => {
+    if (isOpen) {
+      setFocusedIndex(options.findIndex((o) => o.value === value));
+    } else {
+      setFocusedIndex(-1);
+    }
+  }, [isOpen, value, options]);
+
+  const handleKeyDown = (e) => {
+    if (disabled) return;
+    
+    if (e.key === "Enter" || e.key === " ") {
+      if (isOpen && focusedIndex >= 0 && focusedIndex < options.length) {
+        e.preventDefault();
+        onChange({ target: { name, value: options[focusedIndex].value } });
+        setIsOpen(false);
+      } else if (!isOpen) {
+        e.preventDefault();
+        setIsOpen(true);
+      }
+    } else if (e.key === "ArrowDown") {
+      e.preventDefault();
+      if (!isOpen) {
+        setIsOpen(true);
+      } else {
+        setFocusedIndex((prev) => (prev < options.length - 1 ? prev + 1 : prev));
+      }
+    } else if (e.key === "ArrowUp") {
+      e.preventDefault();
+      if (!isOpen) {
+        setIsOpen(true);
+      } else {
+        setFocusedIndex((prev) => (prev > 0 ? prev - 1 : prev));
+      }
+    } else if (e.key === "Escape") {
+      if (isOpen) {
+        e.preventDefault();
+        setIsOpen(false);
+      }
+    }
+  };
+
+  const selectedOption = options.find((opt) => opt.value === value) || options[0];
+
+  return (
+    <div ref={dropdownRef} className="relative w-full">
+      <button
+        type="button"
+        id={id}
+        disabled={disabled}
+        onClick={() => !disabled && setIsOpen(!isOpen)}
+        onKeyDown={handleKeyDown}
+        className="flex w-full items-center justify-between rounded-2xl border border-violet-500/50 bg-violet-900/10 px-4 py-3 text-sm font-medium text-violet-100 focus:border-violet-500 focus:outline-none focus:ring-1 focus:ring-violet-500 disabled:cursor-not-allowed disabled:opacity-70 transition-colors hover:border-violet-500"
+      >
+        <span>{selectedOption?.label}</span>
+        <svg xmlns="http://www.w3.org/2000/svg" className={`h-4 w-4 text-violet-400 transition-transform ${isOpen ? "rotate-180" : ""}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+        </svg>
+      </button>
+      
+      {isOpen && (
+        <div className="absolute z-50 mt-2 max-h-60 w-full overflow-y-auto rounded-2xl border border-slate-700 bg-slate-800 p-1 shadow-xl app-scrollbar">
+          {options.map((opt, index) => (
+            <button
+              key={opt.value}
+              type="button"
+              onClick={() => {
+                onChange({ target: { name, value: opt.value } });
+                setIsOpen(false);
+              }}
+              onMouseEnter={() => setFocusedIndex(index)}
+              className={`w-full rounded-xl px-4 py-2.5 text-left text-sm transition-colors ${
+                value === opt.value
+                  ? "bg-violet-600 text-white font-bold"
+                  : focusedIndex === index
+                    ? "bg-slate-700 text-white"
+                    : "text-slate-300 hover:bg-slate-700 hover:text-white"
+              }`}
+            >
+              {opt.label}
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+};
+
 const MODEL_TYPES = ["ChatGPT", "Claude", "Gemini", "Midjourney", "StableDiffusion"];
 const VARIABLE_COLOR = "#8b5cf6";
 
@@ -319,38 +422,28 @@ export default function CreatePrompt() {
             <label htmlFor="categoryId" className="block text-sm font-bold text-slate-300">
               Category <span className="text-rose-400">*</span>
             </label>
-            <select
+            <CustomSelect
               id="categoryId"
               name="categoryId"
-              required
+              disabled={isEditMode}
               value={formData.categoryId}
               onChange={handleChange}
-              disabled={isEditMode}
-              className="w-full rounded-xl border border-slate-700 bg-slate-900/50 px-4 py-3 text-sm font-medium text-white focus:border-violet-500 focus:outline-none focus:ring-1 focus:ring-violet-500 disabled:cursor-not-allowed disabled:opacity-70"
-            >
-              {categories.map((cat) => (
-                <option key={cat.id} value={cat.id}>{cat.name}</option>
-              ))}
-            </select>
+              options={categories.map(c => ({ label: c.name, value: c.id }))}
+            />
           </div>
 
           <div className="space-y-2">
             <label htmlFor="modelType" className="block text-sm font-bold text-slate-300">
               Model Type <span className="text-rose-400">*</span>
             </label>
-            <select
+            <CustomSelect
               id="modelType"
               name="modelType"
-              required
+              disabled={isEditMode}
               value={formData.modelType}
               onChange={handleChange}
-              disabled={isEditMode}
-              className="w-full rounded-xl border border-slate-700 bg-slate-900/50 px-4 py-3 text-sm font-medium text-white focus:border-violet-500 focus:outline-none focus:ring-1 focus:ring-violet-500 disabled:cursor-not-allowed disabled:opacity-70"
-            >
-              {MODEL_TYPES.map((model) => (
-                <option key={model} value={model}>{model}</option>
-              ))}
-            </select>
+              options={MODEL_TYPES.map(m => ({ label: m, value: m }))}
+            />
           </div>
         </div>
 

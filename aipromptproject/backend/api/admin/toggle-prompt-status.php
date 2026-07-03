@@ -63,6 +63,14 @@ try {
     if (file_exists($cacheFile)) {
         unlink($cacheFile);
     }
+    
+    $homeCacheFile = __DIR__ . "/../../cache/home-data.json";
+    if (file_exists($homeCacheFile)) {
+        unlink($homeCacheFile);
+    }
+
+    require_once __DIR__ . "/../../../websocket/socket_helper.php";
+    emitSocketEvent('prompt_updated', ['promptId' => $promptId]);
 
     echo json_encode([
         "success" => true, 
