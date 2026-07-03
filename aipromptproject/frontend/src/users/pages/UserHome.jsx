@@ -1,14 +1,43 @@
-import React, { useMemo, useState } from "react";
-import { useOutletContext } from "react-router";
+import React, { useEffect, useMemo, useState } from "react";
+import { Link, useOutletContext } from "react-router";
 import HomeFilters from "../components/home/HomeFilters.jsx";
 import PromptGrid from "../components/home/PromptGrid.jsx";
+import PromptCard from "../components/PromptCard.jsx";
 import { useHomePrompts } from "../hooks/useHomePrompts.js";
+import { fetchFollowingAccounts } from "../services/followService.js";
+import { fetchCreatorPrompts, fetchDraftPrompts, updatePromptVisibility, PROMPTS_UPDATED_EVENT } from "../services/promptService.js";
+import { MagicIcon } from "../components/Icon.jsx";
+
+const getVisibilityLabel = (value) => {
+  switch (value) {
+    case 'followers_only': return 'Only Followings';
+    case 'draft': return 'Draft';
+    default: return 'Public';
+  }
+};
 
 export default function UserHome() {
   const { searchQuery = "" } = useOutletContext() ?? {};
   const [selectedModels, setSelectedModels] = useState([]);
   const [selectedCategories, setSelectedCategories] = useState([]);
   const [minRating, setMinRating] = useState(0);
+  const [followingIds, setFollowingIds] = useState([]);
+
+  useEffect(() => {
+    let cancelled = false;
+    async function loadFollowing() {
+      try {
+        const accounts = await fetchFollowingAccounts();
+        if (!cancelled) {
+          setFollowingIds(accounts.map((a) => a.id));
+        }
+      } catch {
+        // silently ignore
+      }
+    }
+    loadFollowing();
+    return () => { cancelled = true; };
+  }, []);
 
   const filters = useMemo(
     () => ({
@@ -16,8 +45,9 @@ export default function UserHome() {
       categories: selectedCategories,
       minRating,
       search: searchQuery,
+      followingIds,
     }),
-    [selectedModels, selectedCategories, minRating, searchQuery]
+    [selectedModels, selectedCategories, minRating, searchQuery, followingIds]
   );
 
   const { prompts, loading, error } = useHomePrompts(filters);
@@ -64,5 +94,3 @@ export default function UserHome() {
     </div>
   );
 }
-
-

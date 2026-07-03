@@ -1,9 +1,9 @@
-import { apiPost } from "./apiClient.js";
+import { getApiBaseUrl } from "./apiClient.js";
 
 /**
  * Submit a report to the backend.
  *
- * @param {{ targetType: string, targetId: number|string, reason: string, reporterId: number|string, description?: string }} params
+ * @param {{ targetType: string, targetId: number|string, reason: string, reporterId: number|string, description?: string, imageEvidence?: File|null }} params
  * @returns {Promise<{ success: boolean, message: string }>}
  */
 export async function submitReport({ targetType, targetId, reason, reporterId, description = "", imageEvidence = null }) {
@@ -17,17 +17,11 @@ export async function submitReport({ targetType, targetId, reason, reporterId, d
     formData.append("image_evidence", imageEvidence);
   }
 
-  // We need to use fetch directly or ensure apiPost doesn't stringify FormData
-  // Assuming apiPost automatically handles JSON vs FormData based on body type, but
-  // standard apiPost typically sets Content-Type: application/json.
-  // We'll use the standard fetch to be safe if apiPost doesn't support FormData.
-  const token = localStorage.getItem("token");
-  const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:8000";
-  const res = await fetch(`${API_BASE_URL}/users/reports/submitReport.php`, {
+  // Use raw fetch (not apiPost) because FormData requires the browser to set
+  // the multipart/form-data Content-Type header automatically.
+  // Route through the Vite proxy to avoid cross-origin issues.
+  const res = await fetch(`${getApiBaseUrl()}/reports/submitReport.php`, {
     method: "POST",
-    headers: {
-      ...(token && { Authorization: `Bearer ${token}` }),
-    },
     body: formData,
   });
 
@@ -42,5 +36,20 @@ export async function submitReport({ targetType, targetId, reason, reporterId, d
     throw new Error(errMessage);
   }
 
+  return await res.json();
+}
+
+/**
+ * Fetch reports for a specific user.
+ * 
+ * @param {number|string} userId 
+ * @returns {Promise<{ success: boolean, submitted: Array, received: Array }>}
+ */
+export async function fetchReports(userId) {
+  if (!userId) return { success: true, submitted: [], received: [] };
+  const res = await fetch(`${getApiBaseUrl()}/reports/getReports.php?user_id=${userId}&t=${Date.now()}`, {
+    cache: "no-store"
+  });
+  if (!res.ok) throw new Error("Failed to fetch reports");
   return await res.json();
 }

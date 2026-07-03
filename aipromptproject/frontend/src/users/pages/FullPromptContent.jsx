@@ -1,10 +1,12 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router";
 import { fetchPromptById } from "../services/promptService.js";
+import { useToast } from "../components/Toast.jsx";
 
 export default function FullPromptContent() {
   const { promptId } = useParams();
   const navigate = useNavigate();
+  const showToast = useToast();
   const [prompt, setPrompt] = useState(null);
   const [loading, setLoading] = useState(true);
 
@@ -73,7 +75,7 @@ export default function FullPromptContent() {
           <button
             onClick={() => {
               navigator.clipboard.writeText(prompt.promptText || "");
-              alert("Copied to clipboard!");
+              showToast("Copied to clipboard!", "success");
             }}
             className="flex items-center gap-2 rounded-lg bg-violet-600/20 px-3 py-1.5 text-xs font-bold text-violet-300 transition hover:bg-violet-600/40"
           >
@@ -112,9 +114,7 @@ export default function FullPromptContent() {
                 .replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
               const regex = new RegExp(`\\[?${safeName}\\]?`, "gi");
               escapedText = escapedText.replace(regex, (match) => {
-                return `<span class="rounded font-bold text-white shadow-sm" style="background-color: ${
-                  v.color || "#8b5cf6"
-                }; padding: 0.1rem 0.4rem;">${match}</span>`;
+                return `<span class="rounded font-bold text-white shadow-sm" style="background-color: ${v.color || '#8b5cf6'}; padding: 0.1rem 0.4rem;">${match}</span>`;
               });
             });
             return { __html: escapedText };

@@ -46,6 +46,7 @@ export function useHomePrompts(filters) {
     filters.minRating,
     filters.models.join(","),
     filters.categories.join(","),
+    (filters.followingIds ?? []).join(","),
   ]);
 
   return { prompts, loading, error };

@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import PromptCard from "../components/PromptCard.jsx";
+import { useToast } from "../components/Toast.jsx";
 import { useOutsideClick } from "../hooks/useOutsideClick.js";
 import {
   fetchPurchaseItems,
@@ -244,6 +245,7 @@ function MonthPickerField({ value, onChange }) {
 
 export default function PurchasedPrompt() {
   const filterRef = useRef(null);
+  const showToast = useToast();
   const [filterMode, setFilterMode] = useState("period");
   const [period, setPeriod] = useState("this_month");
   const [singleDate, setSingleDate] = useState("");
@@ -660,7 +662,7 @@ export default function PurchasedPrompt() {
                     type="button"
                     onClick={() => {
                       navigator.clipboard.writeText(selectedPromptItem.promptText || "");
-                      alert("Copied to clipboard!");
+                      showToast("Copied to clipboard!", "success");
                     }}
                     className="rounded-xl bg-violet-600 px-5 py-2.5 text-sm font-bold text-white transition hover:bg-violet-500 flex items-center gap-2"
                   >

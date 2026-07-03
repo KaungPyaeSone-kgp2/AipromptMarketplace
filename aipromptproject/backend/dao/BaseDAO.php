@@ -28,11 +28,13 @@ class BaseDAO {
 
         } catch(PDOException $e) {
 
-            error_log($e->getMessage());
+            // error_log($e->getMessage());
 
-            throw new Exception(
-                "Database Operation Failed"
-            );
+            // throw new Exception(
+            //     "Database Operation Failed"
+            // );
+
+            throw new Exception("SQL Error: " . $e->getMessage());
 
         }
 

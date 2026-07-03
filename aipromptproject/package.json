@@ -4,19 +4,33 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite",
+    "dev": "concurrently \"npm run dev:frontend\" \"npm run dev:backend\" \"npm run dev:socket\"",
+    "dev:frontend": "vite",
+    "dev:backend": "php -S 127.0.0.1:8000 -t backend",
+    "dev:socket": "node websocket/socket-server/server.js",
     "build": "vite build",
     "lint": "eslint .",
     "preview": "vite preview"
   },
   "dependencies": {
+    "@react-three/fiber": "^9.6.1",
+    "@react-three/postprocessing": "^3.0.4",
     "@tailwindcss/container-queries": "^0.1.1",
     "@tailwindcss/forms": "^0.5.11",
     "apexcharts": "^5.13.0",
+    "cors": "^2.8.6",
+    "express": "^5.2.1",
+    "framer-motion": "^12.42.2",
+    "gsap": "^3.15.0",
+    "lucide-react": "^1.21.0",
+    "postprocessing": "^6.39.2",
     "react": "^19.2.5",
     "react-apexcharts": "^2.1.0",
     "react-dom": "^19.2.5",
-    "react-router": "^7.6.2"
+    "react-router": "^7.6.2",
+    "socket.io": "^4.8.3",
+    "socket.io-client": "^4.8.3",
+    "three": "^0.185.0"
   },
   "devDependencies": {
     "@babel/core": "^7.29.0",
@@ -27,6 +41,7 @@
     "@vitejs/plugin-react": "^6.0.1",
     "autoprefixer": "^10.4.21",
     "babel-plugin-react-compiler": "^1.0.0",
+    "concurrently": "^10.0.3",
     "eslint": "^10.2.1",
     "eslint-plugin-react-hooks": "^7.1.1",
     "eslint-plugin-react-refresh": "^0.5.2",

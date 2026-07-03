@@ -94,12 +94,12 @@ export default function HomeFilters({
   return (
     <header className="flex min-h-12 items-start justify-between gap-4">
       <div className="min-w-0">
-        <h1 className="text-lg font-black text-violet-300">Home</h1>
-        <p className="mt-1 text-xs font-semibold text-slate-500">
+        <h1 className="text-4xl font-black text-violet-400">Home</h1>
+        {/* <p className="mt-1 text-xs font-semibold text-slate-500">
           {loading
             ? "Loading prompts..."
             : `${resultCount.toLocaleString()} prompt${resultCount === 1 ? "" : "s"}`}
-        </p>
+        </p> */}
       </div>
 
       <div className="relative" ref={menuRef}>

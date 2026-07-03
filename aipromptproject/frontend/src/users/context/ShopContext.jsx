@@ -30,7 +30,6 @@ export function ShopProvider({ children }) {
   const [wishlist, setWishlist] = useState([]);
   const [cartUnseen, setCartUnseen] = useState(0);
   const [wishlistUnseen, setWishlistUnseen] = useState(0);
-  const [purchasedPrompts, setPurchasedPrompts] = useState([]);
 
   useEffect(() => {
     localStorage.setItem(CART_KEY, JSON.stringify(cart));
@@ -55,37 +54,6 @@ export function ShopProvider({ children }) {
     };
   }, []);
 
-  useEffect(() => {
-    let cancelled = false;
-
-    async function loadPurchased() {
-      try {
-        const { fetchPurchasedPrompts } = await import("../services/promptService.js");
-        const purchased = await fetchPurchasedPrompts();
-        if (!cancelled) setPurchasedPrompts(purchased);
-      } catch (error) {
-        console.error("Failed to load purchased prompts", error);
-      }
-    }
-
-    loadPurchased();
-
-    const handlePurchaseSuccess = () => {
-      loadPurchased();
-    };
-    window.addEventListener("promptai:purchase-success", handlePurchaseSuccess);
-
-    return () => {
-      cancelled = true;
-      window.removeEventListener("promptai:purchase-success", handlePurchaseSuccess);
-    };
-  }, []);
-
-  const hasPurchased = useCallback(
-    (promptId) => purchasedPrompts.some((p) => String(p.id) === String(promptId)),
-    [purchasedPrompts]
-  );
-
   const isInCart = useCallback(
     (promptId) => cart.some((item) => item.prompt.id === String(promptId)),
     [cart]
@@ -98,16 +66,12 @@ export function ShopProvider({ children }) {
 
   const addToCart = useCallback((prompt) => {
     const id = String(prompt.id);
-    if (hasPurchased(id)) {
-      alert("You have already purchased this prompt.");
-      return;
-    }
     setCart((prev) => {
       if (prev.some((item) => item.prompt.id === id)) return prev;
       setCartUnseen((count) => count + 1);
       return [...prev, { prompt, addedAt: Date.now() }];
     });
-  }, [hasPurchased]);
+  }, []);
 
   const removeFromCart = useCallback((promptId) => {
     setCart((prev) => prev.filter((item) => item.prompt.id !== String(promptId)));
@@ -126,6 +90,8 @@ export function ShopProvider({ children }) {
     );
     if (!exists) {
       setWishlistUnseen((count) => count + 1);
+    } else {
+      setWishlistUnseen((count) => Math.max(0, count - 1));
     }
 
     try {
@@ -198,8 +164,6 @@ export function ShopProvider({ children }) {
       markCartSeen,
       markWishlistSeen,
       purchaseCart,
-      hasPurchased,
-      purchasedPrompts,
     }),
     [
       cart,
@@ -217,8 +181,6 @@ export function ShopProvider({ children }) {
       markCartSeen,
       markWishlistSeen,
       purchaseCart,
-      hasPurchased,
-      purchasedPrompts,
     ]
   );
 

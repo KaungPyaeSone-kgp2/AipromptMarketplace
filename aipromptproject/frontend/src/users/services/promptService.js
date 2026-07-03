@@ -1,6 +1,6 @@
 import { CATEGORIES, LANGUAGE_MODELS } from "../constants/filters.js";
 import { mapPromptListFromApi, normalizeCategory } from "../utils/mapPrompt.js";
-import { apiGet, apiPost } from "./apiClient.js";
+import { apiGet, apiPost, getApiBaseUrl } from "./apiClient.js";
 import { getCurrentUserId } from "./currentUser.js";
 
 let cachedPrompts = null;
@@ -13,13 +13,25 @@ function notifyPromptsUpdated() {
   }
 }
 
+let loadPromptsPromise = null;
+
 async function loadAllPrompts() {
   if (cachedPrompts) return cachedPrompts;
 
-  const response = await apiGet("prompt/getAllprompts.php");
-  const mapped = mapPromptListFromApi(response);
-  cachedPrompts = mapped;
-  return mapped;
+  if (loadPromptsPromise) return loadPromptsPromise;
+
+  loadPromptsPromise = (async () => {
+    try {
+      const response = await apiGet("prompt/getAllprompts.php");
+      const mapped = mapPromptListFromApi(response);
+      cachedPrompts = mapped;
+      return mapped;
+    } finally {
+      loadPromptsPromise = null;
+    }
+  })();
+
+  return loadPromptsPromise;
 }
 
 async function loadAllCategories() {
@@ -45,31 +57,58 @@ async function loadAllCategories() {
 export async function fetchHomePrompts(filters = {}) {
   const all = await loadAllPrompts();
   const currentUserId = String(getCurrentUserId());
-  const { models = [], categories = [], minRating = 0, search = "" } = filters;
+  const { models = [], categories = [], minRating = 0, search = "", followingIds = [] } = filters;
   const query = search.trim().toLowerCase();
+  const followingSet = new Set(followingIds.map(String));
 
   return all.filter((prompt) => {
     const isOwnPrompt = String(prompt.creatorId) === currentUserId;
+
+    // Visibility filtering
+    if (prompt.visibility === 'draft') return false;
+    if (prompt.visibility === 'followers_only') return false;
+
     const modelMatch = models.length === 0 || models.includes(prompt.model);
     const categoryMatch =
       categories.length === 0 || categories.includes(prompt.category);
     const ratingMatch = minRating === 0 || (prompt.rating ?? 0) >= minRating;
-    const searchableText = [
+    const searchFields = [
       prompt.title,
-      prompt.slug,
+      //  prompt.slug,
       prompt.model,
       prompt.category,
       prompt.creator,
-      prompt.creatorName,
-      prompt.description,
-      prompt.promptText,
-    ]
-      .filter(Boolean)
-      .join(" ")
-      .toLowerCase();
-    const searchMatch = !query || searchableText.includes(query);
+      // prompt.creatorName,
+      //  prompt.description,
+      //  prompt.promptText,
+    ].filter(Boolean).map(f => f.toLowerCase());
+
+    const queryWords = query ? query.split(/\s+/).filter(Boolean) : [];
+    const searchMatch = queryWords.length === 0 || queryWords.every(word =>
+      searchFields.some(field => field.split(/\s+/).some(fieldWord => fieldWord.startsWith(word)))
+    );
 
     return !isOwnPrompt && modelMatch && categoryMatch && ratingMatch && searchMatch;
+  });
+}
+
+export async function fetchProfilePrompts(profileUserId, followingIds = []) {
+  const all = await loadAllPrompts();
+  const currentUserId = String(getCurrentUserId());
+  const followingSet = new Set(followingIds.map(String));
+  const targetId = String(profileUserId);
+
+  return all.filter((prompt) => {
+    if (String(prompt.creatorId) !== targetId) return false;
+    if (prompt.visibility === 'draft') return false;
+
+    if (prompt.visibility === 'followers_only') {
+      const isOwnPrompt = targetId === currentUserId;
+      const isFollowing = followingSet.has(targetId);
+      if (!isOwnPrompt && !isFollowing) return false;
+    }
+
+    return true;
   });
 }
 
@@ -116,10 +155,7 @@ export async function fetchPurchaseItems(purchaseId) {
   return mapPromptListFromApi(response);
 }
 
-export async function fetchPurchasedPrompts() {
-  const response = await apiGet(`purchases/getPurchasedPrompts.php?user_id=${getCurrentUserId()}`);
-  return mapPromptListFromApi(response);
-}
+
 
 export async function fetchBuyerRatings() {
   const response = await apiGet(`reviews/getreviews.php?user_id=${getCurrentUserId()}`);
@@ -134,7 +170,12 @@ export async function fetchCreatorRatings() {
 export async function fetchCreatorPrompts() {
   const all = await loadAllPrompts();
   const currentUserId = String(getCurrentUserId());
-  return all.filter((prompt) => String(prompt.creatorId) === currentUserId);
+  return all.filter((prompt) => String(prompt.creatorId) === currentUserId && prompt.visibility !== 'draft');
+}
+
+export async function fetchDraftPrompts() {
+  const response = await apiGet(`prompt/getDraftPrompts.php?creator_id=${getCurrentUserId()}`);
+  return mapPromptListFromApi(response);
 }
 
 export async function getFilterOptions() {
@@ -207,7 +248,8 @@ export async function fetchCategoryOptions() {
 export async function createPrompt(formData) {
   // We need to use fetch directly here because apiClient's apiPost sets Content-Type to application/json
   // But we need multipart/form-data for the image upload.
-  const response = await fetch('/api/prompt/createPrompt.php', {
+  const API_BASE = getApiBaseUrl();
+  const response = await fetch(`${API_BASE}/prompt/createPrompt.php`, {
     method: "POST",
     body: formData,
   });
@@ -222,7 +264,8 @@ export async function createPrompt(formData) {
 }
 
 export async function updatePrompt(formData) {
-  const response = await fetch('/api/prompt/updatePrompt.php', {
+  const API_BASE = getApiBaseUrl();
+  const response = await fetch(`${API_BASE}/prompt/updatePrompt.php`, {
     method: "POST",
     body: formData,
   });
@@ -235,3 +278,25 @@ export async function updatePrompt(formData) {
   clearPromptCache();
   return data;
 }
+
+export async function updatePromptVisibility(promptId, visibility) {
+  const submission = new FormData();
+  submission.append("creator_id", getCurrentUserId());
+  submission.append("prompt_id", promptId);
+  submission.append("visibility", visibility);
+
+  const API_BASE = getApiBaseUrl();
+  const response = await fetch(`${API_BASE}/prompt/updatePrompt.php`, {
+    method: "POST",
+    body: submission,
+  });
+  const data = await response.json();
+
+  if (!response.ok || data?.success === false) {
+    throw new Error(data?.message ?? "Failed to update prompt visibility");
+  }
+
+  clearPromptCache();
+  return data;
+}
+

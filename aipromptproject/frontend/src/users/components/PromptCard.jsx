@@ -1,8 +1,33 @@
 import React from "react";
 import { Link } from "react-router";
-import { CartIcon, HeartIcon } from "./Icon.jsx";
+import { HeartIcon, GlobeIcon, FollowersIcon, DraftIcon } from "./Icon.jsx";
 import Tag from "./Tag.jsx";
 import { useShop } from "../context/ShopContext.jsx";
+
+function VisibilityBadge({ visibility }) {
+  const normVis = (visibility || "").toLowerCase().replace(/_/g, " ").replace(/-/g, " ");
+  
+  if (normVis === "draft") {
+    return (
+      <div className="flex items-center gap-1.5 rounded-md bg-slate-800/90 px-2 py-1 text-[10px] font-bold text-slate-300 ring-1 ring-slate-600/50 backdrop-blur-md">
+        <DraftIcon className="h-3 w-3" /> Draft
+      </div>
+    );
+  }
+  if (normVis === "followers only" || normVis === "only follower" || normVis === "only followers") {
+    return (
+      <div className="flex items-center gap-1.5 rounded-md bg-blue-500/90 px-2 py-1 text-[10px] font-bold text-white ring-1 ring-blue-500/30 backdrop-blur-md">
+        <FollowersIcon className="h-3 w-3" /> Followers Only
+      </div>
+    );
+  }
+  return (
+    <div className="flex items-center gap-1.5 rounded-md bg-emerald-500/90 px-2 py-1 text-[10px] font-bold text-white ring-1 ring-emerald-500/30 backdrop-blur-md">
+      <GlobeIcon className="h-3 w-3" /> Public
+    </div>
+  );
+}
+
 
 /* ── Inline icons for hover overlay ── */
 function ExternalLinkIcon() {
@@ -48,32 +73,23 @@ export default function PromptCard({
   hideCommerceActions = false,
   onActionClick = null,
   actionTo = null,
+  showVisibilityInfo = false,
+  showVisibilityBadge = false,
+  children
 }) {
-  const { addToCart, toggleWishlist, isInCart, isInWishlist, hasPurchased } = useShop();
-
-  const inCart = isInCart(prompt.id);
+  const { isInWishlist, toggleWishlist } = useShop();
   const inWishlist = isInWishlist(prompt.id);
-  const isPurchased = hasPurchased ? hasPurchased(prompt.id) : false;
   const isMarketplace = variant === "grid" || showActions;
 
   const creatorLink = prompt.creatorId
-    ? `/creator/${prompt.creatorId}`
+    ? `/user/profile/${prompt.creatorId}`
     : null;
-  const promptLink = `/prompt/${prompt.id}`;
+  const promptLink = `/user/prompt/${prompt.id}`;
   const actionLink = actionTo ?? promptLink;
-  const priceLabel =
-    Number(prompt.price) > 0 ? `${Number(prompt.price)} coins` : "Free";
   const ratingLabel =
     typeof prompt.rating === "number" && prompt.rating > 0
       ? prompt.rating.toFixed(1).replace(".0", "")
       : "New";
-
-  const ctaLabel =
-    Number(prompt.price) > 0 ? `${Number(prompt.price)} coins` : "Get for Free";
-  const ctaGradient =
-    Number(prompt.price) > 0
-      ? "from-violet-500 to-fuchsia-500"
-      : "from-rose-400 to-orange-300";
 
   /* ═══════════════════════════════════════════════════════
      Grid / Marketplace card — PromptBase-style hover
@@ -116,15 +132,12 @@ export default function PromptCard({
             <h3 className="line-clamp-2 text-base font-black leading-tight text-white drop-shadow">
               {prompt.title}
             </h3>
-            <span className="shrink-0 text-sm font-black text-white drop-shadow">
-              {priceLabel}
-            </span>
           </div>
 
           {/* ════════════════════════════════════════════════
               HOVER OVERLAY — action buttons (top-right)
               ════════════════════════════════════════════════ */}
-          <div className="prompt-card__actions absolute right-3 top-3 flex items-center gap-2">
+          <div className="prompt-card__actions absolute right-3 top-3 flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
             {!hideCommerceActions && (
               <button
                 type="button"
@@ -154,28 +167,11 @@ export default function PromptCard({
             >
               <ExternalLinkIcon />
             </Link>
-
-            {!hideCommerceActions && (
-              <button
-                type="button"
-                onClick={(e) => {
-                  e.preventDefault();
-                  e.stopPropagation();
-                  addToCart(prompt);
-                }}
-                disabled={inCart || isPurchased}
-                aria-label={isPurchased ? "Already purchased" : inCart ? "Already in cart" : "Add to cart"}
-                title={isPurchased ? "Already purchased" : inCart ? "Already in cart" : "Add to cart"}
-                className="flex h-9 w-9 items-center justify-center rounded-full bg-slate-900/80 text-white shadow-lg ring-1 ring-white/10 backdrop-blur-sm transition-all duration-200 hover:scale-110 hover:bg-sky-500 hover:ring-sky-400/30 disabled:cursor-not-allowed disabled:opacity-50"
-              >
-                <CartIcon />
-              </button>
-            )}
           </div>
           {/* ════════════════════════════════════════════════
               HOVER OVERLAY — bottom info + CTA
               ════════════════════════════════════════════════ */}
-          <div className="prompt-card__info absolute inset-x-0 bottom-0 flex items-end justify-between gap-3 p-4">
+          <div className="prompt-card__info absolute inset-x-0 bottom-0 flex items-end justify-between gap-3 p-4 opacity-0 group-hover:opacity-100 translate-y-4 group-hover:translate-y-0 transition-all duration-300">
             <div className="min-w-0 flex-1">
               <h3 className="line-clamp-1 text-sm font-bold leading-tight text-white drop-shadow-lg">
                 {prompt.title}
@@ -187,8 +183,6 @@ export default function PromptCard({
                 <span className="font-bold text-amber-300">
                   {ratingLabel} ★
                 </span>
-                <span className="text-white/30">·</span>
-                <span className="font-semibold">{priceLabel}</span>
               </div>
             </div>
 
@@ -236,8 +230,9 @@ export default function PromptCard({
 
       <div className="absolute inset-0 bg-gradient-to-b from-black/45 via-transparent to-black/70" />
 
-      <div className="absolute left-3 top-3 text-xs font-black text-white drop-shadow">
-        <span>{prompt.model || "AI"}</span>
+      <div className="absolute left-3 top-3 flex flex-col items-start gap-2 drop-shadow">
+        <span className="text-xs font-black text-white">{prompt.model || "AI"}</span>
+        {showVisibilityBadge && <VisibilityBadge visibility={prompt.visibility} />}
       </div>
 
       <div className="absolute right-3 top-3 text-xs font-black text-white drop-shadow">
@@ -248,9 +243,6 @@ export default function PromptCard({
         <h3 className="line-clamp-2 text-base font-black leading-tight text-white drop-shadow">
           {prompt.title}
         </h3>
-        <span className="shrink-0 text-sm font-black text-white drop-shadow">
-          {priceLabel}
-        </span>
       </div>
     </div>
   );
@@ -314,9 +306,14 @@ export default function PromptCard({
       </div>
 
       <div className="mt-5 flex items-center justify-between gap-3">
-        <p className="text-sm font-bold text-violet-300">
-          {Number(prompt.price) || 0} coins
-        </p>
+        {showVisibilityInfo && (
+          <Link
+            to={promptLink}
+            className="rounded-xl border border-slate-700 bg-slate-800 px-4 py-2 text-xs font-bold text-slate-300 transition hover:bg-slate-700"
+          >
+            View Post
+          </Link>
+        )}
         <Link
           to={actionLink}
           className="rounded-xl bg-violet-600 px-4 py-2 text-xs font-bold text-white transition hover:bg-violet-500"
@@ -324,6 +321,7 @@ export default function PromptCard({
           {actionLabel}
         </Link>
       </div>
+      {children}
     </article>
   );
 }

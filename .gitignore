@@ -1,0 +1,7 @@
+node_modules/
+vendor/
+backend/vendor/
+aipromptproject/node_modules/
+aipromptproject/backend/vendor/
+.env
+.DS_Store

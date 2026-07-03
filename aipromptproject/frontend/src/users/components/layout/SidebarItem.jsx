@@ -10,7 +10,12 @@ export default function SidebarItem({
   end = false,
 }) {
   const [hovered, setHovered] = useState(false);
-  const badgeColor = badgeVariant === "blue" ? "bg-sky-500" : "bg-violet-600";
+  const badgeColorMap = {
+    blue: "bg-sky-500",
+    rose: "bg-rose-500",
+    violet: "bg-violet-600",
+  };
+  const badgeColor = badgeColorMap[badgeVariant] || "bg-violet-600";
 
   return (
     <div
