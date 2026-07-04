@@ -12,6 +12,8 @@ import {
   fetchWishlist,
 } from "../services/wishlistService.js";
 
+export const WISHLIST_UPDATED_EVENT = "wishlist_updated";
+
 const CART_KEY = "promptai_cart";
 
 const ShopContext = createContext(null);
@@ -100,6 +102,11 @@ export function ShopProvider({ children }) {
       } else {
         await addWishlistPrompt(id);
       }
+      window.dispatchEvent(
+        new CustomEvent(WISHLIST_UPDATED_EVENT, {
+          detail: { promptId: id, added: !exists },
+        })
+      );
     } catch (error) {
       console.error("Failed to update wishlist", error);
       setWishlist((prev) =>
@@ -120,6 +127,11 @@ export function ShopProvider({ children }) {
 
     try {
       await deleteWishlistPrompt(id);
+      window.dispatchEvent(
+        new CustomEvent(WISHLIST_UPDATED_EVENT, {
+          detail: { promptId: id, added: false },
+        })
+      );
     } catch (error) {
       console.error("Failed to remove wishlist item", error);
       if (removedPrompt) {

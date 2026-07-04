@@ -3,6 +3,7 @@ import { Link } from "react-router";
 import { HeartIcon, GlobeIcon, FollowersIcon, DraftIcon } from "./Icon.jsx";
 import Tag from "./Tag.jsx";
 import { useShop } from "../context/ShopContext.jsx";
+import { getCurrentUserId } from "../services/currentUser.js";
 
 function VisibilityBadge({ visibility }) {
   const normVis = (visibility || "").toLowerCase().replace(/_/g, " ").replace(/-/g, " ");
@@ -80,6 +81,8 @@ export default function PromptCard({
   const { isInWishlist, toggleWishlist } = useShop();
   const inWishlist = isInWishlist(prompt.id);
   const isMarketplace = variant === "grid" || showActions;
+  const currentUserId = String(getCurrentUserId());
+  const isCreator = String(prompt.creatorId) === currentUserId;
 
   const creatorLink = prompt.creatorId
     ? `/user/profile/${prompt.creatorId}`
@@ -138,7 +141,7 @@ export default function PromptCard({
               HOVER OVERLAY — action buttons (top-right)
               ════════════════════════════════════════════════ */}
           <div className="prompt-card__actions absolute right-3 top-3 flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-            {!hideCommerceActions && (
+            {!hideCommerceActions && !isCreator && (
               <button
                 type="button"
                 onClick={(e) => {

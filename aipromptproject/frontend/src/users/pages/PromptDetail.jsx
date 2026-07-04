@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { Link, useParams, useNavigate, useLocation } from "react-router";
 import { HeartIcon, TrashIcon } from "../components/Icon.jsx";
 import ReportButton from "../components/ReportButton.jsx";
-import { useShop } from "../context/ShopContext.jsx";
+import { useShop, WISHLIST_UPDATED_EVENT } from "../context/ShopContext.jsx";
 
 import {
   fetchPromptById,
@@ -104,9 +104,24 @@ export default function PromptDetail() {
     loadPromptDetail();
     window.addEventListener(PROMPTS_UPDATED_EVENT, loadPromptDetail);
 
+    const handleWishlistUpdated = (e) => {
+      const { promptId, added } = e.detail;
+      if (String(promptId) === String(id)) {
+        setPrompt((currentPrompt) => {
+          if (!currentPrompt) return currentPrompt;
+          return {
+            ...currentPrompt,
+            wishlistCount: Math.max(0, (currentPrompt.wishlistCount ?? 0) + (added ? 1 : -1))
+          };
+        });
+      }
+    };
+    window.addEventListener(WISHLIST_UPDATED_EVENT, handleWishlistUpdated);
+
     return () => {
       cancelled = true;
       window.removeEventListener(PROMPTS_UPDATED_EVENT, loadPromptDetail);
+      window.removeEventListener(WISHLIST_UPDATED_EVENT, handleWishlistUpdated);
     };
   }, [id]);
 
@@ -343,60 +358,62 @@ export default function PromptDetail() {
             </div>
           </div>
 
-          <form
-            onSubmit={handleSubmitComment}
-            className="mt-5 rounded-xl border border-slate-800 bg-slate-950/50 p-4"
-          >
-            <div className="flex flex-wrap items-center justify-between gap-3">
-              <div>
-                <h3 className="text-sm font-black text-white">Add Comment</h3>
-                <p className="mt-1 text-xs text-slate-500">
-                  Share your rating and review for this prompt.
+          {String(prompt.creatorId) !== currentUserId && (
+            <form
+              onSubmit={handleSubmitComment}
+              className="mt-5 rounded-xl border border-slate-800 bg-slate-950/50 p-4"
+            >
+              <div className="flex flex-wrap items-center justify-between gap-3">
+                <div>
+                  <h3 className="text-sm font-black text-white">Add Comment</h3>
+                  <p className="mt-1 text-xs text-slate-500">
+                    Share your rating and review for this prompt.
+                  </p>
+                </div>
+                <div className="flex items-center gap-1">
+                  {[1, 2, 3, 4, 5].map((star) => (
+                    <button
+                      key={star}
+                      type="button"
+                      onClick={() => setCommentRating(star)}
+                      className={`text-xl transition ${star <= commentRating
+                        ? "text-amber-300"
+                        : "text-slate-600 hover:text-amber-200"
+                        }`}
+                      aria-label={`${star} star rating`}
+                    >
+                      ★
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <textarea
+                value={commentText}
+                onChange={(event) => setCommentText(event.target.value)}
+                onKeyDown={handleCommentKeyDown}
+                rows={4}
+                placeholder="Write your review comment..."
+                className="mt-4 w-full resize-none rounded-xl border border-slate-700 bg-slate-900 px-4 py-3 text-sm text-slate-200 outline-none transition placeholder:text-slate-500 focus:border-violet-500 focus:ring-4 focus:ring-violet-500/10"
+              />
+
+              {commentError && (
+                <p className="mt-2 text-xs font-semibold text-rose-300">
+                  {commentError}
                 </p>
+              )}
+
+              <div className="mt-3 flex justify-end">
+                <button
+                  type="submit"
+                  disabled={commentSubmitting}
+                  className="h-10 rounded-xl bg-violet-600 px-5 text-sm font-black text-white transition hover:bg-violet-500 disabled:cursor-not-allowed disabled:opacity-60"
+                >
+                  {commentSubmitting ? "Submitting..." : "Submit Comment"}
+                </button>
               </div>
-              <div className="flex items-center gap-1">
-                {[1, 2, 3, 4, 5].map((star) => (
-                  <button
-                    key={star}
-                    type="button"
-                    onClick={() => setCommentRating(star)}
-                    className={`text-xl transition ${star <= commentRating
-                      ? "text-amber-300"
-                      : "text-slate-600 hover:text-amber-200"
-                      }`}
-                    aria-label={`${star} star rating`}
-                  >
-                    ★
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            <textarea
-              value={commentText}
-              onChange={(event) => setCommentText(event.target.value)}
-              onKeyDown={handleCommentKeyDown}
-              rows={4}
-              placeholder="Write your review comment..."
-              className="mt-4 w-full resize-none rounded-xl border border-slate-700 bg-slate-900 px-4 py-3 text-sm text-slate-200 outline-none transition placeholder:text-slate-500 focus:border-violet-500 focus:ring-4 focus:ring-violet-500/10"
-            />
-
-            {commentError && (
-              <p className="mt-2 text-xs font-semibold text-rose-300">
-                {commentError}
-              </p>
-            )}
-
-            <div className="mt-3 flex justify-end">
-              <button
-                type="submit"
-                disabled={commentSubmitting}
-                className="h-10 rounded-xl bg-violet-600 px-5 text-sm font-black text-white transition hover:bg-violet-500 disabled:cursor-not-allowed disabled:opacity-60"
-              >
-                {commentSubmitting ? "Submitting..." : "Submit Comment"}
-              </button>
-            </div>
-          </form>
+            </form>
+          )}
 
           <div className="mt-5 space-y-4">
             {reviewSummary.reviews.length === 0 ? (
@@ -476,15 +493,17 @@ export default function PromptDetail() {
               </h1>
             </div>
             <div className="flex shrink-0 items-center gap-2">
-              <button
-                type="button"
-                onClick={handleToggleWishlist}
-                className="flex h-10 w-10 items-center justify-center rounded-full bg-slate-900/80 text-white shadow-lg ring-1 ring-white/10 backdrop-blur-sm transition-all duration-200 hover:scale-110 hover:bg-rose-500 hover:text-white hover:ring-rose-400/30"
-                aria-label={inWishlist ? "Remove from wishlist" : "Add to wishlist"}
-                title={inWishlist ? "Remove from wishlist" : "Add to wishlist"}
-              >
-                <HeartIcon filled={inWishlist} className="h-5 w-5" />
-              </button>
+              {String(prompt.creatorId) !== currentUserId && (
+                <button
+                  type="button"
+                  onClick={handleToggleWishlist}
+                  className="flex h-10 w-10 items-center justify-center rounded-full bg-slate-900/80 text-white shadow-lg ring-1 ring-white/10 backdrop-blur-sm transition-all duration-200 hover:scale-110 hover:bg-rose-500 hover:text-white hover:ring-rose-400/30"
+                  aria-label={inWishlist ? "Remove from wishlist" : "Add to wishlist"}
+                  title={inWishlist ? "Remove from wishlist" : "Add to wishlist"}
+                >
+                  <HeartIcon filled={inWishlist} className="h-5 w-5" />
+                </button>
+              )}
               {String(prompt.creatorId) !== currentUserId && (
                 <ReportButton targetType="prompt" targetId={prompt.id} />
               )}
