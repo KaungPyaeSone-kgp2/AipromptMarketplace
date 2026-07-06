@@ -25,7 +25,6 @@ function MenuRow({ label, count, disabled = false, onClick }) {
 }
 
 export default function SidebarRatingMenu({
-  isCreatorMode = false,
   buyerRatingCount = 0,
   creatorRatingCount = 0,
 }) {
@@ -38,10 +37,10 @@ export default function SidebarRatingMenu({
   useOutsideClick(ref, () => setOpen(false));
 
   const isActive =
-    location.pathname === "/rating/buyer" ||
-    location.pathname === "/rating/creator";
+    location.pathname === "/user/rating" ||
+    location.pathname === "/user/ratingreceive";
 
-  const totalBadge = buyerRatingCount + (isCreatorMode ? creatorRatingCount : 0);
+  const totalBadge = buyerRatingCount + creatorRatingCount;
 
   return (
     <div
@@ -78,25 +77,18 @@ export default function SidebarRatingMenu({
             label="Rating"
             count={buyerRatingCount}
             onClick={() => {
-              navigate("/rating/buyer");
+              navigate("/user/rating");
               setOpen(false);
             }}
           />
           <MenuRow
-            label="Ratings I received"
+            label="Ratings Received"
             count={creatorRatingCount}
-            disabled={!isCreatorMode}
             onClick={() => {
-              if (!isCreatorMode) return;
-              navigate("/rating/creator");
+              navigate("/user/ratingreceive");
               setOpen(false);
             }}
           />
-          {!isCreatorMode && (
-            <p className="px-3 pb-2 pt-1 text-xs leading-relaxed text-slate-500">
-              Enable Creator Mode to view ratings from buyers.
-            </p>
-          )}
         </div>
       )}
 

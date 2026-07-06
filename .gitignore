@@ -1,24 +1,41 @@
-# Logs
-logs
+# === Dependencies ===
+node_modules/
+backend/vendor/
+vendor/
+
+# === Build Output ===
+dist/
+
+# === Composer lock (optional, keep if you want reproducible builds) ===
+# composer.lock
+
+# === Secrets & Config ===
+.env
+backend/config.ini
+
+# === Cache ===
+backend/cache/
+
+# === Large Archives ===
+*.zip
+
+# === Temp Files ===
+temp_out.txt
+scratch.js
+test_noti.php
+
+# === Knowledge (AI-generated, not source code) ===
+knowledge/
+
+# === Uploaded user files (runtime data, not source code) ===
+backend/uploads/users/
+backend/uploads/profiles/
+backend/uploads/image_evidence_report/
+backend/uploads/prompts/thumbnail/
+
+# === Logs ===
 *.log
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-pnpm-debug.log*
-lerna-debug.log*
 
-node_modules
-dist
-dist-ssr
-*.local
-
-# Editor directories and files
-.vscode/*
-!.vscode/extensions.json
-.idea
+# === OS Files ===
 .DS_Store
-*.suo
-*.ntvs*
-*.njsproj
-*.sln
-*.sw?
+Thumbs.db

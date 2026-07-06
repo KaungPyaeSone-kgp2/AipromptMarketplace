@@ -1,8 +1,9 @@
 import { useEffect, useMemo, useState } from "react";
-import { Link, useParams } from "react-router";
+import { Link, useParams, useNavigate, useLocation } from "react-router";
 import { HeartIcon, TrashIcon } from "../components/Icon.jsx";
 import ReportButton from "../components/ReportButton.jsx";
-import { useShop } from "../context/ShopContext.jsx";
+import { useShop, WISHLIST_UPDATED_EVENT } from "../context/ShopContext.jsx";
+
 import {
   fetchPromptById,
   PROMPTS_UPDATED_EVENT,
@@ -15,6 +16,7 @@ import {
   RATINGS_UPDATED_EVENT,
 } from "../services/reviewService.js";
 import { getCurrentUserId } from "../services/currentUser.js";
+import { fetchFollowStatus } from "../services/followService.js";
 
 function formatDate(value) {
   if (!value) return "";
@@ -43,8 +45,11 @@ function Stars({ value = 0 }) {
 }
 
 export default function PromptDetail() {
-  const { promptId } = useParams();
-  const { addToCart, toggleWishlist, isInCart, isInWishlist } = useShop();
+  const { id } = useParams();
+  const navigate = useNavigate();
+  const location = useLocation();
+  const { isInWishlist, toggleWishlist } = useShop();
+
   const [prompt, setPrompt] = useState(null);
   const [reviewSummary, setReviewSummary] = useState({
     count: 0,
@@ -62,21 +67,34 @@ export default function PromptDetail() {
     let cancelled = false;
 
     async function loadPromptDetail() {
-      setLoading(true);
-
       try {
         const [promptData, reviewsData] = await Promise.all([
-          fetchPromptById(promptId),
-          fetchPromptReviews(promptId).catch(() => ({
+          fetchPromptById(id),
+          fetchPromptReviews(id).catch(() => ({
             count: 0,
             averageRating: 0,
             reviews: [],
           })),
         ]);
 
+        let finalPromptData = promptData;
+
+        if (finalPromptData) {
+          const currentUserId = String(getCurrentUserId());
+          if (
+            finalPromptData.visibility === 'followers_only' &&
+            String(finalPromptData.creatorId) !== currentUserId
+          ) {
+            const isFollowing = await fetchFollowStatus(finalPromptData.creatorId).catch(() => false);
+            if (!isFollowing) {
+              finalPromptData = null;
+            }
+          }
+        }
+
         if (cancelled) return;
 
-        setPrompt(promptData);
+        setPrompt(finalPromptData);
         setReviewSummary(reviewsData);
       } finally {
         if (!cancelled) setLoading(false);
@@ -86,23 +104,33 @@ export default function PromptDetail() {
     loadPromptDetail();
     window.addEventListener(PROMPTS_UPDATED_EVENT, loadPromptDetail);
 
+    const handleWishlistUpdated = (e) => {
+      const { promptId, added } = e.detail;
+      if (String(promptId) === String(id)) {
+        setPrompt((currentPrompt) => {
+          if (!currentPrompt) return currentPrompt;
+          return {
+            ...currentPrompt,
+            wishlistCount: Math.max(0, (currentPrompt.wishlistCount ?? 0) + (added ? 1 : -1))
+          };
+        });
+      }
+    };
+    window.addEventListener(WISHLIST_UPDATED_EVENT, handleWishlistUpdated);
+
     return () => {
       cancelled = true;
       window.removeEventListener(PROMPTS_UPDATED_EVENT, loadPromptDetail);
+      window.removeEventListener(WISHLIST_UPDATED_EVENT, handleWishlistUpdated);
     };
-  }, [promptId]);
+  }, [id]);
 
   const rating = reviewSummary.averageRating ?? prompt?.rating ?? 0;
   const reviewCount = reviewSummary.count ?? prompt?.reviewCount ?? 0;
   const priceLabel = Number(prompt?.price) > 0 ? `${prompt.price} coins` : "Free";
   const currentUserId = String(getCurrentUserId());
-  const getAccountPath = (accountId, isCreator) =>
-    isCreator ? `/creator/${accountId}` : `/user/${accountId}`;
-  const inWishlist = useMemo(
-    () => (prompt ? isInWishlist(prompt.id) : false),
-    [isInWishlist, prompt]
-  );
-
+  const getAccountPath = (accountId) => `/user/profile/${accountId}`;
+  const inWishlist = prompt ? isInWishlist(prompt.id) : false;
   // const syncReviewSummary = (updatedReviews) => {
   //   setReviewSummary(updatedReviews);
   //   updatePromptInCache(prompt.id, {
@@ -120,35 +148,66 @@ export default function PromptDetail() {
   //   );
   // };
   const getCurrentScrollTop = () => {
-  const scrollContainer = document.querySelector(".app-scrollbar");
-  return scrollContainer ? scrollContainer.scrollTop : window.scrollY;
-};
-
-const restoreScrollTop = (scrollTop) => {
-  requestAnimationFrame(() => {
     const scrollContainer = document.querySelector(".app-scrollbar");
+    return scrollContainer ? scrollContainer.scrollTop : window.scrollY;
+  };
 
-    if (scrollContainer) {
-      scrollContainer.scrollTop = scrollTop;
-      return;
-    }
+  const restoreScrollTop = (scrollTop) => {
+    requestAnimationFrame(() => {
+      const scrollContainer = document.querySelector(".app-scrollbar");
 
-    window.scrollTo({ top: scrollTop, left: 0, behavior: "auto" });
-  });
-};
+      if (scrollContainer) {
+        scrollContainer.scrollTop = scrollTop;
+        return;
+      }
 
-const syncReviewSummary = (updatedReviews) => {
-  setReviewSummary(updatedReviews);
-  setPrompt((currentPrompt) =>
-    currentPrompt
-      ? {
+      window.scrollTo({ top: scrollTop, left: 0, behavior: "auto" });
+    });
+  };
+
+  const syncReviewSummary = (updatedReviews) => {
+    setReviewSummary(updatedReviews);
+    updatePromptInCache(prompt.id, {
+      rating: updatedReviews.averageRating,
+      reviewCount: updatedReviews.count,
+    });
+    setPrompt((currentPrompt) =>
+      currentPrompt
+        ? {
           ...currentPrompt,
           reviewCount: updatedReviews.count,
           rating: updatedReviews.averageRating,
         }
-      : currentPrompt
-  );
-};
+        : currentPrompt
+    );
+  };
+
+  const renderHighlightedPromptText = () => {
+    if (!prompt?.promptText) return "No prompt content available.";
+
+    let text = prompt.promptText
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;");
+
+    if (prompt.promptVariables && prompt.promptVariables.length > 0) {
+      prompt.promptVariables.forEach((variable) => {
+        if (!variable.name?.trim()) return;
+        const safeName = variable.name
+          .trim()
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;")
+          .replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+        const regex = new RegExp(`\\[?${safeName}\\]?`, "gi");
+        text = text.replace(regex, (match) => (
+          `<mark class="rounded px-1 mx-0.5 font-bold shadow-sm" style="background-color: ${variable.color || '#8b5cf6'}; color: white;">${match}</mark>`
+        ));
+      });
+    }
+
+    return <span dangerouslySetInnerHTML={{ __html: text }} />;
+  };
 
   const handleSubmitComment = async (event) => {
     event.preventDefault();
@@ -202,9 +261,9 @@ const syncReviewSummary = (updatedReviews) => {
     const nextAverageRating =
       nextReviews.length > 0
         ? nextReviews.reduce(
-            (sum, review) => sum + Number(review.rating || 0),
-            0
-          ) / nextReviews.length
+          (sum, review) => sum + Number(review.rating || 0),
+          0
+        ) / nextReviews.length
         : 0;
 
     setDeletingReviewId(reviewId);
@@ -244,37 +303,10 @@ const syncReviewSummary = (updatedReviews) => {
     }
   };
 
-  const updateWishlistCount = (delta) => {
-    setPrompt((currentPrompt) =>
-      currentPrompt
-        ? {
-            ...currentPrompt,
-            wishlistCount: Math.max(
-              0,
-              (currentPrompt.wishlistCount ?? 0) + delta
-            ),
-          }
-        : currentPrompt
-    );
-  };
 
-  const handleToggleWishlist = async () => {
-    if (!prompt) return;
 
-    const delta = inWishlist ? -1 : 1;
-    updateWishlistCount(delta);
-    updatePromptInCache(prompt.id, {
-      wishlistCount: Math.max(0, (prompt.wishlistCount ?? 0) + delta),
-    });
-
-    try {
-      await toggleWishlist(prompt);
-    } catch {
-      updateWishlistCount(-delta);
-      updatePromptInCache(prompt.id, {
-        wishlistCount: Math.max(0, (prompt.wishlistCount ?? 0)),
-      });
-    }
+  const handleToggleWishlist = () => {
+    if (prompt) toggleWishlist(prompt);
   };
 
   if (loading) {
@@ -326,61 +358,62 @@ const syncReviewSummary = (updatedReviews) => {
             </div>
           </div>
 
-          <form
-            onSubmit={handleSubmitComment}
-            className="mt-5 rounded-xl border border-slate-800 bg-slate-950/50 p-4"
-          >
-            <div className="flex flex-wrap items-center justify-between gap-3">
-              <div>
-                <h3 className="text-sm font-black text-white">Add Comment</h3>
-                <p className="mt-1 text-xs text-slate-500">
-                  Share your rating and review for this prompt.
-                </p>
-              </div>
-              <div className="flex items-center gap-1">
-                {[1, 2, 3, 4, 5].map((star) => (
-                  <button
-                    key={star}
-                    type="button"
-                    onClick={() => setCommentRating(star)}
-                    className={`text-xl transition ${
-                      star <= commentRating
+          {String(prompt.creatorId) !== currentUserId && (
+            <form
+              onSubmit={handleSubmitComment}
+              className="mt-5 rounded-xl border border-slate-800 bg-slate-950/50 p-4"
+            >
+              <div className="flex flex-wrap items-center justify-between gap-3">
+                <div>
+                  <h3 className="text-sm font-black text-white">Add Comment</h3>
+                  <p className="mt-1 text-xs text-slate-500">
+                    Share your rating and review for this prompt.
+                  </p>
+                </div>
+                <div className="flex items-center gap-1">
+                  {[1, 2, 3, 4, 5].map((star) => (
+                    <button
+                      key={star}
+                      type="button"
+                      onClick={() => setCommentRating(star)}
+                      className={`text-xl transition ${star <= commentRating
                         ? "text-amber-300"
                         : "text-slate-600 hover:text-amber-200"
-                    }`}
-                    aria-label={`${star} star rating`}
-                  >
-                    ★
-                  </button>
-                ))}
+                        }`}
+                      aria-label={`${star} star rating`}
+                    >
+                      ★
+                    </button>
+                  ))}
+                </div>
               </div>
-            </div>
 
-            <textarea
-              value={commentText}
-              onChange={(event) => setCommentText(event.target.value)}
-              onKeyDown={handleCommentKeyDown}
-              rows={4}
-              placeholder="Write your review comment..."
-              className="mt-4 w-full resize-none rounded-xl border border-slate-700 bg-slate-900 px-4 py-3 text-sm text-slate-200 outline-none transition placeholder:text-slate-500 focus:border-violet-500 focus:ring-4 focus:ring-violet-500/10"
-            />
+              <textarea
+                value={commentText}
+                onChange={(event) => setCommentText(event.target.value)}
+                onKeyDown={handleCommentKeyDown}
+                rows={4}
+                placeholder="Write your review comment..."
+                className="mt-4 w-full resize-none rounded-xl border border-slate-700 bg-slate-900 px-4 py-3 text-sm text-slate-200 outline-none transition placeholder:text-slate-500 focus:border-violet-500 focus:ring-4 focus:ring-violet-500/10"
+              />
 
-            {commentError && (
-              <p className="mt-2 text-xs font-semibold text-rose-300">
-                {commentError}
-              </p>
-            )}
+              {commentError && (
+                <p className="mt-2 text-xs font-semibold text-rose-300">
+                  {commentError}
+                </p>
+              )}
 
-            <div className="mt-3 flex justify-end">
-              <button
-                type="submit"
-                disabled={commentSubmitting}
-                className="h-10 rounded-xl bg-violet-600 px-5 text-sm font-black text-white transition hover:bg-violet-500 disabled:cursor-not-allowed disabled:opacity-60"
-              >
-                {commentSubmitting ? "Submitting..." : "Submit Comment"}
-              </button>
-            </div>
-          </form>
+              <div className="mt-3 flex justify-end">
+                <button
+                  type="submit"
+                  disabled={commentSubmitting}
+                  className="h-10 rounded-xl bg-violet-600 px-5 text-sm font-black text-white transition hover:bg-violet-500 disabled:cursor-not-allowed disabled:opacity-60"
+                >
+                  {commentSubmitting ? "Submitting..." : "Submit Comment"}
+                </button>
+              </div>
+            </form>
+          )}
 
           <div className="mt-5 space-y-4">
             {reviewSummary.reviews.length === 0 ? (
@@ -409,7 +442,7 @@ const syncReviewSummary = (updatedReviews) => {
                         <div className="flex flex-wrap items-center gap-2">
                           <Link
                             to={getAccountPath(review.userId, review.reviewerIsCreator)}
-                             className="font-bold text-white transition hover:text-violet-300"
+                            className="font-bold text-white transition hover:text-violet-300"
                           >
                             {review.reviewerName}
                           </Link>
@@ -460,15 +493,17 @@ const syncReviewSummary = (updatedReviews) => {
               </h1>
             </div>
             <div className="flex shrink-0 items-center gap-2">
-              <button
-                type="button"
-                onClick={handleToggleWishlist}
-                className="flex h-10 w-10 items-center justify-center rounded-full bg-slate-900/80 text-white shadow-lg ring-1 ring-white/10 backdrop-blur-sm transition-all duration-200 hover:scale-110 hover:bg-rose-500 hover:text-white hover:ring-rose-400/30"
-                aria-label={inWishlist ? "Remove from wishlist" : "Add to wishlist"}
-                title={inWishlist ? "Remove from wishlist" : "Add to wishlist"}
-              >
-                <HeartIcon filled={inWishlist} className="h-5 w-5" />
-              </button>
+              {String(prompt.creatorId) !== currentUserId && (
+                <button
+                  type="button"
+                  onClick={handleToggleWishlist}
+                  className="flex h-10 w-10 items-center justify-center rounded-full bg-slate-900/80 text-white shadow-lg ring-1 ring-white/10 backdrop-blur-sm transition-all duration-200 hover:scale-110 hover:bg-rose-500 hover:text-white hover:ring-rose-400/30"
+                  aria-label={inWishlist ? "Remove from wishlist" : "Add to wishlist"}
+                  title={inWishlist ? "Remove from wishlist" : "Add to wishlist"}
+                >
+                  <HeartIcon filled={inWishlist} className="h-5 w-5" />
+                </button>
+              )}
               {String(prompt.creatorId) !== currentUserId && (
                 <ReportButton targetType="prompt" targetId={prompt.id} />
               )}
@@ -478,7 +513,7 @@ const syncReviewSummary = (updatedReviews) => {
           <div className="mt-4 flex flex-wrap items-center gap-3 text-sm text-slate-300">
             {prompt.creatorId && (
               <Link
-                to={`/creator/${prompt.creatorId}`}
+                to={`/user/profile/${prompt.creatorId}`}
                 className="inline-flex items-center gap-2 rounded-xl pr-2 font-bold text-violet-200 transition hover:bg-slate-800/70 hover:text-white"
               >
                 <img
@@ -493,33 +528,12 @@ const syncReviewSummary = (updatedReviews) => {
             <span>{reviewCount.toLocaleString()} reviews</span>
           </div>
 
-          <div className="mt-8">
-            <p className="text-sm font-bold uppercase tracking-widest text-slate-500">
-              Price
-            </p>
-            <p className="mt-2 text-4xl font-black text-white">{priceLabel}</p>
-          </div>
-
-          <button
-            type="button"
-            onClick={() => addToCart(prompt)}
-            disabled={isInCart(prompt.id)}
-            className="mt-6 h-12 w-full rounded-xl bg-violet-600 px-6 text-sm font-black text-white transition hover:bg-violet-500 disabled:cursor-not-allowed disabled:opacity-60"
-          >
-            {isInCart(prompt.id) ? "Already in Cart" : "Add to Cart"}
-          </button>
-          <div className="mt-6 grid grid-cols-2 gap-3 border-y border-slate-700/70 py-5 text-sm">
+          <div className="mt-6 grid grid-cols-2 gap-3 border-t border-slate-700/70 pt-5 text-sm">
             <div>
               <p className="font-black text-white">
                 {(prompt.wishlistCount ?? 0).toLocaleString()}
               </p>
               <p className="text-slate-500">Wishlist</p>
-            </div>
-            <div>
-              <p className="font-black text-white">
-                {(prompt.viewCount ?? 0).toLocaleString()}
-              </p>
-              <p className="text-slate-500">Views</p>
             </div>
             <div>
               <p className="font-black text-white">
@@ -535,9 +549,20 @@ const syncReviewSummary = (updatedReviews) => {
             </div>
           </div>
 
-          <p className="mt-5 text-sm leading-6 text-slate-300">
-            {prompt.description || prompt.promptText || "No description available."}
-          </p>
+          <div className="mt-5 border-t border-slate-700/70 pt-5">
+            <h3 className="text-sm font-bold uppercase tracking-widest text-slate-500 mb-2">Description</h3>
+            <p className="text-sm leading-6 text-slate-300">
+              {prompt.description || "No description available."}
+            </p>
+          </div>
+
+
+          <div className="mt-5 rounded-xl bg-slate-950/50 p-4 border border-slate-800">
+            <h3 className="text-sm font-bold uppercase tracking-widest text-slate-500 mb-2">Full Prompt</h3>
+            <p className="text-sm leading-6 text-slate-200 font-mono whitespace-pre-wrap break-words">
+              {renderHighlightedPromptText()}
+            </p>
+          </div>
         </section>
       </aside>
     </div>

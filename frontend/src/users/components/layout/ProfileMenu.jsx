@@ -78,7 +78,7 @@ function ConnectionListPopup({
   );
 }
 
-export default function ProfileMenu({ user, onSignOut, onOpenWishlist }) {
+export default function ProfileMenu({ user, onSignOut }) {
   const navigate = useNavigate();
   const [open, setOpen] = useState(false);
   const [connectionModal, setConnectionModal] = useState(null);
@@ -120,8 +120,8 @@ export default function ProfileMenu({ user, onSignOut, onOpenWishlist }) {
   const handleOpenAccount = (account) => {
     setConnectionModal(null);
     setOpen(false);
-    navigate(account.isCreator ? `/creator/${account.id}` : `/user/${account.id}`);
-};
+    navigate(`/user/profile/${account.id}`);
+  };
 
   return (
     <div ref={ref} className="relative">
@@ -146,7 +146,7 @@ export default function ProfileMenu({ user, onSignOut, onOpenWishlist }) {
       {open && (
         <div className="absolute right-0 top-full z-50 mt-2 w-64 overflow-hidden rounded-2xl border border-slate-700/80 bg-slate-900 shadow-2xl">
           <Link
-            to={user.isCreator ? `/creator/${user.id}` : `/user/${user.id}`}
+            to={`/user/profile/${user.id}`}
             onClick={() => setOpen(false)}
             className="flex items-center gap-3 border-b border-slate-700/80 px-4 py-3 transition hover:bg-violet-500/10 group"
           >
@@ -162,99 +162,56 @@ export default function ProfileMenu({ user, onSignOut, onOpenWishlist }) {
               <p className="truncate text-sm font-bold text-white transition group-hover:text-violet-300">
                 {user.fullName ?? user.displayName}
               </p>
-              <p className="truncate text-xs text-slate-400">{user.email}</p>
+              {/* <p className="truncate text-xs text-slate-400">{user.email}</p>
               <p className="mt-1 text-xs font-bold text-emerald-300">
                 {points.toLocaleString()} coin
-              </p>
+              </p> */}
             </div>
           </Link>
 
           <div className="grid grid-cols-2 gap-2 border-b border-slate-700/80 px-4 py-3">
-            {user.isCreator ? (
-              <>
-                <button
-                  type="button"
-                  onClick={() => handleOpenConnections("followers")}
-                  className="group rounded-lg p-1 text-left text-slate-300 transition hover:bg-violet-500/20 hover:text-violet-300 hover:ring-1 hover:ring-violet-500/35"
-                >
-                  <p className="text-[11px] font-bold uppercase text-slate-500 transition group-hover:text-violet-200/80">
-                    Followers
-                  </p>
-                  <p className="text-sm font-black">
-                    {(user.followersCount ?? 0).toLocaleString()}
-                  </p>
-                </button>
-                <button
-                  type="button"
-                  onClick={() => handleOpenConnections("following")}
-                  className="group rounded-lg p-1 text-left text-slate-300 transition hover:bg-violet-500/20 hover:text-violet-300 hover:ring-1 hover:ring-violet-500/35"
-                >
-                  <p className="text-[11px] font-bold uppercase text-slate-500 transition group-hover:text-violet-200/80">
-                    Following
-                  </p>
-                  <p className="text-sm font-black">
-                    {(user.followingCount ?? 0).toLocaleString()}
-                  </p>
-                </button>
-                <div>
-                  <p className="text-[11px] font-bold uppercase text-slate-500">
-                    Posts
-                  </p>
-                  <p className="text-sm font-black text-white">
-                    {(user.postedPromptCount ?? 0).toLocaleString()}
-                  </p>
-                </div>
-                <div>
-                  <p className="text-[11px] font-bold uppercase text-slate-500">
-                    Sales
-                  </p>
-                  <p className="text-sm font-black text-white">
-                    {(user.totalSalesCount ?? 0).toLocaleString()}
-                  </p>
-                </div>
-                <div className="col-span-2">
-                  <p className="text-[11px] font-bold uppercase text-slate-500">
-                    Earned
-                  </p>
-                  <p className="text-sm font-black text-white">
-                    {(user.totalEarningCoins ?? 0).toLocaleString()}
-                  </p>
-                </div>
-              </>
-            ) : (
-              <>
-                <button
-                  type="button"
-                  onClick={() => handleOpenConnections("following")}
-                  className="group rounded-lg p-1 text-left text-slate-300 transition hover:bg-violet-500/20 hover:text-violet-300 hover:ring-1 hover:ring-violet-500/35"
-                >
-                  <p className="text-[11px] font-bold uppercase text-slate-500 transition group-hover:text-violet-200/80">
-                    Following
-                  </p>
-                  <p className="text-sm font-black">
-                    {(user.followingCount ?? 0).toLocaleString()}
-                  </p>
-                </button>
-                <div>
-                  <p className="text-[11px] font-bold uppercase text-slate-500">
-                    Purchased
-                  </p>
-                  <p className="text-sm font-black text-white">
-                    {(user.purchasedPromptsCount ?? 0).toLocaleString()}
-                  </p>
-                </div>
-              </>
-            )}
+            <button
+              type="button"
+              onClick={() => handleOpenConnections("followers")}
+              className="group rounded-lg p-1 text-left text-slate-300 transition hover:bg-violet-500/20 hover:text-violet-300 hover:ring-1 hover:ring-violet-500/35"
+            >
+              <p className="text-[11px] font-bold uppercase text-slate-500 transition group-hover:text-violet-200/80">
+                Followers
+              </p>
+              <p className="text-sm font-black">
+                {(user.followersCount ?? 0).toLocaleString()}
+              </p>
+            </button>
+            <button
+              type="button"
+              onClick={() => handleOpenConnections("following")}
+              className="group rounded-lg p-1 text-left text-slate-300 transition hover:bg-violet-500/20 hover:text-violet-300 hover:ring-1 hover:ring-violet-500/35"
+            >
+              <p className="text-[11px] font-bold uppercase text-slate-500 transition group-hover:text-violet-200/80">
+                Following
+              </p>
+              <p className="text-sm font-black">
+                {(user.followingCount ?? 0).toLocaleString()}
+              </p>
+            </button>
+            <div>
+              <p className="text-[11px] font-bold uppercase text-slate-500">
+                Posts
+              </p>
+              <p className="text-sm font-black text-white">
+                {(user.postedPromptCount ?? 0).toLocaleString()}
+              </p>
+            </div>
           </div>
 
           <Link
-            to="/settings/profile"
+            to="/user/settings"
             onClick={() => setOpen(false)}
             className="block w-full px-4 py-2.5 text-left text-sm text-slate-300 transition hover:bg-slate-800"
           >
             Settings
           </Link>
-          <button
+          {/* <button
             type="button"
             onClick={() => {
               setOpen(false);
@@ -263,7 +220,7 @@ export default function ProfileMenu({ user, onSignOut, onOpenWishlist }) {
             className="w-full px-4 py-2.5 text-left text-sm text-slate-300 transition hover:bg-slate-800"
           >
             Exchange History
-          </button>
+          </button> */}
           <button
             type="button"
             onClick={() => {
@@ -279,20 +236,19 @@ export default function ProfileMenu({ user, onSignOut, onOpenWishlist }) {
 
       {connectionModal
         ? createPortal(
-            <ConnectionListPopup
-              title={connectionModal.title}
-              type={connectionModal.type}
-              accounts={connectionAccounts}
-              loading={connectionLoading}
-              emptyMessage={`No ${connectionModal.type} accounts found.`}
-              onClose={() => {
-                setConnectionModal(null);
-                setOpen(false);
-              }}
-              onOpenAccount={handleOpenAccount}
-            />,
-            document.body
-          )
+          <ConnectionListPopup
+            title={connectionModal.title}
+            type={connectionModal.type}
+            accounts={connectionAccounts}
+            loading={connectionLoading}
+            emptyMessage={`No ${connectionModal.type} accounts found.`}
+            onClose={() => {
+              setConnectionModal(null);
+            }}
+            onOpenAccount={handleOpenAccount}
+          />,
+          document.body
+        )
         : null}
     </div>
   );

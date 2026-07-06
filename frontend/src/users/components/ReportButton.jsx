@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useMemo, useState, useRef } from "react";
 import { createPortal } from "react-dom";
 import { getCurrentUserId } from "../services/currentUser.js";
 import { submitReport } from "../services/reportService.js";
@@ -61,6 +61,20 @@ function ReportModal({ onClose, targetType, targetId, list }) {
   const [imageEvidence, setImageEvidence] = useState(null);
   const fileInputRef = useRef(null);
 
+  // Generate a stable preview URL for the selected image
+  const previewUrl = useMemo(() => {
+    if (!imageEvidence) return null;
+    const url = URL.createObjectURL(imageEvidence);
+    return url;
+  }, [imageEvidence]);
+
+  // Revoke preview URL on change / unmount to prevent memory leaks
+  useEffect(() => {
+    return () => {
+      if (previewUrl) URL.revokeObjectURL(previewUrl);
+    };
+  }, [previewUrl]);
+
   const [submitted, setSubmitted] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
@@ -86,7 +100,7 @@ function ReportModal({ onClose, targetType, targetId, list }) {
         targetId,
         reason: selected.value,
         reporterId: getCurrentUserId(),
-        description,
+        description: selected.value === "other" ? description : undefined,
         imageEvidence,
       });
       
@@ -197,26 +211,28 @@ function ReportModal({ onClose, targetType, targetId, list }) {
                 </div>
               </div>
 
-              {/* Description */}
-              <div className="flex flex-col gap-2">
-                <label className="text-xs font-bold uppercase tracking-wider text-slate-400">
-                  Description (Optional)
-                </label>
-                <textarea
-                  value={description}
-                  onChange={(e) => setDescription(e.target.value)}
-                  placeholder="Provide more details about the issue..."
-                  className="w-full resize-none rounded-xl border border-slate-700 bg-slate-800/50 px-3 py-3 text-sm text-slate-200 outline-none transition focus:border-rose-500 focus:ring-1 focus:ring-rose-500"
-                  rows={4}
-                />
-              </div>
+              {/* Description (Only show if "Other" is selected) */}
+              {selected?.value === "other" && (
+                <div className="flex flex-col gap-2">
+                  <label className="text-xs font-bold uppercase tracking-wider text-slate-400">
+                    Description (Optional)
+                  </label>
+                  <textarea
+                    value={description}
+                    onChange={(e) => setDescription(e.target.value)}
+                    placeholder="Provide more details about the issue..."
+                    className="w-full resize-none rounded-xl border border-slate-700 bg-slate-800/50 px-3 py-3 text-sm text-slate-200 outline-none transition focus:border-rose-500 focus:ring-1 focus:ring-rose-500"
+                    rows={4}
+                  />
+                </div>
+              )}
 
               {/* Image Evidence */}
               <div className="flex flex-col gap-2">
                 <label className="text-xs font-bold uppercase tracking-wider text-slate-400">
                   Evidence Image (Optional)
                 </label>
-                <div className="flex items-center gap-3">
+                <div className="relative flex items-center gap-3 group/evidence">
                   <input
                     ref={fileInputRef}
                     type="file"
@@ -254,6 +270,23 @@ function ReportModal({ onClose, targetType, targetId, list }) {
                         <line x1="6" y1="6" x2="18" y2="18" />
                       </svg>
                     </button>
+                  )}
+                  {/* Hover image preview tooltip */}
+                  {imageEvidence && (
+                    <div className="pointer-events-none absolute bottom-full left-1/2 z-50 mb-3 -translate-x-1/2 opacity-0 transition-opacity duration-200 group-hover/evidence:opacity-100">
+                      <div className="overflow-hidden rounded-xl border border-slate-600/80 bg-slate-900 p-1.5 shadow-2xl shadow-black/40">
+                        <img
+                          src={previewUrl}
+                          alt="Evidence preview"
+                          className="block max-h-[200px] max-w-[200px] rounded-lg object-contain"
+                        />
+                        <p className="mt-1 truncate text-center text-[10px] font-medium text-slate-400" style={{ maxWidth: 200 }}>
+                          {imageEvidence.name}
+                        </p>
+                      </div>
+                      {/* Arrow */}
+                      <div className="mx-auto h-0 w-0 border-x-8 border-t-8 border-x-transparent border-t-slate-600/80" />
+                    </div>
                   )}
                 </div>
               </div>

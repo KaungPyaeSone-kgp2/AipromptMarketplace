@@ -6,9 +6,10 @@ export function getWishlistUserId() {
   return getCurrentUserId();
 }
 
-export async function fetchWishlist() {
-  const userId = getCurrentUserId();
-  const response = await apiGet(`wishlist/getWishlist.php?user_id=${userId}`);
+export async function fetchWishlist(userId) {
+  const currentUserId = userId || getCurrentUserId();
+  if (!currentUserId) return [];
+  const response = await apiPost("wishlist/getWishlist.php", { user_id: currentUserId });
   return mapPromptListFromApi(response);
 }
 

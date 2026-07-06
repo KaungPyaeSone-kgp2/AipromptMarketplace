@@ -1,4 +1,4 @@
-import { mockCartCount } from "../data/mock/users.js";
+
 import { resolveAssetUrl } from "../utils/assets.js";
 import { apiGet, getApiBaseUrl } from "./apiClient.js";
 import { getCurrentUserId } from "./currentUser.js";
@@ -15,7 +15,7 @@ function mapUserFromApi(payload) {
   const avatarUrl =
     resolveAssetUrl(row.profile_image ?? row.avatar ?? row.avatarUrl) ??
     `https://ui-avatars.com/api/?name=${encodeURIComponent(displayName)}&background=8b5cf6&color=fff`;
-  const creatorMode = toBoolean(payload?.creator_mode ?? row.creator_mode);
+  const isCreator = toBoolean(payload?.is_creator ?? row.is_creator);
 
   return {
     id: String(row.user_id ?? row.id ?? getCurrentUserId()),
@@ -25,30 +25,21 @@ function mapUserFromApi(payload) {
     email,
     avatarUrl,
     profileImage: avatarUrl,
-    points: Number(row.coin_balance ?? row.points ?? row.coins ?? 0),
-    isCreator: creatorMode,
+    isCreator,
     creatorDataId: row.creator_data_id ? String(row.creator_data_id) : null,
     creatorBio: row.user_bio ?? row.bio ?? "",
     creatorCategory: row.category ?? "",
     creatorCoverUrl: resolveAssetUrl(row.cover_image),
-    totalEarningCoins: Number(row.total_earning_coins ?? 0),
-    totalSalesCount: Number(row.total_sales_count ?? 0),
     followersCount: Number(row.followers_count ?? 0),
     postedPromptCount: Number(row.posted_prompt_count ?? 0),
     followingCount: Number(row.following_count ?? 0),
-    purchasedPromptsCount: Number(row.purchased_prompts_count ?? 0),
     joinedAt: row.creator_created_at ?? row.user_created_at ?? row.created_at ?? null,
   };
 }
 
-/** @returns {Promise<import("../types/models.js").User>} */
-export async function fetchCurrentUser({ creatorMode } = {}) {
+export async function fetchCurrentUser() {
   const userId = getCurrentUserId();
-
-  if (creatorMode === true) {
-    const response = await apiGet(`user/getCreator.php?user_id=${userId}`);
-    return mapUserFromApi(response);
-  }
+  if (!userId) return null;
 
   try {
     const response = await apiGet(`user/getUser.php?user_id=${userId}`);
@@ -71,11 +62,9 @@ export async function fetchUserById(userId) {
   return mapUserFromApi(response);
 }
 
-export async function updateCurrentUserProfile({ name, email, bio, imageBlob }) {
+export async function updateCurrentUserProfile({ bio, imageBlob }) {
   const formData = new FormData();
   formData.append("user_id", getCurrentUserId());
-  formData.append("user_name", name);
-  formData.append("user_email", email);
   formData.append("bio", bio ?? "");
 
   if (imageBlob) {
@@ -139,6 +128,7 @@ export async function requestCreatorMode(withdrawPassword) {
 
 export async function fetchCreatorRequestStatus() {
   const userId = getCurrentUserId();
+  if (!userId) return null;
   try {
     const response = await apiGet(`user/getCreatorRequestStatus.php?user_id=${userId}`);
     return response?.data ?? null;
@@ -148,15 +138,16 @@ export async function fetchCreatorRequestStatus() {
 }
 
 export async function fetchCartCount() {
-  return mockCartCount;
+  return 0;
 }
 
 export async function fetchUnreadNotificationCount() {
   const userId = getCurrentUserId();
+  if (!userId) return 0;
   try {
-    const res = await fetch(`/api/users/notification/getUnreadCount.php?user_id=${userId}`);
+    const res = await fetch(`/api/notification/getUnreadCount.php?user_id=${userId}`);
     const data = await res.json();
-    if (data.success) return data.count;
+    if (data.success) return data.unread_count ?? data.count ?? 0;
     return 0;
   } catch {
     return 0;

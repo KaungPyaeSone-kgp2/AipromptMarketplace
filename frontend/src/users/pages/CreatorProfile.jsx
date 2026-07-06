@@ -8,9 +8,10 @@ import {
   fetchFollowStatus,
   getCurrentFollowerId,
   toggleFollowCreator,
+  FOLLOW_COUNTS_UPDATED_EVENT
 } from "../services/followService.js";
 import {
-  fetchHomePrompts,
+  fetchProfilePrompts,
   PROMPTS_UPDATED_EVENT,
 } from "../services/promptService.js";
 import { fetchCreatorById, fetchUserById } from "../services/userService.js";
@@ -97,9 +98,9 @@ function ConnectionListModal({
 
 export default function CreatorProfile() {
   const navigate = useNavigate();
-  const { creatorId, userId } = useParams();
-  const profileUserId = creatorId ?? userId;
-  const isUserProfileRoute = Boolean(userId);
+  const { creatorId, userId, id } = useParams();
+  const profileUserId = creatorId ?? userId ?? id;
+  const isUserProfileRoute = Boolean(userId ?? id);
   const [creatorProfile, setCreatorProfile] = useState(null);
   const [prompts, setPrompts] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -118,23 +119,22 @@ export default function CreatorProfile() {
       setLoading(true);
 
       try {
-        const [profile, allPrompts] = await Promise.all([
+        const [profile, followingAccounts] = await Promise.all([
           isUserProfileRoute
             ? fetchUserById(profileUserId).catch(() => fetchCreatorById(profileUserId).catch(() => null))
             : fetchCreatorById(profileUserId).catch(() => fetchUserById(profileUserId).catch(() => null)),
-          fetchHomePrompts(),
+          fetchFollowingAccounts().catch(() => []),
         ]);
 
         if (cancelled) return;
 
-        setCreatorProfile(profile);
-        setPrompts(
-          profile?.isCreator
-            ? allPrompts.filter((p) => String(p.creatorId) === String(profileUserId))
-            : []
-        );
+        const followingIds = followingAccounts.map((a) => a.id);
+        const profilePrompts = await fetchProfilePrompts(profileUserId, followingIds);
 
-        if (profile?.isCreator && !isOwnProfile) {
+        setCreatorProfile(profile);
+        setPrompts(profilePrompts);
+
+        if (!isOwnProfile) {
           const followStatus = await fetchFollowStatus(profileUserId).catch(() => false);
           if (!cancelled) setIsFollowing(followStatus);
         }
@@ -147,12 +147,23 @@ export default function CreatorProfile() {
       loadCreatorProfile();
     };
 
+    const handleFollowCountsUpdated = (event) => {
+      const followersCount = event.detail?.followersCount;
+      if (typeof followersCount === "number" && isOwnProfile) {
+        setCreatorProfile((currentProfile) =>
+          currentProfile ? { ...currentProfile, followersCount } : currentProfile
+        );
+      }
+    };
+
     loadCreatorProfile();
     window.addEventListener(PROMPTS_UPDATED_EVENT, handlePromptsUpdated);
+    window.addEventListener(FOLLOW_COUNTS_UPDATED_EVENT, handleFollowCountsUpdated);
 
     return () => {
       cancelled = true;
       window.removeEventListener(PROMPTS_UPDATED_EVENT, handlePromptsUpdated);
+      window.removeEventListener(FOLLOW_COUNTS_UPDATED_EVENT, handleFollowCountsUpdated);
     };
   }, [profileUserId, isOwnProfile, isUserProfileRoute]);
 
@@ -188,8 +199,9 @@ export default function CreatorProfile() {
 
     try {
       const response = await toggleFollowCreator(profileUserId);
+      const isNowFollowing = Boolean(response?.is_following);
 
-      setIsFollowing(Boolean(response?.is_following));
+      setIsFollowing(isNowFollowing);
       setCreatorProfile((currentProfile) =>
         currentProfile
           ? {
@@ -198,6 +210,11 @@ export default function CreatorProfile() {
           }
           : currentProfile
       );
+
+      // Instantly update the list of visible prompts to show/hide "followers_only" posts
+      const followingIds = isNowFollowing ? [profileUserId] : [];
+      const profilePrompts = await fetchProfilePrompts(profileUserId, followingIds);
+      setPrompts(profilePrompts);
     } finally {
       setFollowLoading(false);
     }
@@ -227,7 +244,7 @@ export default function CreatorProfile() {
 
   const handleOpenAccount = (account) => {
     setConnectionModal(null);
-    navigate(account.isCreator ? `/creator/${account.id}` : `/user/${account.id}`);
+    navigate(`/user/profile/${account.id}`);
   };
 
   if (loading) {
@@ -263,10 +280,7 @@ export default function CreatorProfile() {
                 className="h-24 w-24 rounded-full border-4 border-slate-950 object-cover ring-4 ring-violet-500/30"
               />
               <div className="pb-1">
-                <p className="text-xs font-black uppercase tracking-widest text-violet-300">
-                  {creator.isCreator ? "Creator account" : "User account"}
-                </p>
-                <h1 className="mt-1 text-2xl font-black text-white">
+                <h1 className="text-2xl font-black text-white">
                   {creator.name}
                 </h1>
               </div>
@@ -274,21 +288,19 @@ export default function CreatorProfile() {
 
             {!isOwnProfile && (
               <div className="flex items-center gap-2">
-                {creator.isCreator && (
-                  <button
-                    type="button"
-                    onClick={handleToggleFollow}
-                    disabled={followLoading}
-                    className={`h-10 rounded-xl px-5 text-sm font-black transition ${isFollowing
-                      ? "bg-slate-800 text-slate-200 hover:bg-slate-700"
-                      : "bg-white text-slate-950 hover:bg-violet-100"
-                      }`}
-                  >
-                    {followLoading ? "Saving..." : isFollowing ? "Following" : "Follow"}
-                  </button>
-                )}
+                <button
+                  type="button"
+                  onClick={handleToggleFollow}
+                  disabled={followLoading}
+                  className={`h-10 rounded-xl px-5 text-sm font-black transition ${isFollowing
+                    ? "bg-slate-800 text-slate-200 hover:bg-slate-700"
+                    : "bg-white text-slate-950 hover:bg-violet-100"
+                    }`}
+                >
+                  {followLoading ? "Saving..." : isFollowing ? "Following" : "Follow"}
+                </button>
                 <ReportButton
-                  targetType={creator.isCreator ? "creator" : "user"}
+                  targetType="user"
                   targetId={creator.id}
                 />
               </div>
@@ -310,34 +322,22 @@ export default function CreatorProfile() {
               </span>
               <span className="ml-1 text-slate-400">Following</span>
             </button>
-            {creator.isCreator && (
-              <>
-                <button
-                  type="button"
-                  onClick={() => handleOpenConnections("followers")}
-                  className="rounded-lg text-left transition hover:text-violet-300"
-                >
-                  <span className="font-black text-white">
-                    {creator.followersCount.toLocaleString()}
-                  </span>
-                  <span className="ml-1 text-slate-400">Followers</span>
-                </button>
-                <div>
-                  <span className="font-black text-white">
-                    {creator.postedPromptCount.toLocaleString()}
-                  </span>
-                  <span className="ml-1 text-slate-400">Prompt posts</span>
-                </div>
-              </>
-            )}
-            {!creator.isCreator && (
-              <div>
-                <span className="font-black text-white">
-                  {creator.purchasedPromptsCount.toLocaleString()}
-                </span>
-                <span className="ml-1 text-slate-400">Buy prompts</span>
-              </div>
-            )}
+            <button
+              type="button"
+              onClick={() => handleOpenConnections("followers")}
+              className="rounded-lg text-left transition hover:text-violet-300"
+            >
+              <span className="font-black text-white">
+                {creator.followersCount.toLocaleString()}
+              </span>
+              <span className="ml-1 text-slate-400">Followers</span>
+            </button>
+            <div>
+              <span className="font-black text-white">
+                {creator.postedPromptCount.toLocaleString()}
+              </span>
+              <span className="ml-1 text-slate-400">Prompt posts</span>
+            </div>
             <div>
               <span className="text-slate-400">Joined: </span>
               <span className="font-black text-white">
@@ -348,13 +348,11 @@ export default function CreatorProfile() {
         </div>
       </section>
 
-      {creator.isCreator && (
-        <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
-          {prompts.map((prompt) => (
-            <PromptCard key={prompt.id} prompt={prompt} variant="grid" />
-          ))}
-        </div>
-      )}
+      <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
+        {prompts.map((prompt) => (
+          <PromptCard key={prompt.id} prompt={prompt} variant="grid" showVisibilityInfo={true} />
+        ))}
+      </div>
 
       {connectionModal && (
         <ConnectionListModal

@@ -5,15 +5,16 @@ import {
   DashboardIcon,
   HomeIcon,
   LibraryIcon,
+  FlagIcon,
+  MagicIcon,
 } from "../Icon.jsx";
 import SidebarItem from "./SidebarItem.jsx";
 import SidebarRatingMenu from "./SidebarRatingMenu.jsx";
 
 export default function Sidebar({
-  libraryCount = 0,
-  isCreatorMode = false,
   buyerRatingCount = 0,
   creatorRatingCount = 0,
+  reportCount = 0,
 }) {
   return (
     <aside
@@ -22,44 +23,38 @@ export default function Sidebar({
         background: "rgba(8, 13, 28, 0.96)",
       }}
     >
-      <SidebarItem to="/" end icon={<HomeIcon />} label="Home" />
+      <SidebarItem to="/user" end icon={<HomeIcon />} label="Home" />
+      <SidebarItem to="/user/created-prompts" icon={<MagicIcon />} label="Created Prompts" />
 
-      <SidebarItem
+
+      {/* <SidebarItem
         to="/purchased"
         icon={<LibraryIcon />}
         label="Library"
         badgeCount={libraryCount}
         badgeVariant="blue"
-      />
+      /> */}
 
       <SidebarItem
-        to="/followings"
+        to="/user/followings"
         icon={<CommunityIcon />}
         label="Followings"
       />
 
+      <SidebarItem
+        to="/user/reports"
+        icon={<FlagIcon />}
+        label="Reports"
+        badgeCount={reportCount}
+        badgeVariant="rose"
+      />
+
       <SidebarRatingMenu
-        isCreatorMode={isCreatorMode}
         buyerRatingCount={buyerRatingCount}
         creatorRatingCount={creatorRatingCount}
       />
 
-      {isCreatorMode && (
-        <>
-          <div className="my-1 w-8 border-t border-slate-700/70" />
-          <SidebarItem
-            to="/creator/creatordashboard"
-            icon={<DashboardIcon />}
-            label="Dashboard"
-          />
-          <SidebarItem
-            to="/creator"
-            end
-            icon={<CreatorIcon />}
-            label="Creator Home"
-          />
-        </>
-      )}
+
     </aside>
   );
 }

@@ -22,7 +22,7 @@ function mapFollowAccount(row) {
     avatarUrl:
       resolveAssetUrl(row.profile_image) ||
       `https://ui-avatars.com/api/?name=${encodeURIComponent(displayName)}&background=8b5cf6&color=fff`,
-    isCreator: toBoolean(row.creator_mode),
+    isCreator: toBoolean(row.is_creator),
     followersCount: Number(row.followers_count ?? 0),
     followingCount: Number(row.following_count ?? 0),
     postedPromptCount: Number(row.posted_prompt_count ?? 0),
@@ -33,6 +33,7 @@ function mapFollowAccount(row) {
 
 export async function fetchFollowStatus(creatorId) {
   const followerId = getCurrentUserId();
+  if (!followerId) return false;
   const response = await apiGet(
     `followers/getFollowStatus.php?follower_id=${followerId}&creator_id=${creatorId}`
   );
@@ -41,6 +42,7 @@ export async function fetchFollowStatus(creatorId) {
 }
 
 export async function fetchFollowingAccounts(userId = getCurrentUserId()) {
+  if (!userId) return [];
   const response = await apiGet(`followers/getFollowingList.php?user_id=${userId}`);
   const rows = Array.isArray(response?.data) ? response.data : [];
 
@@ -48,6 +50,7 @@ export async function fetchFollowingAccounts(userId = getCurrentUserId()) {
 }
 
 export async function fetchFollowerAccounts(userId) {
+  if (!userId) return [];
   const response = await apiGet(`followers/getFollowersList.php?user_id=${userId}`);
   const rows = Array.isArray(response?.data) ? response.data : [];
 

@@ -21,7 +21,7 @@ function mapReview(row) {
     id: String(row.review_id ?? row.id ?? ""),
     promptId: String(row.prompt_id ?? ""),
     userId: String(row.user_id ?? ""),
-    reviewerIsCreator: toBoolean(row.reviewer_creator_mode),
+    reviewerIsCreator: toBoolean(row.reviewer_is_creator),
     reviewerName,
     reviewerAvatarUrl:
       resolveAssetUrl(row.reviewer_profile_image ?? row.profile_image) ??
@@ -54,7 +54,7 @@ function mapRatingRow(row) {
     creatorId: String(row.creator_id ?? ""),
     creatorName: row.creator_name ?? "Creator",
     buyerId: String(row.user_id ?? ""),
-    buyerIsCreator: toBoolean(row.reviewer_creator_mode),
+    buyerIsCreator: toBoolean(row.reviewer_is_creator),
     buyerName: row.reviewer_name ?? row.user_name ?? "Buyer",
     buyerAvatarUrl:
       resolveAssetUrl(row.reviewer_profile_image ?? row.profile_image) ??

@@ -32,7 +32,14 @@ export function normalizeCategory(categoryName) {
     .replace("Pixel art", "Pixel Art");
 }
 
-/** @param {Record<string, unknown>} row */
+function normalizeVisibility(visibility) {
+  if (!visibility) return 'public';
+  const v = String(visibility).toLowerCase().replace(/[- ]/g, '_');
+  if (v === 'only_followers' || v === 'only_follower' || v === 'followers_only' || v === 'following_only') return 'followers_only';
+  if (['public', 'followers_only', 'draft'].includes(v)) return v;
+  return 'public';
+}
+
 export function mapPromptFromApi(row) {
   const id = String(row.prompt_id ?? row.id ?? "");
   const creatorId = String(row.creator_id ?? "");
@@ -47,10 +54,8 @@ export function mapPromptFromApi(row) {
     model: normalizeModelType(row.model_type),
     category: normalizeCategory(row.category_name),
     rating: Number(row.rating ?? row.avg_rating ?? row.average_rating ?? 0),
-    price: Number(row.prompt_sale_coin ?? row.sale_coin ?? row.price ?? 0),
-    wishlistCount: Number(row.wish_list_count ?? row.wishlist_count ?? 0),
+    wishlistCount: Number(row.save_count ?? row.wish_list_count ?? row.wishlist_count ?? 0),
     reviewCount: Number(row.review_count ?? 0),
-    salesCount: Number(row.sales_count ?? 0),
     viewCount: Number(row.view_count ?? row.views_count ?? row.views ?? 0),
     creator: creatorName,
     creatorId,
@@ -61,10 +66,7 @@ export function mapPromptFromApi(row) {
     description: row.prompt_description ?? row.description ?? "",
     promptText: row.full_prompt_content ?? row.prompt_text ?? "",
     promptVariables: row.prompt_variables ? (typeof row.prompt_variables === 'string' ? JSON.parse(row.prompt_variables) : row.prompt_variables) : [],
-    purchaseId: row.purchase_id ? String(row.purchase_id) : null,
-    purchaseItemId: row.purchase_item_id ? String(row.purchase_item_id) : null,
-    purchasedAt: row.item_purchased_at ?? row.purchased_at ?? null,
-    purchasePrice: Number(row.prompt_sale_coin ?? row.sale_coin ?? row.price ?? 0),
+    visibility: normalizeVisibility(row.visibility ?? row.permission),
   };
 }
 

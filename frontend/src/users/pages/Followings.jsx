@@ -1,7 +1,7 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { useOutletContext } from "react-router";
 import PromptCard from "../components/PromptCard.jsx";
-import { fetchCreatorPrompts } from "../services/promptService.js";
+import { fetchCreatorPrompts, PROMPTS_UPDATED_EVENT } from "../services/promptService.js";
 import { fetchFollowingPosts } from "../services/followingService.js";
 
 export default function Followings() {
@@ -11,9 +11,10 @@ export default function Followings() {
   const [loading, setLoading] = useState(true);
   const [tab, setTab] = useState("feed");
 
-  useEffect(() => {
-    async function load() {
-      setLoading(true);
+  const load = useCallback(async (showLoading = true) => {
+    if (showLoading) setLoading(true);
+
+    try {
       const feed = await fetchFollowingPosts();
       setFollowingPosts(feed);
 
@@ -21,17 +22,28 @@ export default function Followings() {
         const posted = await fetchCreatorPrompts();
         setMyPostedPrompts(posted);
       }
-
-      setLoading(false);
+    } finally {
+      if (showLoading) setLoading(false);
     }
-
-    load();
   }, [isCreatorMode]);
+
+  useEffect(() => {
+    load(true);
+
+    const handleUpdate = () => {
+      load(false); // Reload without showing loading indicator
+    };
+
+    window.addEventListener(PROMPTS_UPDATED_EVENT, handleUpdate);
+    return () => {
+      window.removeEventListener(PROMPTS_UPDATED_EVENT, handleUpdate);
+    };
+  }, [load]);
 
   return (
     <div className="space-y-6 fade-in">
       <div>
-        <h1 className="text-lg font-black text-violet-300">Following</h1>
+        <h1 className="text-4xl font-black text-violet-400">Following</h1>
         <p className="mt-1 text-sm text-slate-400">
           Prompt posts from creators you follow.
         </p>
@@ -42,24 +54,22 @@ export default function Followings() {
           <button
             type="button"
             onClick={() => setTab("feed")}
-            className={`rounded-full px-4 py-2 text-sm font-bold transition ${
-              tab === "feed"
-                ? "bg-violet-600 text-white"
-                : "bg-slate-900/80 text-slate-400 hover:bg-slate-800"
-            }`}
+            className={`rounded-full px-4 py-2 text-sm font-bold transition ${tab === "feed"
+              ? "bg-violet-600 text-white"
+              : "bg-slate-900/80 text-slate-400 hover:bg-slate-800"
+              }`}
           >
             Following feed
           </button>
           <button
             type="button"
             onClick={() => setTab("my-posts")}
-            className={`rounded-full px-4 py-2 text-sm font-bold transition ${
-              tab === "my-posts"
-                ? "bg-violet-600 text-white"
-                : "bg-slate-900/80 text-slate-400 hover:bg-slate-800"
-            }`}
+            className={`rounded-full px-4 py-2 text-sm font-bold transition ${tab === "my-posts"
+              ? "bg-violet-600 text-white"
+              : "bg-slate-900/80 text-slate-400 hover:bg-slate-800"
+              }`}
           >
-            My posted prompts
+            Created prompts
           </button>
         </div>
       )}

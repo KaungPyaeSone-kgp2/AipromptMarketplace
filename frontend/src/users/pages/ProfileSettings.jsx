@@ -16,8 +16,11 @@ function CropModal({ imageUrl, onCancel, onApply }) {
   const canvasRef = useRef(null);
   const imageRef = useRef(null);
   const [zoom, setZoom] = useState(1);
+  const [offset, setOffset] = useState({ x: 0, y: 0 });
+  const [isDragging, setIsDragging] = useState(false);
+  const dragStart = useRef({ x: 0, y: 0 });
 
-  const drawCrop = useCallback((image, scale) => {
+  const drawCrop = useCallback((image, scale, currentOffset) => {
     const canvas = canvasRef.current;
     if (!canvas) return;
 
@@ -34,8 +37,8 @@ function CropModal({ imageUrl, onCancel, onApply }) {
     const baseScale = Math.max(size / image.width, size / image.height);
     const drawWidth = image.width * baseScale * scale;
     const drawHeight = image.height * baseScale * scale;
-    const x = (size - drawWidth) / 2;
-    const y = (size - drawHeight) / 2;
+    const x = (size - drawWidth) / 2 + currentOffset.x;
+    const y = (size - drawHeight) / 2 + currentOffset.y;
 
     context.drawImage(image, x, y, drawWidth, drawHeight);
     context.restore();
@@ -45,14 +48,65 @@ function CropModal({ imageUrl, onCancel, onApply }) {
     const image = new Image();
     image.onload = () => {
       imageRef.current = image;
-      drawCrop(image, zoom);
+      drawCrop(image, zoom, offset);
     };
     image.src = imageUrl;
-  }, [drawCrop, imageUrl, zoom]);
+  }, [drawCrop, imageUrl, zoom, offset]);
 
   useEffect(() => {
-    if (imageRef.current) drawCrop(imageRef.current, zoom);
-  }, [drawCrop, zoom]);
+    if (imageRef.current) drawCrop(imageRef.current, zoom, offset);
+  }, [drawCrop, zoom, offset]);
+
+  const handleMouseDown = (e) => {
+    setIsDragging(true);
+    dragStart.current = { x: e.clientX - offset.x, y: e.clientY - offset.y };
+  };
+
+  const handleMouseMove = (e) => {
+    if (!isDragging) return;
+    setOffset({
+      x: e.clientX - dragStart.current.x,
+      y: e.clientY - dragStart.current.y,
+    });
+  };
+
+  const handleMouseUpOrLeave = () => {
+    setIsDragging(false);
+  };
+
+  // Wheel Zoom (Mouse pad / scroll wheel)
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+
+    const handleWheel = (e) => {
+      e.preventDefault();
+      setZoom((prevZoom) => {
+        let newZoom = prevZoom - e.deltaY * 0.005;
+        return Math.max(1, Math.min(newZoom, 5));
+      });
+    };
+
+    canvas.addEventListener("wheel", handleWheel, { passive: false });
+    return () => canvas.removeEventListener("wheel", handleWheel);
+  }, []);
+
+  // Keyboard Zoom (Ctrl +/-)
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.ctrlKey || e.metaKey) {
+        if (e.key === "=" || e.key === "+") {
+          e.preventDefault();
+          setZoom((prev) => Math.max(1, Math.min(prev + 0.1, 5)));
+        } else if (e.key === "-") {
+          e.preventDefault();
+          setZoom((prev) => Math.max(1, Math.min(prev - 0.1, 5)));
+        }
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, []);
 
   const handleApply = () => {
     const canvas = canvasRef.current;
@@ -79,7 +133,14 @@ function CropModal({ imageUrl, onCancel, onApply }) {
 
         <div className="p-5">
           <div className="flex justify-center">
-            <canvas ref={canvasRef} className="rounded-full ring-4 ring-violet-500/35" />
+            <canvas
+              ref={canvasRef}
+              className={`rounded-full ring-4 ring-violet-500/35 ${isDragging ? "cursor-grabbing" : "cursor-grab"}`}
+              onMouseDown={handleMouseDown}
+              onMouseMove={handleMouseMove}
+              onMouseUp={handleMouseUpOrLeave}
+              onMouseLeave={handleMouseUpOrLeave}
+            />
           </div>
 
           <label className="mt-5 block text-sm font-black text-slate-300">
@@ -88,7 +149,7 @@ function CropModal({ imageUrl, onCancel, onApply }) {
           <input
             type="range"
             min="1"
-            max="2.5"
+            max="5"
             step="0.05"
             value={zoom}
             onChange={(event) => setZoom(Number(event.target.value))}
@@ -172,8 +233,6 @@ export default function ProfileSettings() {
 
     try {
       const updated = await updateCurrentUserProfile({
-        name,
-        email,
         bio,
         imageBlob: croppedBlob,
       });
@@ -201,7 +260,7 @@ export default function ProfileSettings() {
       )}
 
       <div>
-        <h1 className="text-lg font-black text-violet-300">Profile Setting</h1>
+        <h1 className="text-4xl font-black text-violet-400">Profile Setting</h1>
         <p className="mt-1 text-sm text-slate-400">
           Manage your personal information and profile details.
         </p>
@@ -242,8 +301,8 @@ export default function ProfileSettings() {
               <span className="text-sm font-black text-slate-300">Name</span>
               <input
                 value={name}
-                onChange={(event) => setName(event.target.value)}
-                className="mt-2 h-11 w-full rounded-xl border border-slate-700 bg-slate-950 px-4 text-sm text-slate-200 outline-none transition focus:border-violet-500 focus:ring-4 focus:ring-violet-500/10"
+                readOnly
+                className="mt-2 h-11 w-full rounded-xl border border-slate-700 bg-slate-950 px-4 text-sm text-slate-400 outline-none cursor-not-allowed opacity-70"
               />
             </label>
 
@@ -252,8 +311,8 @@ export default function ProfileSettings() {
               <input
                 type="email"
                 value={email}
-                onChange={(event) => setEmail(event.target.value)}
-                className="mt-2 h-11 w-full rounded-xl border border-slate-700 bg-slate-950 px-4 text-sm text-slate-200 outline-none transition focus:border-violet-500 focus:ring-4 focus:ring-violet-500/10"
+                readOnly
+                className="mt-2 h-11 w-full rounded-xl border border-slate-700 bg-slate-950 px-4 text-sm text-slate-400 outline-none cursor-not-allowed opacity-70"
               />
             </label>
 
