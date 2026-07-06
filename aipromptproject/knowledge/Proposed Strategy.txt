@@ -1,0 +1,18 @@
+Proposed Strategy
+
+  1. Backend (API)
+   - Create a new endpoint backend/users/reports/getReports.php that returns two main data sets for the logged-in user:
+     - Submitted Reports: All reports where the user is the reporter.
+     - Received Reports: All reports filed against the user. This will cross-reference the user_reports, bad_review_reports, and prompt_reports tables.
+
+  2. Frontend Services & Routing
+   - Add a new fetchReports function in reportService.js to communicate with the new endpoint.
+   - Register two new routes in your router (e.g., App.jsx):
+     - /reports for the regular user view.
+     - /creator/reports for the creator view.
+
+  3. Frontend UI (Pages & Sidebar)
+   - Create UserReports.jsx: Displays "Submitted Reports" and "Reports Against Me" (specifically for User reported and Bad Review reported).
+   - Create CreatorReports.jsx: Similar to above, but the "Reports Against Me" section will additionally include "Prompt Reports".
+   - Update Sidebar.jsx: Add a "Reports" icon in the top user section linking to /reports, and another "Reports" icon in the bottom creator section linking
+     to /creator/reports.
