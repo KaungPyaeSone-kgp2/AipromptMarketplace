@@ -96,8 +96,6 @@ import {
   UserManagement,
   PromptManagement,
   CategoryManagement,
-  UserToUser,
-  AdminToUser,
   UserReport,
   PromptReport,
   BadReviewReport,
@@ -136,10 +134,6 @@ function AdminDashboardWrapper() {
         return <PromptManagement />;
       case "Category":
         return <CategoryManagement />;
-      case "User to User":
-        return <UserToUser />;
-      case "Admin to User":
-        return <AdminToUser />;
       case "User Report":
         return <UserReport />;
       case "Prompt Report":
