@@ -1,0 +1,25 @@
+# Dependencies — regenerated during build
+node_modules
+vendor
+
+# Local build output — rebuilt during Docker build
+dist
+
+# Backend PHP service (has its own Dockerfile)
+backend
+
+# Git & IDE
+.git
+.gitignore
+.agent
+.worktrees
+
+# Dev/temp files
+*.zip
+*.lnk
+temp_out.txt
+knowledge
+scripts
+
+# Environment secrets — never ship to container
+.env
