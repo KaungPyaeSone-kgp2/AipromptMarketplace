@@ -35,4 +35,4 @@ COPY --from=builder /app/dist ./dist
 EXPOSE 3000
 
 # Use sh -c so $PORT env variable is expanded at container runtime
-CMD ["sh", "-c", "serve dist -s -l ${PORT:-3000}"]
+CMD ["sh", "-c", "serve dist -s --listen tcp://0.0.0.0:${PORT:-3000}"]
