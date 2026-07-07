@@ -7,7 +7,7 @@
  */
 function getBackendBaseUrl() {
     // Hardcoded to the hosting domain name as requested to avoid localhost issues
-    return 'https://dreamkey.up.railway.app';
+    return 'https://the-backendphp-production.up.railway.app';
 }
 
 /**
