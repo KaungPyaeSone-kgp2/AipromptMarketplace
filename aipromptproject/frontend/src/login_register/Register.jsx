@@ -217,6 +217,7 @@
 
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router";
+import API_BASE from "../config/api";
 
 export default function Register() {
   const [username, setUsername] = useState("");
@@ -338,8 +339,8 @@ export default function Register() {
             </span>
           </h1>
           <p className="text-gray-300 mb-8 leading-relaxed text-sm md:text-base">
-            Create an account to browse premium curated prompts, save your
-            favorites, and join an exclusive elite creator platform.
+            Create an account to copy prompts easily, save your
+            favorites, and join our platform.
           </p>
           <div>
             <button
@@ -456,7 +457,7 @@ export default function Register() {
             </div>
 
             <a
-              href="http://localhost:8000/api/login_register/google_callback.php"
+              href={`${API_BASE}/api/login_register/google_callback.php`}
               className="w-full flex items-center justify-center gap-3 bg-white/5 hover:bg-white/10 border border-white/20 text-white font-bold py-3 px-4 rounded-full transition duration-300"
             >
               <img

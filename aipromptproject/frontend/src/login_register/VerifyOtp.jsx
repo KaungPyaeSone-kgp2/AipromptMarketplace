@@ -1,6 +1,7 @@
 // src/VerifyOtp.jsx
 import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router";
+import API_BASE from "../config/api";
 
 export default function VerifyOtp() {
   const [otp, setOtp] = useState("");
@@ -66,9 +67,8 @@ export default function VerifyOtp() {
     setSuccessMessage("");
 
     try {
-      // UPDATE THIS URL to match your local PHP server path
       const response = await fetch(
-        "http://localhost:8000/api/login_register/verify_otp.php",
+        `${API_BASE}/api/login_register/verify_otp.php`,
         {
           method: "POST",
           headers: {

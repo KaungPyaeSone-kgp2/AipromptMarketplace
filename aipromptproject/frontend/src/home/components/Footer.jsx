@@ -178,6 +178,7 @@
 // src/components/Footer.jsx
 import { useState, useEffect } from "react";
 import { ChevronRight, Wand2 } from "lucide-react";
+import API_BASE from "../../config/api";
 
 export default function Footer() {
   const currentYear = new Date().getFullYear();
@@ -190,7 +191,7 @@ export default function Footer() {
     const fetchFooterCategories = async () => {
       try {
         const response = await fetch(
-          "http://localhost:8000/api/home/get_filtered_prompts.php",
+          `${API_BASE}/api/home/get_filtered_prompts.php`,
           {
             method: "POST",
             headers: { "Content-Type": "application/json" },

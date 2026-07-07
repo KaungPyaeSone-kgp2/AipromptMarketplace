@@ -123,6 +123,7 @@
 
 import { useState, useEffect } from "react";
 import { useLocation } from "react-router";
+import API_BASE from "../config/api";
 
 import Navbar from "./components/Navbar";
 import Hero from "./components/Hero";
@@ -169,7 +170,7 @@ export default function Home() {
     const fetchHomeData = async () => {
       try {
         const response = await fetch(
-          "http://localhost:8000/api/home/get_home_data.php",
+          `${API_BASE}/api/home/get_home_data.php`,
           {
             method: "POST",
             headers: { "Content-Type": "application/json" },
