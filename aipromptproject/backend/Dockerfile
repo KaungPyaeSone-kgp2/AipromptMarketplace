@@ -1,7 +1,11 @@
 FROM php:8.2-apache
 
+# Suppress "Could not reliably determine FQDN" warning
+RUN echo "ServerName localhost" >> /etc/apache2/apache2.conf
+
 # Enable Apache mod_rewrite for clean API URLs
 RUN a2enmod rewrite headers
+
 
 # Install PHP extensions needed
 RUN docker-php-ext-install pdo pdo_mysql
