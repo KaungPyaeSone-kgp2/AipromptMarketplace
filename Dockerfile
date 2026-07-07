@@ -18,21 +18,23 @@ COPY . .
 RUN npm run build
 
 # =============================================
-# Stage 2: Serve the built app
+# Stage 2: Serve with nginx (no Node.js needed)
 # =============================================
-FROM node:20-alpine AS runner
+FROM nginx:alpine
 
-WORKDIR /app
+# Copy built React app into nginx's web root
+COPY --from=builder /app/dist /usr/share/nginx/html
 
-# Install serve globally so it's available on PATH
-# (no npx, no node_modules path needed)
-RUN npm install -g serve@14
+# Copy our nginx config template (uses __PORT__ placeholder)
+COPY nginx.conf /etc/nginx/conf.d/default.conf.template
 
-# Copy only the built output from the builder stage
-COPY --from=builder /app/dist ./dist
+# Remove the default nginx config
+RUN rm /etc/nginx/conf.d/default.conf
 
-# Railway injects $PORT dynamically — default to 3000 for local dev
-EXPOSE 3000
+# Railway injects $PORT — use sed to replace __PORT__ at container startup
+# Falls back to port 80 if PORT is not set
+EXPOSE 80
 
-# Use sh -c so $PORT env variable is expanded at container runtime
-CMD ["sh", "-c", "serve dist -s -l ${PORT:-3000}"]
+CMD ["/bin/sh", "-c", \
+  "sed 's/__PORT__/'\"${PORT:-80}\"'/g' /etc/nginx/conf.d/default.conf.template > /etc/nginx/conf.d/default.conf && \
+  nginx -g 'daemon off;'"]

@@ -1,6 +1,7 @@
 // src/ForgotPassword.jsx
 import { useState } from "react";
 import { useNavigate } from "react-router";
+import API_BASE from "../config/api";
 
 export default function ForgotPassword() {
   const [email, setEmail] = useState("");
@@ -18,7 +19,7 @@ export default function ForgotPassword() {
 
     try {
       const response = await fetch(
-        "http://localhost:8000/api/login_register/forgot_password.php",
+        `${API_BASE}/api/login_register/forgot_password.php`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },

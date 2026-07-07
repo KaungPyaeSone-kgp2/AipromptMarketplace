@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router";
+import API_BASE from "../config/api";
 // import Navbar from "../admin/components/Navbar";
 
 export default function Login() {
@@ -38,7 +39,7 @@ export default function Login() {
     setSuccessMessage("");
 
     try {
-      const response = await fetch(`/api/login_register/login.php`, {
+      const response = await fetch(`${API_BASE}/api/login_register/login.php`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -188,7 +189,7 @@ export default function Login() {
             </div>
 
             <a
-              href="http://localhost:8000/api/login_register/google_callback.php"
+              href={`${API_BASE}/api/login_register/google_callback.php`}
               className="w-full flex items-center justify-center gap-3 bg-white/5 hover:bg-white/10 border border-white/20 text-white font-bold py-3 px-4 rounded-full transition duration-300"
             >
               <img

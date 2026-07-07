@@ -1,7 +1,8 @@
-const API_BASE = import.meta.env.VITE_API_BASE_URL ?? "/api";
+import API_BASE_CONFIG from "../../config/api";
+
 const ASSETS_BASE =
   import.meta.env.VITE_ASSETS_BASE_URL ??
-  API_BASE.replace(/\/api\/?$/, "");
+  (import.meta.env.VITE_API_BASE_URL ? import.meta.env.VITE_API_BASE_URL.replace(/\/api\/?$/, "") : "");
 
 export function resolveAssetUrl(path) {
   if (!path) return null;

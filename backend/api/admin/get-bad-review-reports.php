@@ -1,7 +1,8 @@
 <?php
 
 header("Content-Type: application/json");
-header("Access-Control-Allow-Origin: *");
+require_once __DIR__ . '/../../includes/cors_headers.php';
+require_once __DIR__ . '/../../includes/url_helper.php';
 header("Access-Control-Allow-Methods: POST, OPTIONS");
 header("Access-Control-Allow-Headers: Content-Type, Authorization");
 
@@ -77,7 +78,7 @@ try {
     // Format the data explicitly for the frontend[cite: 4]
     $formattedReports = array_map(function ($report) {
         $formatImage = function($path) {
-            return !empty($path) ? (strpos($path, 'http') === 0 ? $path : "http://localhost:8000/" . ltrim($path, '/')) : "https://i.pravatar.cc/150";
+            return !empty($path) ? (strpos($path, 'http') === 0 ? $path : getBackendBaseUrl() . "/" . ltrim($path, '/')) : "https://i.pravatar.cc/150";
         };
 
         return [
@@ -89,7 +90,7 @@ try {
             "review_text" => $report["review_text"],
             "reason" => $report["reason"],
             "report_description" => $report["report_description"],
-            "image_evidence" => !empty($report["image_evidence"]) ? (strpos($report["image_evidence"], 'http') === 0 ? $report["image_evidence"] : "http://localhost:8000/" . ltrim($report["image_evidence"], '/')) : null,
+            "image_evidence" => !empty($report["image_evidence"]) ? (strpos($report["image_evidence"], 'http') === 0 ? $report["image_evidence"] : getBackendBaseUrl() . "/" . ltrim($report["image_evidence"], '/')) : null,
             "status" => $report["status"],
             "created_at" => $report["created_at"] // Kept as standard string for JS parsing[cite: 1]
         ];

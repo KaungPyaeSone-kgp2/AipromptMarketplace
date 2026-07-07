@@ -1,7 +1,7 @@
 <?php
 
 // 1. Send CORS headers immediately so they register even if a database error happens
-header("Access-Control-Allow-Origin: *");
+require_once __DIR__ . '/../../includes/cors_headers.php';
 header("Access-Control-Allow-Methods: POST, OPTIONS");
 header("Access-Control-Allow-Headers: Content-Type, Authorization");
 header("Content-Type: application/json");

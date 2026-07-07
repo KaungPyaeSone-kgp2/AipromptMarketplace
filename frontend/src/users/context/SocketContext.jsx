@@ -13,9 +13,14 @@ export const SocketProvider = ({ children }) => {
   const [socket, setSocket] = useState(null);
 
   useEffect(() => {
-    // Connect to the WebSocket server running on port 3001
-    // Update this URL if your WebSocket server is hosted elsewhere
-    const newSocket = io("http://localhost:3001", {
+    // Connect to the WebSocket server dynamically based on environment
+    let socketUrl = import.meta.env.VITE_SOCKET_URL;
+    if (!socketUrl) {
+      socketUrl = import.meta.env.PROD ? undefined : "http://localhost:3001";
+    }
+    
+    // Only connect if we have a valid URL or we are in prod (where undefined defaults to current host)
+    const newSocket = io(socketUrl, {
       transports: ["websocket"],
       autoConnect: true,
     });

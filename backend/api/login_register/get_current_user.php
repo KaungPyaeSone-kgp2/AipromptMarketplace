@@ -1,7 +1,8 @@
 <?php
 // backend/api/login_register/get_current_user.php
 
-header("Access-Control-Allow-Origin: http://localhost:5173"); 
+require_once __DIR__ . '/../../includes/cors_headers.php';
+require_once __DIR__ . '/../../includes/url_helper.php'; 
 header("Access-Control-Allow-Credentials: true");
 header("Access-Control-Allow-Methods: POST, OPTIONS");
 header("Access-Control-Allow-Headers: Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With");
@@ -22,7 +23,7 @@ if (isset($_SESSION['user_id'])) {
             "user_name" => $_SESSION['user_name'] ?? 'User',
             "user_email" => $_SESSION['user_email'] ?? 'example@gmail.com',
             "user_role" => $_SESSION['user_role'] ?? 'user',
-            "profile_image" => $_SESSION['profile_image'] ?? 'http://localhost:8000/uploads/profiles/default-profile-picture-male-icon.svg'
+            "profile_image" => $_SESSION['profile_image'] ?? getBackendBaseUrl() . '/uploads/profiles/default-profile-picture-male-icon.svg'
         ]
     ]);
 } else {

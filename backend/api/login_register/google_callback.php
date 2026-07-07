@@ -16,13 +16,16 @@ $config = parse_ini_file(__DIR__ . '/../../config.ini');
 $clientID = $config['GOOGLE_CLIENT_ID'];
 $clientSecret = $config['GOOGLE_CLIENT_SECRET'];
 
+require_once __DIR__ . '/../../includes/url_helper.php';
+
 // IMPORTANT: This must match the exact API URL registered in your Google Cloud Console
-$redirectUri = 'http://localhost:8000/api/login_register/google_callback.php';
+$redirectUri = getBackendBaseUrl() . '/api/login_register/google_callback.php';
 
 // Frontend React Routes
-$frontend_login_url = "http://localhost:5173/login";
-$frontend_admin_dashboard = "http://localhost:5173/admin";
-$frontend_user_dashboard = "http://localhost:5173/user";
+$frontendBaseUrl = getenv('FRONTEND_URL') ?: "https://dreamkey.up.railway.app";
+$frontend_login_url = $frontendBaseUrl . "/login";
+$frontend_admin_dashboard = $frontendBaseUrl . "/admin";
+$frontend_user_dashboard = $frontendBaseUrl . "/user";
 
 try {
     $client = new Client();

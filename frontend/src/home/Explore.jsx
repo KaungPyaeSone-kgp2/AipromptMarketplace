@@ -225,6 +225,7 @@
 // src/pages/Explore.jsx
 import { useState, useEffect } from "react";
 import { useSearchParams, useNavigate } from "react-router";
+import API_BASE from "../config/api";
 import {
   Search,
   X,
@@ -272,7 +273,7 @@ export default function Explore() {
     setIsLoading(true);
     try {
       const response = await fetch(
-        "http://localhost:8000/api/home/get_filtered_prompts.php",
+        `${API_BASE}/api/home/get_filtered_prompts.php`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },

@@ -1,7 +1,8 @@
 <?php
 
 header("Content-Type: application/json");
-header("Access-Control-Allow-Origin: *");
+require_once __DIR__ . '/../../includes/cors_headers.php';
+require_once __DIR__ . '/../../includes/url_helper.php';
 header("Access-Control-Allow-Methods: POST, OPTIONS");
 header("Access-Control-Allow-Headers: Content-Type, Authorization");
 
@@ -89,7 +90,7 @@ try {
         $thumbnail = $p['thumbnail'];
         // Ensure the path is a fully qualified URL for the React frontend
         if (!str_starts_with($thumbnail, 'http')) {
-            $thumbnail = "http://localhost:8000/" . ltrim($thumbnail, '/');
+            $thumbnail = getBackendBaseUrl() . "/" . ltrim($thumbnail, '/');
         }
 
         return [
