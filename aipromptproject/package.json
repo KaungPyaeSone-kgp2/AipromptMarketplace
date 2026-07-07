@@ -9,6 +9,7 @@
     "dev:backend": "php -S 127.0.0.1:8000 -t backend",
     "dev:socket": "node websocket/socket-server/server.js",
     "build": "vite build",
+    "start": "serve dist -s -l $PORT",
     "lint": "eslint .",
     "preview": "vite preview"
   },
@@ -30,6 +31,7 @@
     "react-router": "^7.6.2",
     "socket.io": "^4.8.3",
     "socket.io-client": "^4.8.3",
+    "serve": "^14.2.4",
     "three": "^0.185.0"
   },
   "devDependencies": {
