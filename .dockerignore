@@ -5,9 +5,7 @@ vendor
 # Local build output — rebuilt during Docker build
 dist
 
-# Backend PHP service (has its own Dockerfile)
-backend
-
+# Unified Monolith now uses the backend folder in the root Dockerfile!
 # Git & IDE
 .git
 .gitignore
