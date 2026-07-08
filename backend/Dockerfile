@@ -17,6 +17,11 @@ COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 # Set working directory
 WORKDIR /var/www/html
 
+# Enforce Secure & SameSite=None for all PHP sessions to fix cross-domain cookies
+RUN echo "session.cookie_samesite = None" >> /usr/local/etc/php/conf.d/session-cookies.ini && \
+    echo "session.cookie_secure = 1" >> /usr/local/etc/php/conf.d/session-cookies.ini && \
+    echo "session.cookie_httponly = 1" >> /usr/local/etc/php/conf.d/session-cookies.ini
+
 # Copy all backend files
 COPY . .
 
