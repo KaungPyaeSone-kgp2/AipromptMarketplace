@@ -7,8 +7,9 @@ RUN echo "ServerName localhost" >> /etc/apache2/apache2.conf
 RUN a2enmod rewrite headers
 
 
-# Install PHP extensions needed
-RUN docker-php-ext-install pdo pdo_mysql
+# Install PHP extensions and system dependencies needed
+RUN apt-get update && apt-get install -y unzip libzip-dev \
+    && docker-php-ext-install pdo pdo_mysql zip
 
 # Install Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
