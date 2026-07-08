@@ -28,11 +28,10 @@ require_once __DIR__ . '/../../includes/url_helper.php';
 // IMPORTANT: This must match the exact API URL registered in your Google Cloud Console
 $redirectUri = getBackendBaseUrl() . '/api/login_register/google_callback.php';
 
-// Frontend React Routes
-$frontendBaseUrl = getenv('FRONTEND_URL') ?: "https://dreamkey.up.railway.app";
-$frontend_login_url = $frontendBaseUrl . "/login";
-$frontend_admin_dashboard = $frontendBaseUrl . "/admin";
-$frontend_user_dashboard = $frontendBaseUrl . "/user";
+// Frontend React Routes (Unified Monolith uses relative paths)
+$frontend_login_url = "/login";
+$frontend_admin_dashboard = "/admin";
+$frontend_user_dashboard = "/user";
 
 try {
     $client = new Client();

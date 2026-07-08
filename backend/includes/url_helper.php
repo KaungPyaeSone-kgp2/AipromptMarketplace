@@ -6,8 +6,10 @@
  * Works for localhost and deployed environments (e.g. Railway).
  */
 function getBackendBaseUrl() {
-    // Hardcoded to the hosting domain name as requested to avoid localhost issues
-    return 'https://the-backendphp-production.up.railway.app';
+    // Dynamically determine the current domain (monolith setup)
+    $protocol = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') || $_SERVER['SERVER_PORT'] == 443 ? "https://" : "http://";
+    $host = isset($_SERVER['HTTP_HOST']) ? $_SERVER['HTTP_HOST'] : 'localhost';
+    return $protocol . $host;
 }
 
 /**
