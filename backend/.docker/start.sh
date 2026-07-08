@@ -22,7 +22,18 @@ sed -i "s/\*:\${PORT}/*:${PORT}/g" /etc/apache2/sites-available/000-default.conf
   echo "PassEnv DB_NAME"
   echo "PassEnv DB_USER"
   echo "PassEnv DB_PASS"
+  echo "PassEnv DB_PASSWORD"
   echo "PassEnv DB_PORT"
+  echo "PassEnv MYSQLHOST"
+  echo "PassEnv MYSQL_HOST"
+  echo "PassEnv MYSQLDATABASE"
+  echo "PassEnv MYSQL_DATABASE"
+  echo "PassEnv MYSQLUSER"
+  echo "PassEnv MYSQL_USER"
+  echo "PassEnv MYSQLPASSWORD"
+  echo "PassEnv MYSQL_PASSWORD"
+  echo "PassEnv MYSQLPORT"
+  echo "PassEnv MYSQL_PORT"
 } >> /etc/apache2/sites-available/000-default.conf
 
 # --- Fix: Ensure only ONE MPM module is loaded at runtime ---

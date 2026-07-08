@@ -36,9 +36,7 @@ class Database {
             return $this->pdo;
 
         } catch(PDOException $e) {
-
-            die("Connection Failed : " . $e->getMessage());
-
+            throw new Exception("Connection Failed : " . $e->getMessage());
         }
 
     }
