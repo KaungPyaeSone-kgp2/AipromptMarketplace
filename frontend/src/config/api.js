@@ -7,8 +7,8 @@
 
 let API_BASE = import.meta.env.VITE_API_BASE_URL || "";
 
-// Hard fallback for production if the environment variable was missing during build
-if (!API_BASE && typeof window !== 'undefined' && window.location.hostname === 'dreamkey.up.railway.app') {
+// FORCE the correct backend URL in production to override any typos in Railway variables
+if (typeof window !== 'undefined' && window.location.hostname === 'dreamkey.up.railway.app') {
     API_BASE = 'https://the-backendphp-production.up.railway.app';
 }
 
