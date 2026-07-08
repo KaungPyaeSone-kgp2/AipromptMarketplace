@@ -33,6 +33,21 @@ $frontend_login_url = "/login";
 $frontend_admin_dashboard = "/admin";
 $frontend_user_dashboard = "/user";
 
+// --- TEMPORARY DEBUG: visit google_callback.php?debug=1 to check values ---
+if (isset($_GET['debug']) && $_GET['debug'] === '1') {
+    header('Content-Type: application/json');
+    echo json_encode([
+        'client_id_length' => strlen($clientID),
+        'client_id_preview' => substr($clientID, 0, 20) . '...' . substr($clientID, -15),
+        'client_secret_set' => !empty($clientSecret),
+        'redirect_uri' => $redirectUri,
+        'env_client_id_raw' => getenv('GOOGLE_CLIENT_ID') !== false ? 'SET' : 'NOT SET',
+        'config_ini_exists' => file_exists($ini_path),
+    ]);
+    exit;
+}
+// --- END TEMPORARY DEBUG ---
+
 try {
     $client = new Client();
 
