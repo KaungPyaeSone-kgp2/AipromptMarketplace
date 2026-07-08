@@ -11,10 +11,17 @@ require_once '../../vendor/autoload.php';
 use Google\Client;
 use Google\Service\Oauth2;
 
-$config = parse_ini_file(__DIR__ . '/../../config.ini');
+$clientID = getenv('GOOGLE_CLIENT_ID');
+$clientSecret = getenv('GOOGLE_CLIENT_SECRET');
 
-$clientID = $config['GOOGLE_CLIENT_ID'];
-$clientSecret = $config['GOOGLE_CLIENT_SECRET'];
+$ini_path = __DIR__ . '/../../config.ini';
+if ((!$clientID || !$clientSecret) && file_exists($ini_path)) {
+    $config = parse_ini_file($ini_path);
+    if ($config) {
+        $clientID = $clientID ?: $config['GOOGLE_CLIENT_ID'];
+        $clientSecret = $clientSecret ?: $config['GOOGLE_CLIENT_SECRET'];
+    }
+}
 
 require_once __DIR__ . '/../../includes/url_helper.php';
 
