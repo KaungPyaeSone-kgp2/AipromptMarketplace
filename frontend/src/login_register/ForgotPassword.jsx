@@ -19,7 +19,7 @@ export default function ForgotPassword() {
 
     try {
       const response = await fetch(
-        `${API_BASE}/api/login_register/forgot_password.php`,
+        `\/login_register/forgot_password.php`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },

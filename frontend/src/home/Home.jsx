@@ -170,7 +170,7 @@ export default function Home() {
     const fetchHomeData = async () => {
       try {
         const response = await fetch(
-          `${API_BASE}/api/home/get_home_data.php`,
+          `\/home/get_home_data.php`,
           {
             method: "POST",
             headers: { "Content-Type": "application/json" },
