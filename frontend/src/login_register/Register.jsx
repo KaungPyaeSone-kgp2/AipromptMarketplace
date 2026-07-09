@@ -280,7 +280,7 @@ export default function Register() {
 
     try {
       const response = await fetch(
-        `\/login_register/register.php`,
+        `${API_BASE}/login_register/register.php`,
         {
           method: "POST",
           headers: {

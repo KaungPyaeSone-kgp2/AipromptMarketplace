@@ -273,7 +273,7 @@ export default function Explore() {
     setIsLoading(true);
     try {
       const response = await fetch(
-        `\/home/get_filtered_prompts.php`,
+        `${API_BASE}/home/get_filtered_prompts.php`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },

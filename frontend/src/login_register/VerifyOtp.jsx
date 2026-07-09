@@ -68,7 +68,7 @@ export default function VerifyOtp() {
 
     try {
       const response = await fetch(
-        `\/login_register/verify_otp.php`,
+        `${API_BASE}/login_register/verify_otp.php`,
         {
           method: "POST",
           headers: {

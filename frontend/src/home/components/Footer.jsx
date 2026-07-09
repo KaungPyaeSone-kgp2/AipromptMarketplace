@@ -191,7 +191,7 @@ export default function Footer() {
     const fetchFooterCategories = async () => {
       try {
         const response = await fetch(
-          `\/home/get_filtered_prompts.php`,
+          `${API_BASE}/home/get_filtered_prompts.php`,
           {
             method: "POST",
             headers: { "Content-Type": "application/json" },

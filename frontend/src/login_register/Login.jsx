@@ -39,7 +39,7 @@ export default function Login() {
     setSuccessMessage("");
 
     try {
-      const response = await fetch(`\/login_register/login.php`, {
+      const response = await fetch(`${API_BASE}/login_register/login.php`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

@@ -69,7 +69,7 @@ export default function ResetPassword() {
 
     try {
       const response = await fetch(
-        `\/login_register/reset_password.php`,
+        `${API_BASE}/login_register/reset_password.php`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
