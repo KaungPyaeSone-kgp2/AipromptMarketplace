@@ -3,7 +3,7 @@
 // via the Unified Monolith Dockerfile, the API_BASE is simply an empty string.
 // This allows axios/fetch to make native relative requests (e.g., /api/login_register/...)
 
-let API_BASE = "";
+let API_BASE = "/api";
 
 // Ensure no trailing slashes if ever modified in the future
 if (API_BASE.endsWith('/')) {
