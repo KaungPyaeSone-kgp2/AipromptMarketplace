@@ -189,7 +189,7 @@ export default function Login() {
             </div>
 
             <a
-              href={`${API_BASE}/api/login_register/google_callback.php`}
+              href={`${API_BASE}/login_register/google_callback.php`}
               className="w-full flex items-center justify-center gap-3 bg-white/5 hover:bg-white/10 border border-white/20 text-white font-bold py-3 px-4 rounded-full transition duration-300"
             >
               <img
