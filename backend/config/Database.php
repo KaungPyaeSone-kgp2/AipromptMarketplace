@@ -33,6 +33,17 @@ class Database {
                 ]
             );
 
+            // --- AUTO MIGRATION: Ensure reviews table has is_banned column ---
+            try {
+                $stmt = $this->pdo->query("SHOW COLUMNS FROM `reviews` LIKE 'is_banned'");
+                if ($stmt && $stmt->rowCount() === 0) {
+                    $this->pdo->exec("ALTER TABLE `reviews` ADD COLUMN `is_banned` TINYINT(1) DEFAULT 0");
+                }
+            } catch (PDOException $e) {
+                // Ignore schema errors during auto-migrate
+            }
+            // ------------------------------------------------------------------
+
             return $this->pdo;
 
         } catch(PDOException $e) {
