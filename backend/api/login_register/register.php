@@ -79,14 +79,15 @@ try {
 
     require_once '../../includes/mail.php'; 
     
-    if (send_otp_email($email, $otp_code) === "SUCCESS") {
+    $mail_status = send_otp_email($email, $otp_code);
+    if ($mail_status === "SUCCESS") {
         echo json_encode([
             "success" => true, 
             "message" => "OTP code has been sent to your email! Proceed to verification."
         ]);
     } else {
         unset($_SESSION['temp_user'], $_SESSION['temp_otp'], $_SESSION['otp_action']);
-        echo json_encode(["success" => false, "message" => "Failed to send verification email. Please try again."]);
+        echo json_encode(["success" => false, "message" => "Failed to send verification email. Error: " . $mail_status]);
     }
 
 } catch (Exception $e) {
