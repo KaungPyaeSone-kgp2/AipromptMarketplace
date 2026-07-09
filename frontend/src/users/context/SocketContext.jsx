@@ -23,6 +23,7 @@ export const SocketProvider = ({ children }) => {
     const newSocket = io(socketUrl, {
       transports: ["websocket"],
       autoConnect: true,
+      reconnectionAttempts: 3, // Prevent infinite spam
     });
 
     setSocket(newSocket);

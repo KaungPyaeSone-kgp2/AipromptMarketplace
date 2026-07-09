@@ -12,15 +12,15 @@ function send_otp_email($to_email, $otp_code) {
     $mail = new PHPMailer(true);
 
     try {
-        $emailUser = getenv('EMAIL_USERNAME');
-        $emailPass = getenv('EMAIL_PASSWORD');
+        // Load credentials dynamically
+        $email_username = getenv('EMAIL_USERNAME');
+        $email_password = getenv('EMAIL_PASSWORD');
 
-        $ini_path = __DIR__ . '/../config.ini';
-        if ((!$emailUser || !$emailPass) && file_exists($ini_path)) {
-            $config = parse_ini_file($ini_path);
+        if (!$email_username || !$email_password) {
+            $config = @parse_ini_file(__DIR__ . '/../config.ini');
             if ($config) {
-                $emailUser = $emailUser ?: $config['EMAIL_USERNAME'];
-                $emailPass = $emailPass ?: $config['EMAIL_PASSWORD'];
+                $email_username = $config['EMAIL_USERNAME'] ?? '';
+                $email_password = $config['EMAIL_PASSWORD'] ?? '';
             }
         }
         
@@ -28,8 +28,8 @@ function send_otp_email($to_email, $otp_code) {
         $mail->Host       = 'smtp.gmail.com';
         $mail->SMTPAuth   = true;
         
-        $mail->Username   = $emailUser; 
-        $mail->Password   = $emailPass; 
+        $mail->Username   = $email_username; 
+        $mail->Password   = $email_password; 
         
         $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS; 
         $mail->Port       = 587;
@@ -45,7 +45,7 @@ function send_otp_email($to_email, $otp_code) {
         );
 
         // Uses the config email dynamically
-        $mail->setFrom($emailUser, 'Dream Key Security');
+        $mail->setFrom($email_username, 'Dream Key Security');
         $mail->addAddress($to_email);
 
         $mail->isHTML(true);
