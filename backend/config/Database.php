@@ -10,11 +10,11 @@ class Database {
 
     public function __construct() {
         // Use Railway environment variables if available, otherwise fallback to local defaults
-        $this->host = getenv('MYSQLHOST') ?: "localhost";
-        $this->dbname = getenv('MYSQLDATABASE') ?: "image_prompt_db";
-        $this->username = getenv('MYSQLUSER') ?: "root";
-        $this->password = getenv('MYSQLPASSWORD') !== false ? getenv('MYSQLPASSWORD') : "kmd123!@#";
-        $this->port = getenv('MYSQLPORT') ?: "3306";
+        $this->host = getenv('DB_HOST') ?: "localhost";
+        $this->dbname = getenv('DB_NAME') ?: "image_prompt_db";
+        $this->username = getenv('DB_USER') ?: "root";
+        $this->password = getenv('DB_PASSWORD') !== false ? getenv('DB_PASSWORD') : "kmd123!@#";
+        $this->port = getenv('DB_PORT') ?: "3306";
     }
 
     private $pdo;
