@@ -1,6 +1,6 @@
 <?php
 header("Content-Type: application/json; charset=UTF-8");
-require_once __DIR__ . '/../../includes/cors_headers.php';
+header("Access-Control-Allow-Origin: *");
 header("Access-Control-Allow-Methods: POST, OPTIONS");
 header("Access-Control-Allow-Headers: Content-Type");
 
@@ -18,6 +18,7 @@ if ($_SERVER["REQUEST_METHOD"] !== "POST") {
 require_once __DIR__ . "/../../config/Database.php";
 require_once __DIR__ . "/../../database/schema_helpers.php";
 require_once __DIR__ . "/../../dao/BaseDAO.php";
+require_once __DIR__ . "/../../includes/SupabaseStorage.php";
 
 session_start();
 $userId = filter_var($_POST['user_id'] ?? $_SESSION['user_id'] ?? null, FILTER_VALIDATE_INT);
@@ -69,22 +70,20 @@ try {
             exit;
         }
 
-        $uploadDir = __DIR__ . "/../../uploads/users/profile";
-        if (!is_dir($uploadDir)) {
-            mkdir($uploadDir, 0777, true);
-        }
-
         $extension = $allowedMimeTypes[$mimeType];
         $fileName = "user_" . $userId . "_" . time() . "." . $extension;
-        $targetPath = $uploadDir . "/" . $fileName;
+        $destPath = 'users/profile/' . $fileName;
 
-        if (!move_uploaded_file($_FILES["profile_image"]["tmp_name"], $targetPath)) {
+        $supabase = new SupabaseStorage();
+        $uploadedUrl = $supabase->upload($_FILES["profile_image"]["tmp_name"], $destPath, $mimeType);
+
+        if (!$uploadedUrl) {
             http_response_code(500);
-            echo json_encode(["success" => false, "message" => "Unable to save profile image"]);
+            echo json_encode(["success" => false, "message" => "Unable to save profile image to Supabase"]);
             exit;
         }
 
-        $profileImagePath = "uploads/users/profile/" . $fileName;
+        $profileImagePath = $uploadedUrl;
     }
 
     $fields = [];

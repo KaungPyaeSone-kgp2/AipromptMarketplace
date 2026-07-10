@@ -1,6 +1,6 @@
 <?php
 header("Content-Type: application/json; charset=UTF-8");
-require_once __DIR__ . '/../../includes/cors_headers.php';
+header("Access-Control-Allow-Origin: *");
 header("Access-Control-Allow-Methods: POST, OPTIONS");
 header("Access-Control-Allow-Headers: Content-Type");
 
@@ -12,6 +12,7 @@ if ($_SERVER["REQUEST_METHOD"] === "OPTIONS") {
 require_once __DIR__ . "/../../config/Database.php";
 require_once __DIR__ . "/../../database/schema_helpers.php";
 require_once __DIR__ . "/../../dao/BaseDAO.php";
+require_once __DIR__ . "/../../includes/SupabaseStorage.php";
 
 $creator_id = $_POST['creator_id'] ?? null;
 $title = $_POST['title'] ?? null;
@@ -33,19 +34,18 @@ $slug = $slug . '-' . time();
 $thumbnailPath = "";
 
 if (isset($_FILES['thumbnail']) && $_FILES['thumbnail']['error'] === UPLOAD_ERR_OK) {
-    $uploadDir = __DIR__ . '/../../uploads/prompts/thumbnail/';
-    if (!is_dir($uploadDir)) {
-        mkdir($uploadDir, 0777, true);
-    }
-
     $fileTmpPath = $_FILES['thumbnail']['tmp_name'];
+    $fileType = $_FILES['thumbnail']['type'];
     $fileName = time() . '_' . basename($_FILES['thumbnail']['name']);
-    $destPath = $uploadDir . $fileName;
+    $destPath = 'prompts/thumbnail/' . $fileName;
 
-    if (move_uploaded_file($fileTmpPath, $destPath)) {
-        $thumbnailPath = 'uploads/prompts/thumbnail/' . $fileName;
+    $supabase = new SupabaseStorage();
+    $uploadedUrl = $supabase->upload($fileTmpPath, $destPath, $fileType);
+
+    if ($uploadedUrl) {
+        $thumbnailPath = $uploadedUrl;
     } else {
-        echo json_encode(["success" => false, "message" => "Failed to move uploaded file"]);
+        echo json_encode(["success" => false, "message" => "Failed to upload file to Supabase"]);
         exit;
     }
 } else {

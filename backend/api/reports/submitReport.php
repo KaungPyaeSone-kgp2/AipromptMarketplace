@@ -1,6 +1,6 @@
 <?php
 header("Content-Type: application/json; charset=UTF-8");
-require_once __DIR__ . '/../../includes/cors_headers.php';
+header("Access-Control-Allow-Origin: *");
 header("Access-Control-Allow-Methods: POST, OPTIONS");
 header("Access-Control-Allow-Headers: Content-Type");
 
@@ -17,6 +17,7 @@ if ($_SERVER["REQUEST_METHOD"] !== "POST") {
 
 require_once __DIR__ . "/../../config/Database.php";
 require_once __DIR__ . "/../../database/schema_helpers.php";
+require_once __DIR__ . "/../../includes/SupabaseStorage.php";
 
 $isJson = isset($_SERVER["CONTENT_TYPE"]) && strpos($_SERVER["CONTENT_TYPE"], "application/json") !== false;
 $data = $isJson ? json_decode(file_get_contents("php://input"), true) : $_POST;
@@ -95,16 +96,18 @@ if (isset($_FILES["image_evidence"]) && $_FILES["image_evidence"]["error"] === U
             break;
     }
 
-    $uploadDir = __DIR__ . "/../../uploads/image_evidence_report/" . $subDir . "/";
-    if (!is_dir($uploadDir)) {
-        mkdir($uploadDir, 0777, true);
-    }
-
     $ext = strtolower(pathinfo($_FILES["image_evidence"]["name"], PATHINFO_EXTENSION));
     $fileName = time() . "_" . $descriptiveName . "." . $ext;
-    $targetFilePath = $uploadDir . $fileName;
-    if (move_uploaded_file($_FILES["image_evidence"]["tmp_name"], $targetFilePath)) {
-        $imageEvidencePath = "uploads/image_evidence_report/" . $subDir . "/" . $fileName;
+    
+    $fileTmpPath = $_FILES["image_evidence"]["tmp_name"];
+    $fileType = $_FILES["image_evidence"]["type"];
+    $destPath = 'image_evidence_report/' . $subDir . '/' . $fileName;
+
+    $supabase = new SupabaseStorage();
+    $uploadedUrl = $supabase->upload($fileTmpPath, $destPath, $fileType);
+
+    if ($uploadedUrl) {
+        $imageEvidencePath = $uploadedUrl;
     }
 }
 
