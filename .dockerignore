@@ -5,8 +5,6 @@ vendor
 # Local build output — rebuilt during Docker build
 dist
 
-# Backend PHP service (has its own Dockerfile)
-backend
 
 # Git & IDE
 .git
