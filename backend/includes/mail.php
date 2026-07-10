@@ -31,9 +31,9 @@ function send_otp_email($to_email, $otp_code) {
         $mail->Username   = $email_username; 
         $mail->Password   = $email_password; 
         
-        $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS; 
-        $mail->Port       = 587;
-        $mail->Timeout    = 5; // Fail fast if network is blocking SMTP
+        $mail->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS; 
+        $mail->Port       = 465;
+        $mail->Timeout    = 30; // Increased timeout for cloud providers
 
         // Bypasses local SSL certificate issues during development
         $mail->SMTPOptions = array(
