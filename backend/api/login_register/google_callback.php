@@ -12,6 +12,9 @@ use Google\Client;
 use Google\Service\Oauth2;
 
 $config = @parse_ini_file(__DIR__ . '/../../config.ini');
+if (!is_array($config)) {
+    $config = [];
+}
 
 $clientID = getenv('GOOGLE_CLIENT_ID') ?: ($config['GOOGLE_CLIENT_ID'] ?? '');
 $clientSecret = getenv('GOOGLE_CLIENT_SECRET') ?: ($config['GOOGLE_CLIENT_SECRET'] ?? '');

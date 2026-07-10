@@ -66,8 +66,14 @@ if (!in_array($reason, $allowedReasons[$targetType], true)) {
     exit;
 }
 
-$db  = new Database();
-$pdo = $db->connect();
+try {
+    $db  = new Database();
+    $pdo = $db->connect();
+} catch (Exception $e) {
+    http_response_code(500);
+    echo json_encode(["success" => false, "message" => "Database connection failed"]);
+    exit;
+}
 
 $reporterStmt = $pdo->prepare("SELECT user_name FROM users WHERE id = ? LIMIT 1");
 $reporterStmt->execute([$reporterId]);

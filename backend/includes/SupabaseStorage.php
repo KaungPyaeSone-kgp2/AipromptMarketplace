@@ -7,9 +7,13 @@ class SupabaseStorage {
 
     public function __construct($bucket = 'uploads') {
         $config = @parse_ini_file(__DIR__ . '/../config.ini', true);
+        if (!is_array($config)) {
+            $config = [];
+        }
+        $supabaseConfig = $config['Supabase'] ?? [];
         
-        $this->url = getenv('SUPABASE_URL') ?: ($config['Supabase']['SUPABASE_URL'] ?? '');
-        $this->key = getenv('SUPABASE_KEY') ?: ($config['Supabase']['SUPABASE_KEY'] ?? '');
+        $this->url = getenv('SUPABASE_URL') ?: ($supabaseConfig['SUPABASE_URL'] ?? '');
+        $this->key = getenv('SUPABASE_KEY') ?: ($supabaseConfig['SUPABASE_KEY'] ?? '');
         $this->bucket = $bucket;
         
         if (empty($this->url) || empty($this->key)) {
@@ -33,16 +37,24 @@ class SupabaseStorage {
         $fileContent = file_get_contents($fileTmpPath);
 
         // Automatically convert images to WebP if GD library is available
-        if (function_exists('imagecreatefromstring') && strpos($contentType, 'image/') === 0 && $contentType !== 'image/webp' && $contentType !== 'image/svg+xml' && $contentType !== 'image/gif') {
+        if (function_exists('imagecreatefromstring') && function_exists('imagewebp') && strpos($contentType, 'image/') === 0 && $contentType !== 'image/webp' && $contentType !== 'image/svg+xml' && $contentType !== 'image/gif') {
             $image = @imagecreatefromstring($fileContent);
             if ($image !== false) {
-                ob_start();
-                imagewebp($image, null, 85); // 85% quality
-                $fileContent = ob_get_clean();
-                imagedestroy($image);
+                // Preserve transparency for PNGs
+                imagepalettetotruecolor($image);
+                imagealphablending($image, false);
+                imagesavealpha($image, true);
                 
-                $contentType = 'image/webp';
-                $destPath = preg_replace('/\.[^.]+$/', '.webp', $destPath);
+                $tempWebpPath = sys_get_temp_dir() . '/' . uniqid('webp_', true) . '.webp';
+                
+                // Write to temp file to avoid output buffering issues that can corrupt the image
+                if (@imagewebp($image, $tempWebpPath, 85)) {
+                    $fileContent = file_get_contents($tempWebpPath);
+                    $contentType = 'image/webp';
+                    $destPath = preg_replace('/\.[^.]+$/', '.webp', $destPath);
+                    @unlink($tempWebpPath);
+                }
+                imagedestroy($image);
             }
         }
 
