@@ -6,10 +6,10 @@ class SupabaseStorage {
     private $bucket;
 
     public function __construct($bucket = 'uploads') {
-        $config = parse_ini_file(__DIR__ . '/../config.ini', true);
+        $config = @parse_ini_file(__DIR__ . '/../config.ini', true);
         
-        $this->url = $config['Supabase']['SUPABASE_URL'] ?? '';
-        $this->key = $config['Supabase']['SUPABASE_KEY'] ?? '';
+        $this->url = getenv('SUPABASE_URL') ?: ($config['Supabase']['SUPABASE_URL'] ?? '');
+        $this->key = getenv('SUPABASE_KEY') ?: ($config['Supabase']['SUPABASE_KEY'] ?? '');
         $this->bucket = $bucket;
         
         if (empty($this->url) || empty($this->key)) {

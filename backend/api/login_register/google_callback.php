@@ -11,10 +11,10 @@ require_once '../../vendor/autoload.php';
 use Google\Client;
 use Google\Service\Oauth2;
 
-$config = parse_ini_file(__DIR__ . '/../../config.ini');
+$config = @parse_ini_file(__DIR__ . '/../../config.ini');
 
-$clientID = $config['GOOGLE_CLIENT_ID'];
-$clientSecret = $config['GOOGLE_CLIENT_SECRET'];
+$clientID = getenv('GOOGLE_CLIENT_ID') ?: ($config['GOOGLE_CLIENT_ID'] ?? '');
+$clientSecret = getenv('GOOGLE_CLIENT_SECRET') ?: ($config['GOOGLE_CLIENT_SECRET'] ?? '');
 
 // IMPORTANT: This must match the exact API URL registered in your Google Cloud Console
 $redirectUri = 'http://localhost:8000/api/login_register/google_callback.php';
