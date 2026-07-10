@@ -25,14 +25,15 @@ function send_otp_email($to_email, $otp_code) {
         }
         
         $mail->isSMTP();
-        $mail->Host       = 'smtp.gmail.com';
+        // Force IPv4 to fix Railway / Docker IPv6 routing timeouts
+        $mail->Host       = gethostbyname('smtp.gmail.com');
         $mail->SMTPAuth   = true;
         
         $mail->Username   = $email_username; 
         $mail->Password   = $email_password; 
         
-        $mail->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS; 
-        $mail->Port       = 465;
+        $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS; 
+        $mail->Port       = 587;
         $mail->Timeout    = 30; // Increased timeout for cloud providers
 
         // Bypasses local SSL certificate issues during development
