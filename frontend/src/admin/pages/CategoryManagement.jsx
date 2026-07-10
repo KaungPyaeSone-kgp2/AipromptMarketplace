@@ -220,13 +220,9 @@ export default function CategoryManagement() {
       const result = await response.json();
       if (result.success && result.data?.categories) {
         setCategories(result.data.categories);
-
-        // if (viewing) {
-        //   const updatedViewing = result.data.categories.find(
-        //     (c) => c.id === viewing.id,
-        //   );
-        //   if (updatedViewing) setViewing(updatedViewing);
-        // }
+      } else {
+        console.error("Backend Error:", result);
+        if (result.error) alert(`Database Error: ${result.error}`);
       }
     } catch (error) {
       console.error("Failed to load categories", error);

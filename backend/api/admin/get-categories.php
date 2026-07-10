@@ -57,7 +57,7 @@ try {
                 COUNT(p.id) AS total
             FROM categories c
             LEFT JOIN prompts p ON c.id = p.category_id
-            GROUP BY c.id
+            GROUP BY c.id, c.category_name, c.created_at, c.updated_at
             ORDER BY c.created_at DESC";
 
     $categories = $baseDAO->select($sqlCats, []);
