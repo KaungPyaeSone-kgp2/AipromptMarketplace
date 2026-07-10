@@ -1,8 +1,7 @@
 <?php
 
 header("Content-Type: application/json");
-require_once __DIR__ . '/../../includes/cors_headers.php';
-require_once __DIR__ . '/../../includes/url_helper.php';
+header("Access-Control-Allow-Origin: *");
 header("Access-Control-Allow-Methods: POST, OPTIONS");
 header("Access-Control-Allow-Headers: Content-Type, Authorization");
 
@@ -68,7 +67,7 @@ try {
             "name" => $user["user_name"],
             "email" => $user["user_email"],
             "profile_image" => !empty($user["profile_image"])
-                ? getBackendBaseUrl() . "/" . $user["profile_image"]
+                ? "http://localhost:8000/" . $user["profile_image"]
                 : null,
             "status" => $user["is_banned"] ? "Ban" : "Active", // Translate boolean to your exact requested text
             "created_at" => date("M d, Y h:i A", strtotime($user["created_at"]))

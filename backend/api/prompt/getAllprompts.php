@@ -1,6 +1,6 @@
 <?php
 header("Content-Type: application/json; charset=UTF-8");
-require_once __DIR__ . '/../../includes/cors_headers.php';
+header("Access-Control-Allow-Origin: *");
 header("Access-Control-Allow-Methods: GET, POST, OPTIONS");
 header("Access-Control-Allow-Headers: Content-Type");
 
@@ -37,7 +37,7 @@ try {
 
     $promptVariablesExpr = db_column_expr($pdo, 'prompts', 'prompt_variables', 'p.prompt_variables', "'[]'");
     $wishListExpr = db_column_expr($pdo, 'prompts', 'save_count', 'p.save_count', '(SELECT COUNT(*) FROM wishlists w WHERE w.prompt_id = p.id)');
-    $reviewCountExpr = db_column_expr($pdo, 'prompts', 'review_count', 'p.review_count', '(SELECT COUNT(*) FROM reviews r WHERE r.prompt_id = p.id)');
+    $reviewCountExpr = db_column_expr($pdo, 'prompts', 'review_count', 'p.review_count', '(SELECT COUNT(*) FROM reviews r WHERE r.prompt_id = p.id AND (r.is_banned IS NULL OR r.is_banned = 0))');
 
     $select_query = "SELECT
     p.id AS prompt_id,
@@ -56,7 +56,7 @@ try {
     COALESCE((
         SELECT AVG(r.rating)
         FROM reviews r
-        WHERE r.prompt_id = p.id
+        WHERE r.prompt_id = p.id AND (r.is_banned IS NULL OR r.is_banned = 0)
     ), p.average_rating, 0) AS average_rating,
     p.thumbnail,
     {$wishListExpr} AS save_count,

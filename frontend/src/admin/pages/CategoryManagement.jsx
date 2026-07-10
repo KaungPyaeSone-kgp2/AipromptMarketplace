@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import { RefreshCw, Plus, Eye, Pencil, X } from "lucide-react";
+import { useSocket } from "../../users/context/SocketContext";
 
 function GradientButton({ children, onClick, className = "" }) {
   return (
@@ -232,9 +233,27 @@ export default function CategoryManagement() {
     }
   }, []);
 
+  const socket = useSocket();
+
   useEffect(() => {
     loadCategories(false);
   }, [loadCategories]);
+
+  // Realtime updates listener
+  useEffect(() => {
+    if (!socket) return;
+
+    const handleCategoriesUpdated = (data) => {
+      console.log("Realtime update received for categories:", data);
+      loadCategories(true);
+    };
+
+    socket.on("categories_updated", handleCategoriesUpdated);
+
+    return () => {
+      socket.off("categories_updated", handleCategoriesUpdated);
+    };
+  }, [socket, loadCategories]);
 
   const handleRefresh = async () => {
     setRefreshing(true);

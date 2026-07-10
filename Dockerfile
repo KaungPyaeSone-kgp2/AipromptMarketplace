@@ -57,8 +57,8 @@ RUN composer install --no-dev --optimize-autoloader
 # This allows Apache to serve index.html and assets directly
 COPY --from=frontend-builder /app/dist /var/www/html/
 
-# Copy Apache config (this handles routing React vs PHP)
-COPY backend/.docker/apache.conf /etc/apache2/sites-available/000-default.conf
+# Configure Apache
+RUN cp .docker/apache.conf /etc/apache2/sites-available/000-default.conf
 
 # Fix file permissions and ensure ONLY mpm_prefork is loaded (required for mod_php)
 RUN chown -R www-data:www-data /var/www/html \
@@ -72,8 +72,7 @@ RUN chown -R www-data:www-data /var/www/html \
              /etc/apache2/mods-enabled/mpm_worker.conf || true
 
 # Railway injects PORT env variable — Apache must listen on it
-COPY backend/.docker/start.sh /start.sh
-RUN chmod +x /start.sh
+RUN cp .docker/start.sh /start.sh && chmod +x /start.sh
 
 EXPOSE 80
 

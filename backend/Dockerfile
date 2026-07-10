@@ -7,20 +7,14 @@ RUN echo "ServerName localhost" >> /etc/apache2/apache2.conf
 RUN a2enmod rewrite headers
 
 
-# Install PHP extensions and system dependencies needed
-RUN apt-get update && apt-get install -y unzip libzip-dev \
-    && docker-php-ext-install pdo pdo_mysql zip
+# Install PHP extensions needed
+RUN docker-php-ext-install pdo pdo_mysql
 
 # Install Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
 # Set working directory
 WORKDIR /var/www/html
-
-# Enforce Secure & SameSite=None for all PHP sessions to fix cross-domain cookies
-RUN echo "session.cookie_samesite = None" >> /usr/local/etc/php/conf.d/session-cookies.ini && \
-    echo "session.cookie_secure = 1" >> /usr/local/etc/php/conf.d/session-cookies.ini && \
-    echo "session.cookie_httponly = 1" >> /usr/local/etc/php/conf.d/session-cookies.ini
 
 # Copy all backend files
 COPY . .

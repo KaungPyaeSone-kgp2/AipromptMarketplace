@@ -1,7 +1,7 @@
 <?php
 // backend/api/check_session.php
 
-require_once __DIR__ . '/../includes/cors_headers.php'; 
+header("Access-Control-Allow-Origin: http://localhost:5173"); 
 header("Access-Control-Allow-Credentials: true");
 header("Access-Control-Allow-Methods: POST, OPTIONS"); // Changed to POST
 header("Access-Control-Allow-Headers: Content-Type, Authorization, X-Requested-With");

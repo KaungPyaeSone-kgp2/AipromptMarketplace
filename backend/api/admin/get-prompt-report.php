@@ -1,8 +1,7 @@
 <?php
 
 header("Content-Type: application/json");
-require_once __DIR__ . '/../../includes/cors_headers.php';
-require_once __DIR__ . '/../../includes/url_helper.php';
+header("Access-Control-Allow-Origin: *");
 header("Access-Control-Allow-Methods: POST, OPTIONS");
 header("Access-Control-Allow-Headers: Content-Type, Authorization");
 
@@ -77,11 +76,11 @@ try {
     // Format the data explicitly for the frontend[cite: 4]
     $formattedReports = array_map(function ($report) {
         $formatImage = function($path) {
-            return !empty($path) ? (strpos($path, 'http') === 0 ? $path : getBackendBaseUrl() . "/" . ltrim($path, '/')) : "https://i.pravatar.cc/150";
+            return !empty($path) ? (strpos($path, 'http') === 0 ? $path : "http://localhost:8000/" . ltrim($path, '/')) : "https://i.pravatar.cc/150";
         };
         
         $formatEvidence = function($path) {
-            return !empty($path) ? (strpos($path, 'http') === 0 ? $path : getBackendBaseUrl() . "/" . ltrim($path, '/')) : null;
+            return !empty($path) ? (strpos($path, 'http') === 0 ? $path : "http://localhost:8000/" . ltrim($path, '/')) : null;
         };
 
         return [

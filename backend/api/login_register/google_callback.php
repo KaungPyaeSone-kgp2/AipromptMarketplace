@@ -11,42 +11,18 @@ require_once '../../vendor/autoload.php';
 use Google\Client;
 use Google\Service\Oauth2;
 
-$clientID = getenv('GOOGLE_CLIENT_ID') ?: '';
-$clientSecret = getenv('GOOGLE_CLIENT_SECRET') ?: '';
+$config = parse_ini_file(__DIR__ . '/../../config.ini');
 
-$ini_path = __DIR__ . '/../../config.ini';
-if ((empty($clientID) || empty($clientSecret)) && file_exists($ini_path)) {
-    $config = parse_ini_file($ini_path);
-    if ($config) {
-        $clientID = !empty($clientID) ? $clientID : ($config['GOOGLE_CLIENT_ID'] ?? '');
-        $clientSecret = !empty($clientSecret) ? $clientSecret : ($config['GOOGLE_CLIENT_SECRET'] ?? '');
-    }
-}
-
-require_once __DIR__ . '/../../includes/url_helper.php';
+$clientID = $config['GOOGLE_CLIENT_ID'];
+$clientSecret = $config['GOOGLE_CLIENT_SECRET'];
 
 // IMPORTANT: This must match the exact API URL registered in your Google Cloud Console
-$redirectUri = getBackendBaseUrl() . '/api/login_register/google_callback.php';
+$redirectUri = 'http://localhost:8000/api/login_register/google_callback.php';
 
-// Frontend React Routes (Unified Monolith uses relative paths)
-$frontend_login_url = "/login";
-$frontend_admin_dashboard = "/admin";
-$frontend_user_dashboard = "/user";
-
-// --- TEMPORARY DEBUG: visit google_callback.php?debug=1 to check values ---
-if (isset($_GET['debug']) && $_GET['debug'] === '1') {
-    header('Content-Type: application/json');
-    echo json_encode([
-        'client_id_length' => strlen($clientID),
-        'client_id_preview' => substr($clientID, 0, 20) . '...' . substr($clientID, -15),
-        'client_secret_set' => !empty($clientSecret),
-        'redirect_uri' => $redirectUri,
-        'env_client_id_raw' => getenv('GOOGLE_CLIENT_ID') !== false ? 'SET' : 'NOT SET',
-        'config_ini_exists' => file_exists($ini_path),
-    ]);
-    exit;
-}
-// --- END TEMPORARY DEBUG ---
+// Frontend React Routes
+$frontend_login_url = "http://localhost:5173/login";
+$frontend_admin_dashboard = "http://localhost:5173/admin";
+$frontend_user_dashboard = "http://localhost:5173/user";
 
 try {
     $client = new Client();
@@ -161,7 +137,7 @@ try {
         $user_role = 'user';
 
         $sql = "INSERT INTO user_login_logs(user_id) VALUES (:id)";
-        $param = [":id" => $new_user_id];
+            $param = [":id" => $user['id']];
 
             $dao->insert($sql,$param);
         

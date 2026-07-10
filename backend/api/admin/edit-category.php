@@ -1,7 +1,7 @@
 <?php
 
 header("Content-Type: application/json");
-require_once __DIR__ . '/../../includes/cors_headers.php';
+header("Access-Control-Allow-Origin: *");
 header("Access-Control-Allow-Methods: POST, OPTIONS");
 header("Access-Control-Allow-Headers: Content-Type, Authorization");
 
@@ -60,6 +60,10 @@ try {
     if (file_exists($cacheFile)) {
         unlink($cacheFile);
     }
+
+    // 4. Emit WebSocket event to refresh frontend in realtime
+    require_once __DIR__ . "/../../../websocket/socket_helper.php";
+    emitSocketEvent("categories_updated", ["action" => "edit", "id" => $id]);
 
     echo json_encode(["success" => true, "message" => "Category updated successfully"]);
 

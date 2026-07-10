@@ -1,8 +1,7 @@
 <?php
 
 header("Content-Type: application/json");
-require_once __DIR__ . '/../../includes/cors_headers.php';
-require_once __DIR__ . '/../../includes/url_helper.php';
+header("Access-Control-Allow-Origin: *");
 header("Access-Control-Allow-Methods: POST, OPTIONS");
 header("Access-Control-Allow-Headers: Content-Type, Authorization");
 
@@ -44,7 +43,7 @@ if (!$refresh && file_exists($cacheFile)) {
 // Helper to format image URLs
 function formatImageUrl($rawPath) {
     if (empty($rawPath)) return null;
-    return getBackendBaseUrl() . "/" . ltrim($rawPath, '/');
+    return "http://localhost:8000/" . ltrim($rawPath, '/');
 }
 
 try {

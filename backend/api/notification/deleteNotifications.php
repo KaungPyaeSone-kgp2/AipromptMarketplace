@@ -3,7 +3,7 @@ require_once __DIR__ . "/../../config/Database.php";
 require_once __DIR__ . "/../../database/schema_helpers.php";
 
 header("Content-Type: application/json; charset=UTF-8");
-require_once __DIR__ . '/../../includes/cors_headers.php';
+header("Access-Control-Allow-Origin: *");
 header("Access-Control-Allow-Methods: POST, OPTIONS");
 header("Access-Control-Allow-Headers: Content-Type");
 
