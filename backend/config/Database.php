@@ -36,7 +36,8 @@ class Database {
 
         } catch(PDOException $e) {
             // Throw exception instead of die() so APIs can catch it and return JSON errors
-            throw new Exception("Connection Failed : " . $e->getMessage());
+            $debug = " [Debug: Host=" . ($this->host ?: 'empty') . ", User=" . ($this->username ?: 'empty') . ", DB=" . ($this->dbname ?: 'empty') . "]";
+            throw new Exception("Connection Failed : " . $e->getMessage() . $debug);
         }
 
     }
