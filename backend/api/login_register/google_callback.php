@@ -16,13 +16,23 @@ $config = @parse_ini_file(__DIR__ . '/../../config.ini');
 $clientID = getenv('GOOGLE_CLIENT_ID') ?: ($config['GOOGLE_CLIENT_ID'] ?? '');
 $clientSecret = getenv('GOOGLE_CLIENT_SECRET') ?: ($config['GOOGLE_CLIENT_SECRET'] ?? '');
 
-// IMPORTANT: This must match the exact API URL registered in your Google Cloud Console
-$redirectUri = 'http://localhost:8000/api/login_register/google_callback.php';
+$is_localhost = (strpos($_SERVER['HTTP_HOST'] ?? '', 'localhost') !== false);
+$protocol = (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https') ? 'https://' : 'http://';
+$host = $_SERVER['HTTP_HOST'] ?? 'localhost';
+$base_url = $protocol . $host;
 
-// Frontend React Routes
-$frontend_login_url = "http://localhost:5173/login";
-$frontend_admin_dashboard = "http://localhost:5173/admin";
-$frontend_user_dashboard = "http://localhost:5173/user";
+if ($is_localhost) {
+    $redirectUri = 'http://localhost:8000/api/login_register/google_callback.php';
+    $frontend_login_url = "http://localhost:5173/login";
+    $frontend_admin_dashboard = "http://localhost:5173/admin";
+    $frontend_user_dashboard = "http://localhost:5173/user";
+} else {
+    // IMPORTANT: This exact URL must be registered in your Google Cloud Console!
+    $redirectUri = $base_url . '/api/login_register/google_callback.php';
+    $frontend_login_url = $base_url . "/login";
+    $frontend_admin_dashboard = $base_url . "/admin";
+    $frontend_user_dashboard = $base_url . "/user";
+}
 
 try {
     $client = new Client();
