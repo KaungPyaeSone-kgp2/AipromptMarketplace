@@ -27,8 +27,8 @@ FROM php:8.2-apache
 # Suppress "Could not reliably determine FQDN" warning
 RUN echo "ServerName localhost" >> /etc/apache2/apache2.conf
 
-# Enable Apache mod_rewrite for clean API URLs and React Router fallback
-RUN a2enmod rewrite headers
+# Enable Apache modules: rewrite (clean URLs), headers (CORS), env (PassEnv)
+RUN a2enmod rewrite headers env
 
 # Install PHP extensions and system dependencies needed
 RUN apt-get update && apt-get install -y unzip libzip-dev \
