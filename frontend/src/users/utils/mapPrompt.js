@@ -53,6 +53,7 @@ export function mapPromptFromApi(row) {
     imageUrl: resolveAssetUrl(thumbnail),
     model: normalizeModelType(row.model_type),
     category: normalizeCategory(row.category_name),
+    categoryId: String(row.category_id ?? ""),
     rating: Number(row.rating ?? row.avg_rating ?? row.average_rating ?? 0),
     wishlistCount: Number(row.save_count ?? row.wish_list_count ?? row.wishlist_count ?? 0),
     reviewCount: Number(row.review_count ?? 0),

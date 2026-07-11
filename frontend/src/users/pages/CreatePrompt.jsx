@@ -417,8 +417,7 @@ export default function CreatePrompt() {
               required
               value={formData.title}
               onChange={handleChange}
-              disabled={isEditMode}
-              className="w-full rounded-xl border border-slate-700 bg-slate-900/50 px-4 py-3 text-sm font-medium text-white placeholder-slate-500 focus:border-violet-500 focus:outline-none focus:ring-1 focus:ring-violet-500 disabled:cursor-not-allowed disabled:opacity-70"
+              className="w-full rounded-xl border border-slate-700 bg-slate-900/50 px-4 py-3 text-sm font-medium text-white placeholder-slate-500 focus:border-violet-500 focus:outline-none focus:ring-1 focus:ring-violet-500 transition-colors"
               placeholder="e.g., Cinematic Sci-Fi Cityscape"
             />
           </div>
@@ -430,7 +429,6 @@ export default function CreatePrompt() {
             <CustomSelect
               id="categoryId"
               name="categoryId"
-              disabled={isEditMode}
               value={formData.categoryId}
               onChange={handleChange}
               options={categories.map(c => ({ label: c.name, value: c.id }))}
@@ -444,7 +442,6 @@ export default function CreatePrompt() {
             <CustomSelect
               id="modelType"
               name="modelType"
-              disabled={isEditMode}
               value={formData.modelType}
               onChange={handleChange}
               options={MODEL_TYPES.map(m => ({ label: m, value: m }))}
@@ -464,8 +461,7 @@ export default function CreatePrompt() {
             rows={3}
             value={formData.description}
             onChange={handleChange}
-            disabled={isEditMode}
-            className="w-full resize-none overflow-hidden rounded-xl border border-slate-700 bg-slate-900/50 px-4 py-3 text-sm font-medium text-white placeholder-slate-500 focus:border-violet-500 focus:outline-none focus:ring-1 focus:ring-violet-500 disabled:cursor-not-allowed disabled:opacity-70"
+            className="w-full resize-none overflow-hidden rounded-xl border border-slate-700 bg-slate-900/50 px-4 py-3 text-sm font-medium text-white placeholder-slate-500 focus:border-violet-500 focus:outline-none focus:ring-1 focus:ring-violet-500 transition-colors"
             placeholder="Briefly describe what this prompt does..."
           />
         </div>
@@ -540,8 +536,7 @@ export default function CreatePrompt() {
               value={formData.content}
               onChange={handleChange}
               onScroll={handleScroll}
-              disabled={isEditMode}
-              className="relative z-10 m-0 w-full resize-none overflow-hidden border-none bg-transparent px-4 py-3 font-mono text-sm font-medium text-white placeholder-slate-500 focus:border-transparent focus:outline-none focus:ring-0 disabled:cursor-not-allowed disabled:opacity-70"
+              className="relative z-10 m-0 w-full resize-none overflow-hidden border-none bg-transparent px-4 py-3 font-mono text-sm font-medium text-white placeholder-slate-500 focus:border-transparent focus:outline-none focus:ring-0"
               placeholder="Enter the exact prompt here... Use [brackets] for variables."
             />
           </div>
