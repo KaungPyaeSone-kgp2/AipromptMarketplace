@@ -2,6 +2,8 @@
 -- Triggers for PROMPTS table (Updates posted_prompt_count)
 -- =========================================================================
 
+DELIMITER //
+
 -- 1. When a new prompt is INSERTED
 CREATE TRIGGER after_prompt_insert
 AFTER INSERT ON prompts
@@ -101,3 +103,5 @@ BEGIN
     WHERE user_id = OLD.creator_id;
 END;
 //
+
+DELIMITER ;
