@@ -45,14 +45,17 @@ class SupabaseStorage {
                 imagealphablending($image, false);
                 imagesavealpha($image, true);
                 
-                $tempWebpPath = sys_get_temp_dir() . '/' . uniqid('webp_', true) . '.webp';
-                
-                // Write to temp file to avoid output buffering issues that can corrupt the image
-                if (@imagewebp($image, $tempWebpPath, 85)) {
-                    $fileContent = file_get_contents($tempWebpPath);
-                    $contentType = 'image/webp';
-                    $destPath = preg_replace('/\.[^.]+$/', '.webp', $destPath);
-                    @unlink($tempWebpPath);
+                // Use output buffering to capture image data directly into memory without disk writing
+                ob_start();
+                if (@imagewebp($image, null, 85)) {
+                    $webpContent = ob_get_clean();
+                    if (!empty($webpContent)) {
+                        $fileContent = $webpContent;
+                        $contentType = 'image/webp';
+                        $destPath = preg_replace('/\.[^.]+$/', '.webp', $destPath);
+                    }
+                } else {
+                    ob_end_clean();
                 }
                 imagedestroy($image);
             }
