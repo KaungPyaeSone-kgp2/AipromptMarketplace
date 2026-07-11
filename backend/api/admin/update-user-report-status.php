@@ -93,7 +93,7 @@ try {
                             $baseDAO->update($update_user_status,[":id" => $target_id]);
                         }
 
-                        require_once __DIR__ . "/../../../websocket/socket_helper.php";
+                        require_once __DIR__ . "/../../includes/socket_helper.php";
                         $title = $new_status === "resolved" ? "Account Report Resolved" : "Account Report Rejected";
                         $reporter_msg = $new_status === "resolved" 
                             ? "Your report against a user has been reviewed and resolved. The user has been banned." 

@@ -55,7 +55,7 @@ try {
     }
 
     // 4. Emit WebSocket event to refresh frontend in realtime
-    require_once __DIR__ . "/../../../websocket/socket_helper.php";
+    require_once __DIR__ . "/../../includes/socket_helper.php";
     emitSocketEvent("categories_updated", ["action" => "add", "id" => $newId]);
 
     echo json_encode([

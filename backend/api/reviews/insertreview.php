@@ -18,7 +18,7 @@ if ($_SERVER["REQUEST_METHOD"] !== "POST") {
 require_once __DIR__ . "/../../config/Database.php";
 require_once __DIR__ . "/../../database/schema_helpers.php";
 require_once __DIR__ . "/../../dao/BaseDAO.php";
-require_once __DIR__ . "/../../../websocket/socket_helper.php";
+require_once __DIR__ . "/../../includes/socket_helper.php";
 
 try {
     $db = new Database();

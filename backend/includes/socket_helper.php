@@ -1,7 +1,7 @@
 <?php
 
 function emitSocketEvent($event, $data, $room = null) {
-    $url = 'http://127.0.0.1:3001/emit';
+    $url = getenv('SOCKET_SERVER_INTERNAL_URL') ?: 'http://127.0.0.1:3001/emit';
     
     $payload = [
         'event' => $event,

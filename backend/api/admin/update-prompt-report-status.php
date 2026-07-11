@@ -124,7 +124,7 @@ try {
                     }
                 }
 
-                require_once __DIR__ . "/../../../websocket/socket_helper.php";
+                require_once __DIR__ . "/../../includes/socket_helper.php";
                 $title = $new_status === "resolved" ? "Prompt Report Resolved" : "Prompt Report Rejected";
                 
                 $reporter_msg = $new_status === "resolved" 

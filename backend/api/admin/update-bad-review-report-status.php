@@ -135,7 +135,7 @@ try {
                     }
                 }
 
-                require_once __DIR__ . "/../../../websocket/socket_helper.php";
+                require_once __DIR__ . "/../../includes/socket_helper.php";
                 $title = $new_status === "resolved" ? "Review Report Resolved" : "Review Report Rejected";
                 $reporter_msg = $new_status === "resolved" 
                     ? "Your report against a review has been reviewed and resolved. The review has been banned." 

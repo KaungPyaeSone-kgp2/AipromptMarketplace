@@ -144,7 +144,7 @@ try {
     }
 
     // Trigger Real-Time update to connected React clients
-    require_once __DIR__ . "/../../../websocket/socket_helper.php";
+    require_once __DIR__ . "/../../includes/socket_helper.php";
     emitSocketEvent('prompt_updated', ['promptId' => $prompt_id]);
 
     echo json_encode([

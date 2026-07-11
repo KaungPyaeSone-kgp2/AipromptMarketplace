@@ -111,7 +111,7 @@ try {
     $creatorFollowersCount = (int)($followersCount[0]["followers_count"] ?? 0);
     $buyerFollowingCount = (int)($followingCount[0]["following_count"] ?? 0);
 
-    require_once __DIR__ . "/../../../websocket/socket_helper.php";
+    require_once __DIR__ . "/../../includes/socket_helper.php";
     emitSocketEvent('follow_updated', [
         'followers_count' => $creatorFollowersCount,
         'follower_id' => $followerId

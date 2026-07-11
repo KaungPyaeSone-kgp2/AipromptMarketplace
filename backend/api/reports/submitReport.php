@@ -196,7 +196,7 @@ try {
     $stmt = $pdo->prepare($sql);
     $stmt->execute();
 
-    require_once __DIR__ . "/../../../websocket/socket_helper.php";
+    require_once __DIR__ . "/../../includes/socket_helper.php";
 
     if (!empty($notifyUserId) && (int)$notifyUserId !== $reporterId) {
         insertNotification($pdo, $reporterId, (int)$notifyUserId, $notifyTitle, $notifyMsg, $reportId, $reportType);
