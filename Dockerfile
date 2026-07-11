@@ -31,8 +31,17 @@ RUN echo "ServerName localhost" >> /etc/apache2/apache2.conf
 RUN a2enmod rewrite headers env
 
 # Install PHP extensions and system dependencies needed
-RUN apt-get update && apt-get install -y unzip libzip-dev \
-    && docker-php-ext-install pdo pdo_mysql zip
+RUN apt-get update && apt-get install -y \
+    unzip libzip-dev \
+    libfreetype6-dev \
+    libjpeg62-turbo-dev \
+    libpng-dev \
+    libwebp-dev \
+    libmagickwand-dev \
+    && docker-php-ext-configure gd --with-freetype --with-jpeg --with-webp \
+    && docker-php-ext-install -j$(nproc) gd pdo pdo_mysql zip \
+    && pecl install imagick \
+    && docker-php-ext-enable imagick
 
 # Install Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
