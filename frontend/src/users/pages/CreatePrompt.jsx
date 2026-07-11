@@ -306,11 +306,6 @@ export default function CreatePrompt() {
   const handleFileChange = (event) => {
     const file = event.target.files?.[0];
     if (file) {
-      if (file.size > 1048576) {
-        setError("Image size must be less than 1MB.");
-        event.target.value = "";
-        return;
-      }
       setError(null);
       setFormData((prev) => ({ ...prev, thumbnail: file }));
       setPreviewImage(URL.createObjectURL(file));
@@ -399,7 +394,6 @@ export default function CreatePrompt() {
             </button>
             <div className="text-sm text-slate-400">
               <p>Recommended size: 800x800px</p>
-              <p>Format: JPG, PNG, WEBP</p>
             </div>
             <input
               type="file"
