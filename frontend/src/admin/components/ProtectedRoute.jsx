@@ -36,6 +36,9 @@ export default function ProtectedRoute({ allowedRoles = [] }) {
         if (data.success) {
           // Save the current user ID for the frontend layout/services to use
           sessionStorage.setItem("promptai_user_id", data.user.id);
+          window.dispatchEvent(
+            new CustomEvent("auth_changed", { detail: { userId: data.user.id } })
+          );
 
           setAuthState({
             isLoading: false,

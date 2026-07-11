@@ -40,9 +40,10 @@ export function ShopProvider({ children }) {
   useEffect(() => {
     let cancelled = false;
 
-    async function loadWishlist() {
+    async function loadWishlist(event) {
       try {
-        const savedWishlist = await fetchWishlist();
+        const dynamicUserId = event?.detail?.userId;
+        const savedWishlist = await fetchWishlist(dynamicUserId);
         if (!cancelled) setWishlist(savedWishlist);
       } catch (error) {
         console.error("Failed to load wishlist", error);
@@ -51,8 +52,11 @@ export function ShopProvider({ children }) {
 
     loadWishlist();
 
+    window.addEventListener("auth_changed", loadWishlist);
+
     return () => {
       cancelled = true;
+      window.removeEventListener("auth_changed", loadWishlist);
     };
   }, []);
 
