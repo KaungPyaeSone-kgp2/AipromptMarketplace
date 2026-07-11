@@ -36,6 +36,28 @@ class SupabaseStorage {
 
         $fileContent = file_get_contents($fileTmpPath);
 
+        // Automatically convert images to WebP if GD library is available
+        if (function_exists('imagecreatefromstring') && function_exists('imagewebp') && strpos($contentType, 'image/') === 0 && $contentType !== 'image/webp' && $contentType !== 'image/svg+xml' && $contentType !== 'image/gif') {
+            $image = @imagecreatefromstring($fileContent);
+            if ($image !== false) {
+                // Preserve transparency for PNGs
+                imagepalettetotruecolor($image);
+                imagealphablending($image, false);
+                imagesavealpha($image, true);
+                
+                $tempWebpPath = sys_get_temp_dir() . '/' . uniqid('webp_', true) . '.webp';
+                
+                // Write to temp file to avoid output buffering issues that can corrupt the image
+                if (@imagewebp($image, $tempWebpPath, 85)) {
+                    $fileContent = file_get_contents($tempWebpPath);
+                    $contentType = 'image/webp';
+                    $destPath = preg_replace('/\.[^.]+$/', '.webp', $destPath);
+                    @unlink($tempWebpPath);
+                }
+                imagedestroy($image);
+            }
+        }
+
         $endpoint = rtrim($this->url, '/') . '/storage/v1/object/' . $this->bucket . '/' . ltrim($destPath, '/');
 
         $ch = curl_init();
