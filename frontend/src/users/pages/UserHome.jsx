@@ -3,6 +3,7 @@ import { Link, useOutletContext } from "react-router";
 import HomeFilters from "../components/home/HomeFilters.jsx";
 import PromptGrid from "../components/home/PromptGrid.jsx";
 import PromptCard from "../components/PromptCard.jsx";
+import Pagination from "../components/Pagination.jsx";
 import { useHomePrompts } from "../hooks/useHomePrompts.js";
 import { fetchFollowingAccounts } from "../services/followService.js";
 import { fetchCreatorPrompts, fetchDraftPrompts, updatePromptVisibility, PROMPTS_UPDATED_EVENT } from "../services/promptService.js";
@@ -22,6 +23,13 @@ export default function UserHome() {
   const [selectedCategories, setSelectedCategories] = useState([]);
   const [minRating, setMinRating] = useState(0);
   const [followingIds, setFollowingIds] = useState([]);
+
+  const [currentPage, setCurrentPage] = useState(1);
+  const ITEMS_PER_PAGE = 10;
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [selectedModels, selectedCategories, minRating, searchQuery]);
 
   useEffect(() => {
     let cancelled = false;
@@ -51,6 +59,12 @@ export default function UserHome() {
   );
 
   const { prompts, loading, error } = useHomePrompts(filters);
+
+  const totalPages = Math.ceil((prompts?.length || 0) / ITEMS_PER_PAGE);
+  const currentPrompts = prompts?.slice(
+    (currentPage - 1) * ITEMS_PER_PAGE,
+    currentPage * ITEMS_PER_PAGE
+  );
 
   const toggleModel = (model) => {
     setSelectedModels((prev) =>
@@ -85,12 +99,20 @@ export default function UserHome() {
       />
 
       <PromptGrid
-        prompts={prompts}
+        prompts={currentPrompts}
         loading={loading}
         error={error}
         variant="grid"
         searchQuery={searchQuery}
       />
+      
+      {!loading && !error && (
+        <Pagination
+          currentPage={currentPage}
+          totalPages={totalPages}
+          onPageChange={setCurrentPage}
+        />
+      )}
     </div>
   );
 }
