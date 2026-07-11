@@ -111,11 +111,16 @@ try {
     $creatorFollowersCount = (int)($followersCount[0]["followers_count"] ?? 0);
     $buyerFollowingCount = (int)($followingCount[0]["following_count"] ?? 0);
 
-    require_once __DIR__ . "/../../includes/socket_helper.php";
-    emitSocketEvent('follow_updated', [
+    $socketHelperPath = __DIR__ . "/../../includes/socket_helper.php";
+    if (file_exists($socketHelperPath)) {
+        require_once $socketHelperPath;
+        if (function_exists('emitSocketEvent')) {
+            emitSocketEvent('follow_updated', [
         'followers_count' => $creatorFollowersCount,
         'follower_id' => $followerId
     ], "user_" . $creatorId);
+        }
+    }
 
     echo json_encode([
         "success" => true,
@@ -131,3 +136,4 @@ try {
     ]);
 }
 ?>
+

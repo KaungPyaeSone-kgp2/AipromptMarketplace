@@ -55,8 +55,13 @@ try {
     }
 
     // 4. Emit WebSocket event to refresh frontend in realtime
-    require_once __DIR__ . "/../../includes/socket_helper.php";
-    emitSocketEvent("categories_updated", ["action" => "add", "id" => $newId]);
+    $socketHelperPath = __DIR__ . "/../../includes/socket_helper.php";
+    if (file_exists($socketHelperPath)) {
+        require_once $socketHelperPath;
+        if (function_exists('emitSocketEvent')) {
+            emitSocketEvent("categories_updated", ["action" => "add", "id" => $newId]);
+        }
+    }
 
     echo json_encode([
         "success" => true, 
@@ -69,3 +74,4 @@ try {
     echo json_encode(["success" => false, "message" => "Failed to create category", "error" => $e->getMessage()]);
 }
 ?>
+

@@ -99,8 +99,13 @@ try {
     }
 
     // Trigger Real-Time update to connected React clients
-    require_once __DIR__ . "/../../includes/socket_helper.php";
-    emitSocketEvent('prompt_inserted', ['promptId' => $promptId]);
+    $socketHelperPath = __DIR__ . "/../../includes/socket_helper.php";
+    if (file_exists($socketHelperPath)) {
+        require_once $socketHelperPath;
+        if (function_exists('emitSocketEvent')) {
+            emitSocketEvent('prompt_inserted', ['promptId' => $promptId]);
+        }
+    }
 
     echo json_encode([
         "success" => true,
@@ -120,3 +125,4 @@ try {
     ]);
 }
 ?>
+
