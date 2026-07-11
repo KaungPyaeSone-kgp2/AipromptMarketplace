@@ -262,8 +262,8 @@ export default function CreatePrompt() {
           title: prompt.title ?? "",
           description: prompt.description ?? "",
           content: prompt.promptText ?? "",
-          categoryId: prompt.categoryId ?? "",
-          modelType: prompt.model ?? MODEL_TYPES[0],
+          categoryId: prompt.categoryId ?? prompt.category_id ?? "",
+          modelType: prompt.modelType ?? prompt.model_type ?? prompt.model ?? MODEL_TYPES[0],
           thumbnail: null,
           visibility: prompt.visibility ?? "public",
         });

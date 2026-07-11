@@ -89,7 +89,7 @@ try {
     }
 
     $title = $_POST['title'] ?? null;
-    if ($title !== null) {
+    if ($title !== null && $title !== "") {
         $setClauses[] = "title = :title";
         $updateParams[":title"] = $title;
         $slug = strtolower(trim(preg_replace('/[^A-Za-z0-9-]+/', '-', $title)));
@@ -99,25 +99,25 @@ try {
     }
     
     $prompt_description = $_POST['prompt_description'] ?? null;
-    if ($prompt_description !== null) {
+    if ($prompt_description !== null && $prompt_description !== "") {
         $setClauses[] = "prompt_description = :prompt_description";
         $updateParams[":prompt_description"] = $prompt_description;
     }
     
     $full_prompt_content = $_POST['full_prompt_content'] ?? null;
-    if ($full_prompt_content !== null) {
+    if ($full_prompt_content !== null && $full_prompt_content !== "") {
         $setClauses[] = "full_prompt_content = :full_prompt_content";
         $updateParams[":full_prompt_content"] = $full_prompt_content;
     }
     
     $category_id = $_POST['category_id'] ?? null;
-    if ($category_id !== null) {
+    if ($category_id !== null && $category_id !== "") {
         $setClauses[] = "category_id = :category_id";
         $updateParams[":category_id"] = $category_id;
     }
     
     $model_type = $_POST['model_type'] ?? null;
-    if ($model_type !== null) {
+    if ($model_type !== null && $model_type !== "") {
         $setClauses[] = "model_type = :model_type";
         $updateParams[":model_type"] = $model_type;
     }
