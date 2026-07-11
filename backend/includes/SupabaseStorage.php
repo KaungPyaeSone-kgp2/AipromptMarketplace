@@ -36,28 +36,51 @@ class SupabaseStorage {
 
         $fileContent = @file_get_contents($fileTmpPath);
 
-        // Automatically convert images to WebP if GD library is available
-        if (function_exists('imagecreatefromstring') && function_exists('imagewebp') && strpos($contentType, 'image/') === 0 && $contentType !== 'image/webp' && $contentType !== 'image/svg+xml' && $contentType !== 'image/gif') {
-            $image = @imagecreatefromstring($fileContent);
-            if ($image !== false) {
-                // Preserve transparency for PNGs
-                imagepalettetotruecolor($image);
-                imagealphablending($image, false);
-                imagesavealpha($image, true);
-                
-                // Use output buffering to capture image data directly into memory without disk writing
-                ob_start();
-                if (@imagewebp($image, null, 85)) {
-                    $webpContent = ob_get_clean();
-                    if (!empty($webpContent)) {
-                        $fileContent = $webpContent;
-                        $contentType = 'image/webp';
-                        $destPath = preg_replace('/\.[^.]+$/', '.webp', $destPath);
-                    }
-                } else {
-                    ob_end_clean();
+        // Automatically convert images to WebP if extensions are available
+        $converted = false;
+        if (strpos($contentType, 'image/') === 0 && $contentType !== 'image/webp' && $contentType !== 'image/svg+xml' && $contentType !== 'image/gif') {
+            
+            // Try Imagick first
+            if (class_exists('Imagick')) {
+                try {
+                    $imagick = new Imagick();
+                    $imagick->readImageBlob($fileContent);
+                    $imagick->setImageFormat('webp');
+                    $imagick->setImageCompressionQuality(85);
+                    $fileContent = $imagick->getImageBlob();
+                    $contentType = 'image/webp';
+                    $destPath = preg_replace('/\.[^.]+$/', '.webp', $destPath);
+                    $converted = true;
+                    $imagick->clear();
+                    $imagick->destroy();
+                } catch (Exception $e) {
+                    // Imagick failed, fallback to GD
                 }
-                imagedestroy($image);
+            }
+
+            // Fallback to GD if Imagick is not available or failed
+            if (!$converted && function_exists('imagecreatefromstring') && function_exists('imagewebp')) {
+                $image = @imagecreatefromstring($fileContent);
+                if ($image !== false) {
+                    // Preserve transparency for PNGs
+                    imagepalettetotruecolor($image);
+                    imagealphablending($image, false);
+                    imagesavealpha($image, true);
+                    
+                    // Use output buffering to capture image data directly into memory without disk writing
+                    ob_start();
+                    if (@imagewebp($image, null, 85)) {
+                        $webpContent = ob_get_clean();
+                        if (!empty($webpContent)) {
+                            $fileContent = $webpContent;
+                            $contentType = 'image/webp';
+                            $destPath = preg_replace('/\.[^.]+$/', '.webp', $destPath);
+                        }
+                    } else {
+                        ob_end_clean();
+                    }
+                    imagedestroy($image);
+                }
             }
         }
 
