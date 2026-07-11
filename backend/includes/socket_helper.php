@@ -9,7 +9,11 @@ function emitSocketEvent($event, $data, $room = null) {
         'room' => $room
     ];
     
-    $ch = curl_init($url);
+    $ch = curl_init(trim($url));
+    
+    if (!$ch) {
+        return false;
+    }
     
     $jsonData = json_encode($payload);
     

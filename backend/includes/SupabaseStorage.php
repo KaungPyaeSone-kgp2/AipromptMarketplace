@@ -34,7 +34,7 @@ class SupabaseStorage {
             return false;
         }
 
-        $fileContent = file_get_contents($fileTmpPath);
+        $fileContent = @file_get_contents($fileTmpPath);
 
         // Automatically convert images to WebP if GD library is available
         if (function_exists('imagecreatefromstring') && function_exists('imagewebp') && strpos($contentType, 'image/') === 0 && $contentType !== 'image/webp' && $contentType !== 'image/svg+xml' && $contentType !== 'image/gif') {
