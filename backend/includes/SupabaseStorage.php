@@ -83,7 +83,7 @@ class SupabaseStorage {
         }
 
         error_log("Supabase Upload Error ($httpCode): " . $response);
-        return false;
+        throw new Exception("Supabase Error ($httpCode): " . $response);
     }
 
     /**
