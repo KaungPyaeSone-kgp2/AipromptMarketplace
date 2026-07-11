@@ -332,6 +332,11 @@ export default function CreatePrompt() {
       if (formData.thumbnail) {
         submission.append("thumbnail", formData.thumbnail);
       }
+      submission.append("title", formData.title);
+      submission.append("prompt_description", formData.description);
+      submission.append("full_prompt_content", formData.content);
+      submission.append("category_id", formData.categoryId);
+      submission.append("model_type", formData.modelType);
     } else {
       submission.append("title", formData.title);
       submission.append("prompt_description", formData.description);

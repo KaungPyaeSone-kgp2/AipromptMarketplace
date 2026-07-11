@@ -88,6 +88,40 @@ try {
         $updateParams[":prompt_variables"] = $prompt_variables;
     }
 
+    $title = $_POST['title'] ?? null;
+    if ($title !== null) {
+        $setClauses[] = "title = :title";
+        $updateParams[":title"] = $title;
+        $slug = strtolower(trim(preg_replace('/[^A-Za-z0-9-]+/', '-', $title)));
+        $slug = $slug . '-' . time();
+        $setClauses[] = "slug = :slug";
+        $updateParams[":slug"] = $slug;
+    }
+    
+    $prompt_description = $_POST['prompt_description'] ?? null;
+    if ($prompt_description !== null) {
+        $setClauses[] = "prompt_description = :prompt_description";
+        $updateParams[":prompt_description"] = $prompt_description;
+    }
+    
+    $full_prompt_content = $_POST['full_prompt_content'] ?? null;
+    if ($full_prompt_content !== null) {
+        $setClauses[] = "full_prompt_content = :full_prompt_content";
+        $updateParams[":full_prompt_content"] = $full_prompt_content;
+    }
+    
+    $category_id = $_POST['category_id'] ?? null;
+    if ($category_id !== null) {
+        $setClauses[] = "category_id = :category_id";
+        $updateParams[":category_id"] = $category_id;
+    }
+    
+    $model_type = $_POST['model_type'] ?? null;
+    if ($model_type !== null) {
+        $setClauses[] = "model_type = :model_type";
+        $updateParams[":model_type"] = $model_type;
+    }
+
     if ($thumbnailPath !== null) {
         $setClauses[] = "thumbnail = :thumbnail";
         $updateParams[":thumbnail"] = $thumbnailPath;
@@ -106,7 +140,7 @@ try {
 
     $cacheFile = __DIR__ . "/../../cache/home-data.json";
     if (file_exists($cacheFile)) {
-        unlink($cacheFile);
+        @unlink($cacheFile);
     }
 
     // Trigger Real-Time update to connected React clients

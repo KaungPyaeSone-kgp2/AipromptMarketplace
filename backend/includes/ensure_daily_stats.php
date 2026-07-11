@@ -33,7 +33,7 @@ function ensureTodayStatsRow(PDO $pdo): void
          FROM dashboard_daily_stats WHERE stat_date = ?"
     );
     $seed->execute([$yesterday]);
-    $prev = $seed->fetch(PDO::FETCH_ASSOC);
+    $prev = $seed->fetch(PDO::FETCH_ASSOC) ?: [];
 
     $totalUsers          = $prev['total_users']           ?? 0;
     $totalPrompts        = $prev['total_prompts']         ?? 0;

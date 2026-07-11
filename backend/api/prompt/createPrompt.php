@@ -95,7 +95,7 @@ try {
 
     $cacheFile = __DIR__ . "/../../cache/home-data.json";
     if (file_exists($cacheFile)) {
-        unlink($cacheFile);
+        @unlink($cacheFile);
     }
 
     // Trigger Real-Time update to connected React clients
