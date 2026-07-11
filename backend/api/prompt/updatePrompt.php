@@ -42,6 +42,11 @@ if ($prompt_variables !== null) {
 
 $thumbnailPath = null;
 if (isset($_FILES['thumbnail']) && $_FILES['thumbnail']['error'] === UPLOAD_ERR_OK) {
+    if ($_FILES['thumbnail']['size'] > 1048576) {
+        http_response_code(400);
+        echo json_encode(["success" => false, "message" => "Image size must be less than 1MB"]);
+        exit;
+    }
     $fileTmpPath = $_FILES['thumbnail']['tmp_name'];
     $fileType = $_FILES['thumbnail']['type'];
     $fileName = time() . '_' . basename($_FILES['thumbnail']['name']);

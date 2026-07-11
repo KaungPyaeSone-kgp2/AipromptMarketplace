@@ -306,6 +306,12 @@ export default function CreatePrompt() {
   const handleFileChange = (event) => {
     const file = event.target.files?.[0];
     if (file) {
+      if (file.size > 1048576) {
+        setError("Image size must be less than 1MB.");
+        event.target.value = "";
+        return;
+      }
+      setError(null);
       setFormData((prev) => ({ ...prev, thumbnail: file }));
       setPreviewImage(URL.createObjectURL(file));
     }
