@@ -58,13 +58,23 @@ class SupabaseStorage {
             }
         }
 
-        $endpoint = rtrim($this->url, '/') . '/storage/v1/object/' . $this->bucket . '/' . ltrim($destPath, '/');
+        // Ensure URL has https://
+        $baseUrl = rtrim($this->url, '/');
+        if (!preg_match('~^(?:f|ht)tps?://~i', $baseUrl)) {
+            $baseUrl = "https://" . $baseUrl;
+        }
+        $endpoint = $baseUrl . '/storage/v1/object/' . $this->bucket . '/' . ltrim($destPath, '/');
 
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, $endpoint);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'POST');
         curl_setopt($ch, CURLOPT_POSTFIELDS, $fileContent);
+        
+        // Prevent SSL issues in Docker containers
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
+        curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
         
         $headers = [
             'apikey: ' . $this->key,
@@ -75,15 +85,17 @@ class SupabaseStorage {
 
         $response = curl_exec($ch);
         $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        $curlError = curl_error($ch);
         
         curl_close($ch);
 
-        if ($httpCode >= 200 && $httpCode < 300) {
+        if ($response !== false && $httpCode >= 200 && $httpCode < 300) {
             return $this->getPublicUrl($destPath);
         }
 
-        error_log("Supabase Upload Error ($httpCode): " . $response);
-        throw new Exception("Supabase Error ($httpCode): " . $response);
+        $errorMsg = $response === false ? "cURL Error: " . $curlError : $response;
+        error_log("Supabase Upload Error ($httpCode): " . $errorMsg);
+        throw new Exception("Supabase Error ($httpCode): " . $errorMsg);
     }
 
     /**
@@ -93,6 +105,10 @@ class SupabaseStorage {
      * @return string The full public URL
      */
     public function getPublicUrl($path) {
-        return rtrim($this->url, '/') . '/storage/v1/object/public/' . $this->bucket . '/' . ltrim($path, '/');
+        $baseUrl = rtrim($this->url, '/');
+        if (!preg_match('~^(?:f|ht)tps?://~i', $baseUrl)) {
+            $baseUrl = "https://" . $baseUrl;
+        }
+        return $baseUrl . '/storage/v1/object/public/' . $this->bucket . '/' . ltrim($path, '/');
     }
 }
