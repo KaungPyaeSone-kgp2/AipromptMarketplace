@@ -45,12 +45,17 @@ if (isset($_FILES['thumbnail']) && $_FILES['thumbnail']['error'] === UPLOAD_ERR_
     $destPath = 'prompts/thumbnail/' . $fileName;
 
     $supabase = new SupabaseStorage();
-    $uploadedUrl = $supabase->upload($fileTmpPath, $destPath, $fileType);
-
-    if ($uploadedUrl) {
-        $thumbnailPath = $uploadedUrl;
-    } else {
-        echo json_encode(["success" => false, "message" => "Failed to upload file to Supabase"]);
+    try {
+        $uploadedUrl = $supabase->upload($fileTmpPath, $destPath, $fileType);
+        if ($uploadedUrl) {
+            $thumbnailPath = $uploadedUrl;
+        } else {
+            echo json_encode(["success" => false, "message" => "Failed to upload file to Supabase"]);
+            exit;
+        }
+    } catch (Exception $e) {
+        http_response_code(400);
+        echo json_encode(["success" => false, "message" => $e->getMessage()]);
         exit;
     }
 } else {
