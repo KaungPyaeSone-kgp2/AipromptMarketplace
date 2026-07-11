@@ -76,11 +76,11 @@ try {
     // Format the data explicitly for the frontend[cite: 4]
     $formattedReports = array_map(function ($report) {
         $formatImage = function($path) {
-            return !empty($path) ? (strpos($path, 'http') === 0 ? $path : "http://localhost:8000/" . ltrim($path, '/')) : "https://i.pravatar.cc/150";
+            return !empty($path) ? (strpos($path, 'http') === 0 ? $path : ltrim($path, '/')) : "https://i.pravatar.cc/150";
         };
         
         $formatEvidence = function($path) {
-            return !empty($path) ? (strpos($path, 'http') === 0 ? $path : "http://localhost:8000/" . ltrim($path, '/')) : null;
+            return !empty($path) ? (strpos($path, 'http') === 0 ? $path : ltrim($path, '/')) : null;
         };
 
         return [

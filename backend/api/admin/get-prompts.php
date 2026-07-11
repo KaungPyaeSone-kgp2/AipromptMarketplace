@@ -43,7 +43,8 @@ if (!$refresh && file_exists($cacheFile)) {
 // Helper to format image URLs
 function formatImageUrl($rawPath) {
     if (empty($rawPath)) return null;
-    return "http://localhost:8000/" . ltrim($rawPath, '/');
+    if (preg_match('/^https?:\/\//i', $rawPath)) return $rawPath;
+    return ltrim($rawPath, '/');
 }
 
 try {
