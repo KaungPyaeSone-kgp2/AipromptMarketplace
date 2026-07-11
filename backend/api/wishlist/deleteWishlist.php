@@ -48,6 +48,18 @@ try {
              WHERE id = :update_prompt_id",
             [":count_prompt_id" => $promptId, ":update_prompt_id" => $promptId]
         );
+
+        // Sync prompt_stats for analytics chart
+        $dao->insert(
+            "INSERT INTO prompt_stats (prompt_id, stats_date, total_saves, total_reviews, average_rating)
+             SELECT id, CURDATE(), COALESCE(save_count, 0), COALESCE(review_count, 0), COALESCE(average_rating, 0)
+             FROM prompts WHERE id = :prompt_id
+             ON DUPLICATE KEY UPDATE 
+             total_saves = VALUES(total_saves), 
+             total_reviews = VALUES(total_reviews), 
+             average_rating = VALUES(average_rating)",
+            [":prompt_id" => $promptId]
+        );
     }
 
     $pdo->commit();

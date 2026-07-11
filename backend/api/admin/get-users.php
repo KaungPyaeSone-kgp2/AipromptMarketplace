@@ -67,7 +67,7 @@ try {
             "name" => $user["user_name"],
             "email" => $user["user_email"],
             "profile_image" => !empty($user["profile_image"])
-                ? "http://localhost:8000/" . $user["profile_image"]
+                ? ltrim($user["profile_image"], '/')
                 : null,
             "status" => $user["is_banned"] ? "Ban" : "Active", // Translate boolean to your exact requested text
             "created_at" => date("M d, Y h:i A", strtotime($user["created_at"]))

@@ -206,6 +206,7 @@ import {
 } from "lucide-react";
 import PromptAnalytics from "./PromptAnalytics.jsx";
 import { StatCard } from "./StatCard.jsx";
+import { resolveAssetUrl } from "../../users/utils/assets";
 
 export const PromptDetail = ({ prompt, onBack }) => {
   const isActive = prompt.status === "Active";
@@ -236,7 +237,7 @@ export const PromptDetail = ({ prompt, onBack }) => {
         }}
       >
         <img
-          src={prompt.thumbnail}
+          src={resolveAssetUrl(prompt.thumbnail)}
           alt={prompt.title}
           className="w-full h-64 md:h-full object-cover rounded-xl"
           style={{ border: "1px solid rgba(139,92,246,0.3)" }}
@@ -269,7 +270,7 @@ export const PromptDetail = ({ prompt, onBack }) => {
           >
             {prompt.creator_image ? (
               <img
-                src={prompt.creator_image}
+                src={resolveAssetUrl(prompt.creator_image)}
                 alt={prompt.creator_name}
                 className="w-14 h-14 rounded-full object-cover"
                 style={{ border: "2px solid rgba(139,92,246,0.4)" }}

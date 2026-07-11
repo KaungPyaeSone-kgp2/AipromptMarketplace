@@ -12,6 +12,8 @@ import {
   ChevronDown,
 } from "lucide-react";
 
+import { resolveAssetUrl } from "../../users/utils/assets";
+
 const ACTIVITY_STATS_URL = `/api/admin/user-activity-stats.php`;
 const GET_USERS_URL = `/api/admin/get-users.php`;
 const TOGGLE_STATUS_URL = `/api/admin/toggle-user-status.php`;
@@ -427,7 +429,7 @@ export default function UserManagement() {
                       <div className="flex items-center gap-4">
                         {user.profile_image ? (
                           <img
-                            src={user.profile_image}
+                            src={resolveAssetUrl(user.profile_image)}
                             // src="http://localhost:8000/uploads/profiles/default-profile-picture-male-icon.svg"
                             alt={user.name}
                             className="w-10 h-10 rounded-full object-cover border border-white/10"

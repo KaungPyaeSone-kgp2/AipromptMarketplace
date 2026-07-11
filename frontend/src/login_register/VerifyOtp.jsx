@@ -154,12 +154,23 @@ export default function VerifyOtp() {
             placeholder="------"
           />
 
+          {timeLeft === 0 && (
+            <div className="text-red-500 font-bold mb-2 tracking-wide uppercase text-sm">
+              The OTP is expired
+            </div>
+          )}
           <button
-            type="submit"
-            disabled={isProcessing || timeLeft === 0 || successMessage !== ""}
+            type={timeLeft === 0 ? "button" : "submit"}
+            onClick={() => {
+              if (timeLeft === 0) {
+                sessionStorage.removeItem("otp_expires_at");
+                navigate("/login");
+              }
+            }}
+            disabled={isProcessing || successMessage !== ""}
             className="w-full py-4 text-sm md:text-base tracking-wider uppercase font-bold bg-white text-black rounded-full transition-all duration-300 hover:translate-y-[-2px] hover:shadow-[0_10px_20px_rgba(255,255,255,0.2)] disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            {isProcessing ? "Verifying..." : "Verify Account"}
+            {isProcessing ? "Verifying..." : (timeLeft === 0 ? "Verify Again" : "Verify Account")}
           </button>
         </form>
       </div>

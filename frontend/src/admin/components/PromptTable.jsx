@@ -112,6 +112,7 @@
 // };
 
 import { Eye, UserCircle } from "lucide-react";
+import { resolveAssetUrl } from "../../users/utils/assets";
 
 export const PromptTable = ({ prompts, onViewDetail, onToggleStatus }) => {
   return (
@@ -186,7 +187,7 @@ export const PromptTable = ({ prompts, onViewDetail, onToggleStatus }) => {
                       <div className="flex items-center gap-3">
                         {p.creator_image ? (
                           <img
-                            src={p.creator_image}
+                            src={resolveAssetUrl(p.creator_image)}
                             alt={p.creator_name}
                             className="w-9 h-9 rounded-full object-cover"
                             style={{ border: "2px solid rgba(139,92,246,0.4)" }}
