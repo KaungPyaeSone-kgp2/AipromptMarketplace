@@ -59,11 +59,18 @@ class SupabaseStorage {
         }
 
         // Ensure URL has https://
-        $baseUrl = rtrim($this->url, '/');
+        $baseUrl = trim($this->url);
+        $baseUrl = rtrim($baseUrl, '/');
         if (!preg_match('~^(?:f|ht)tps?://~i', $baseUrl)) {
             $baseUrl = "https://" . $baseUrl;
         }
-        $endpoint = $baseUrl . '/storage/v1/object/' . $this->bucket . '/' . ltrim($destPath, '/');
+        
+        // URL encode the destination path parts to handle spaces and special characters
+        $pathParts = explode('/', ltrim($destPath, '/'));
+        $encodedParts = array_map('rawurlencode', $pathParts);
+        $encodedPath = implode('/', $encodedParts);
+        
+        $endpoint = $baseUrl . '/storage/v1/object/' . $this->bucket . '/' . $encodedPath;
 
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, $endpoint);
@@ -105,10 +112,16 @@ class SupabaseStorage {
      * @return string The full public URL
      */
     public function getPublicUrl($path) {
-        $baseUrl = rtrim($this->url, '/');
+        $baseUrl = trim($this->url);
+        $baseUrl = rtrim($baseUrl, '/');
         if (!preg_match('~^(?:f|ht)tps?://~i', $baseUrl)) {
             $baseUrl = "https://" . $baseUrl;
         }
-        return $baseUrl . '/storage/v1/object/public/' . $this->bucket . '/' . ltrim($path, '/');
+        
+        $pathParts = explode('/', ltrim($path, '/'));
+        $encodedParts = array_map('rawurlencode', $pathParts);
+        $encodedPath = implode('/', $encodedParts);
+        
+        return $baseUrl . '/storage/v1/object/public/' . $this->bucket . '/' . $encodedPath;
     }
 }

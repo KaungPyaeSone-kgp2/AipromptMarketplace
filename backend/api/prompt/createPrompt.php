@@ -41,7 +41,8 @@ if (isset($_FILES['thumbnail']) && $_FILES['thumbnail']['error'] === UPLOAD_ERR_
     }
     $fileTmpPath = $_FILES['thumbnail']['tmp_name'];
     $fileType = $_FILES['thumbnail']['type'];
-    $fileName = time() . '_' . basename($_FILES['thumbnail']['name']);
+    $safeFilename = preg_replace('/[^A-Za-z0-9.\-]/', '_', basename($_FILES['thumbnail']['name']));
+    $fileName = time() . '_' . $safeFilename;
     $destPath = 'prompts/thumbnail/' . $fileName;
 
     $supabase = new SupabaseStorage();
