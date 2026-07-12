@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useEffect, useState, useCallback } from "react";
 import { getCurrentUserId } from "../services/currentUser.js";
-import { API_BASE } from "../../../config.js";
+import API_BASE from "../../config/api.js";
 
 const ThemeContext = createContext();
 
