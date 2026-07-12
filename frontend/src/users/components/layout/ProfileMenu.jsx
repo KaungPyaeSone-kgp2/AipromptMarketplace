@@ -161,7 +161,7 @@ export default function ProfileMenu({ user, onSignOut }) {
               <span className="absolute inset-0 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition bg-black/30 text-[8px] text-slate-900 dark:text-white font-bold">View</span>
             </div>
             <div className="min-w-0">
-              <p className="truncate text-sm font-bold text-slate-900 dark:text-white transition group-hover:text-violet-300">
+              <p className="truncate text-sm font-bold text-slate-900 dark:text-white transition group-hover:text-violet-700 dark:group-hover:text-violet-300">
                 {user.fullName ?? user.displayName}
               </p>
               {/* <p className="truncate text-xs text-slate-600 dark:text-slate-400">{user.email}</p>
@@ -175,9 +175,9 @@ export default function ProfileMenu({ user, onSignOut }) {
             <button
               type="button"
               onClick={() => handleOpenConnections("followers")}
-              className="group rounded-lg p-1 text-left text-slate-700 dark:text-slate-300 transition hover:bg-violet-500/20 hover:text-violet-300 hover:ring-1 hover:ring-violet-500/35"
+              className="group rounded-lg p-1 text-left text-slate-700 dark:text-slate-300 transition hover:bg-violet-500/20 hover:text-violet-700 dark:hover:text-violet-300 hover:ring-1 hover:ring-violet-500/35"
             >
-              <p className="text-[11px] font-bold uppercase text-slate-500 transition group-hover:text-violet-200/80">
+              <p className="text-[11px] font-bold uppercase text-slate-500 transition group-hover:text-violet-700 dark:group-hover:text-violet-200/80">
                 Followers
               </p>
               <p className="text-sm font-black">
@@ -187,9 +187,9 @@ export default function ProfileMenu({ user, onSignOut }) {
             <button
               type="button"
               onClick={() => handleOpenConnections("following")}
-              className="group rounded-lg p-1 text-left text-slate-700 dark:text-slate-300 transition hover:bg-violet-500/20 hover:text-violet-300 hover:ring-1 hover:ring-violet-500/35"
+              className="group rounded-lg p-1 text-left text-slate-700 dark:text-slate-300 transition hover:bg-violet-500/20 hover:text-violet-700 dark:hover:text-violet-300 hover:ring-1 hover:ring-violet-500/35"
             >
-              <p className="text-[11px] font-bold uppercase text-slate-500 transition group-hover:text-violet-200/80">
+              <p className="text-[11px] font-bold uppercase text-slate-500 transition group-hover:text-violet-700 dark:group-hover:text-violet-200/80">
                 Following
               </p>
               <p className="text-sm font-black">
@@ -236,7 +236,7 @@ export default function ProfileMenu({ user, onSignOut }) {
           <Link
             to="/user/settings"
             onClick={() => setOpen(false)}
-            className="block w-full px-4 py-2.5 text-left text-sm text-slate-700 dark:text-slate-300 transition hover:bg-slate-800"
+            className="block w-full px-4 py-2.5 text-left text-sm text-slate-700 dark:text-slate-300 transition hover:bg-slate-200 dark:hover:bg-slate-800"
           >
             Settings
           </Link>

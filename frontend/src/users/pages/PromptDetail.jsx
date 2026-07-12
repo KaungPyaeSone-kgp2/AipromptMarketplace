@@ -361,7 +361,7 @@ export default function PromptDetail() {
           {String(prompt.creatorId) !== currentUserId && (
             <form
               onSubmit={handleSubmitComment}
-              className="mt-5 rounded-xl border border-slate-300 dark:border-slate-800 bg-slate-950/50 p-4"
+              className="mt-5 rounded-xl border border-slate-300 dark:border-slate-800 bg-slate-100 dark:bg-slate-950/50 p-4"
             >
               <div className="flex flex-wrap items-center justify-between gap-3">
                 <div>
@@ -417,14 +417,14 @@ export default function PromptDetail() {
 
           <div className="mt-5 space-y-4">
             {reviewSummary.reviews.length === 0 ? (
-              <p className="rounded-xl border border-slate-300 dark:border-slate-800 bg-slate-950/50 p-5 text-sm text-slate-500">
+              <p className="rounded-xl border border-slate-300 dark:border-slate-800 bg-slate-100 dark:bg-slate-950/50 p-5 text-sm text-slate-800 dark:text-slate-500">
                 No reviews yet.
               </p>
             ) : (
               reviewSummary.reviews.map((review) => (
                 <article
                   key={review.id}
-                  className="rounded-xl border border-slate-300 dark:border-slate-800 bg-slate-950/50 p-4"
+                  className="rounded-xl border border-slate-300 dark:border-slate-800 bg-slate-100 dark:bg-slate-950/50 p-4"
                 >
                   <div className="flex items-start gap-3">
                     <Link
@@ -557,7 +557,7 @@ export default function PromptDetail() {
           </div>
 
 
-          <div className="mt-5 rounded-xl bg-slate-950/50 p-4 border border-slate-300 dark:border-slate-800">
+          <div className="mt-5 rounded-xl bg-slate-100 dark:bg-slate-950/50 p-4 border border-slate-300 dark:border-slate-800">
             <h3 className="text-sm font-bold uppercase tracking-widest text-slate-500 mb-2">Full Prompt</h3>
             <p className="text-sm leading-6 text-slate-800 dark:text-slate-200 font-mono whitespace-pre-wrap break-words">
               {renderHighlightedPromptText()}

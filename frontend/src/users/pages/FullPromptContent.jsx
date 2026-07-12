@@ -65,8 +65,8 @@ export default function FullPromptContent() {
         </div>
       </div>
 
-      <div className="overflow-hidden rounded-2xl border border-slate-700/60 bg-[#0b0f19] shadow-2xl backdrop-blur-sm">
-        <div className="flex items-center justify-between border-b border-slate-800/80 bg-[#070a11] px-6 py-4">
+      <div className="overflow-hidden rounded-2xl border border-slate-300 dark:border-slate-700/60 bg-slate-100 dark:bg-[#0b0f19] shadow-2xl backdrop-blur-sm">
+        <div className="flex items-center justify-between border-b border-slate-300 dark:border-slate-800/80 bg-slate-200 dark:bg-[#070a11] px-6 py-4">
           <div className="flex items-center gap-2">
             <span className="h-3 w-3 rounded-full bg-rose-500/80"></span>
             <span className="h-3 w-3 rounded-full bg-amber-500/80"></span>
