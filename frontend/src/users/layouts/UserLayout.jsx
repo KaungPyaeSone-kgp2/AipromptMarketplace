@@ -314,7 +314,7 @@ export default function UserLayout() {
   };
 
   return (
-    <ThemeProvider>
+    <ThemeProvider serverTheme={user?.theme}>
       <div className="app-shell min-h-screen bg-white dark:bg-[#09090b] text-slate-900 dark:text-slate-100 transition-colors duration-200">
         <Navbar
           user={user}

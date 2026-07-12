@@ -22,14 +22,42 @@ if (!isset($_SESSION['user_id'])) {
     exit;
 }
 
+// Include database connection
+require_once __DIR__ . '/../config/Database.php';
+
 // If session exists, return user info so React can update its state
+$userId = $_SESSION['user_id'];
+$themeName = 'light'; // Default
+
+try {
+    $db = new Database();
+    $pdo = $db->connect();
+    
+    // Fetch theme from database
+    $stmt = $pdo->prepare("
+        SELECT t.theme_name 
+        FROM users u 
+        LEFT JOIN themes t ON u.theme_id = t.id 
+        WHERE u.id = ?
+    ");
+    $stmt->execute([$userId]);
+    $result = $stmt->fetch(PDO::FETCH_ASSOC);
+    
+    if ($result && !empty($result['theme_name'])) {
+        $themeName = $result['theme_name'];
+    }
+} catch (Exception $e) {
+    // If table doesn't exist yet, fallback to system
+}
+
 echo json_encode([
     "authenticated" => true,
     "user" => [
         "id" => $_SESSION['user_id'],
         "username" => $_SESSION['user_name'],
         "role" => $_SESSION['user_role'],
-        "profile_image" => $_SESSION['profile_image'] ?? ""
+        "profile_image" => $_SESSION['profile_image'] ?? "",
+        "theme" => $themeName
     ]
 ]);
 ?>
