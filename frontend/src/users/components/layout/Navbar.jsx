@@ -136,8 +136,7 @@ export default function Navbar({
 
   return (
     <nav
-      className="sticky top-0 z-40 flex h-16 items-center gap-3 border-b border-slate-700/30 px-4 backdrop-blur-xl"
-      style={{ background: "rgba(8, 13, 28, 0.96)" }}
+      className="sticky top-0 z-40 flex h-16 items-center gap-3 border-b border-gray-200 dark:border-slate-700/30 px-4 backdrop-blur-xl bg-white/90 dark:bg-[#080d1c]/95 transition-colors duration-200"
     >
       <Link to="/user" className="flex shrink-0 items-center gap-3">
         <img src={dreamKeyLogo} alt="DreamKey Logo" className="w-9 h-9 rounded-lg object-cover shadow-lg" />

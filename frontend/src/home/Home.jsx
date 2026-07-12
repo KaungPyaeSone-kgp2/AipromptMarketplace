@@ -221,7 +221,7 @@ export default function Home() {
   }, []);
 
   return (
-    <div className="bg-[#050505] text-white selection:bg-orange-500 selection:text-white relative w-screen min-h-screen overflow-x-clip font-['Inter']">
+    <div className="bg-white dark:bg-[#050505] text-slate-900 dark:text-white selection:bg-orange-500 selection:text-white relative w-screen min-h-screen overflow-x-clip font-['Inter'] transition-colors duration-200">
       {/* Background Aesthetic Effects */}
       <div
         className="fixed inset-0 z-0 opacity-[0.03] pointer-events-none mix-blend-overlay"
