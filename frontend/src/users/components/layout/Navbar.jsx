@@ -173,7 +173,7 @@ export default function Navbar({
                       key={item.id}
                       to={`/user/prompt/${item.id}`}
                       onClick={() => setShowWishlistDropdown(false)}
-                      className="flex items-center gap-3 p-2 rounded-xl transition-all duration-300 hover:bg-slate-800"
+                      className="flex items-center gap-3 p-2 rounded-xl transition-all duration-300 hover:bg-slate-200 dark:hover:bg-slate-800"
                     >
                       <div className="h-10 w-10 shrink-0 overflow-hidden rounded-lg bg-slate-200 dark:bg-slate-800">
                         {item.imageUrl ? (
@@ -223,7 +223,7 @@ export default function Navbar({
                     title="Double-click to dismiss"
                     className={`p-3 rounded-xl transition-all duration-300 transform select-none cursor-pointer ${dismissingIds.has(noti.id)
                       ? "opacity-0 translate-x-full scale-95 h-0 overflow-hidden py-0 my-0 border-none"
-                      : "opacity-100 translate-x-0 hover:bg-slate-800"
+                      : "opacity-100 translate-x-0 hover:bg-slate-200 dark:hover:bg-slate-800"
                       }`}
                   >
                     <div className="flex items-center justify-between gap-2">

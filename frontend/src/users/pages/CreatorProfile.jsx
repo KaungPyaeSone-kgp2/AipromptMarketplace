@@ -293,7 +293,7 @@ export default function CreatorProfile() {
                   onClick={handleToggleFollow}
                   disabled={followLoading}
                   className={`h-10 rounded-xl px-5 text-sm font-black transition ${isFollowing
-                    ? "bg-slate-200 dark:bg-slate-800 text-slate-800 dark:text-slate-200 hover:bg-slate-700"
+                    ? "bg-slate-200 dark:bg-slate-800 text-slate-800 dark:text-slate-200 hover:bg-slate-300 dark:hover:bg-slate-700"
                     : "bg-white text-slate-950 hover:bg-violet-100"
                     }`}
                 >
