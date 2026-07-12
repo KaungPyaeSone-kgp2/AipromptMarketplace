@@ -36,10 +36,12 @@ if ($promptId) {
 }
 if ($creatorId) {
     $where[] = "p.creator_id = :creator_id";
+    $where[] = "(r.cleared_by_creator IS NULL OR r.cleared_by_creator = 0)";
     $params[":creator_id"] = $creatorId;
 }
 if ($userId) {
     $where[] = "r.user_id = :user_id";
+    $where[] = "(r.cleared_by_reviewer IS NULL OR r.cleared_by_reviewer = 0)";
     $params[":user_id"] = $userId;
 }
 

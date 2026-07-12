@@ -9,7 +9,7 @@ function MenuRow({ label, count, disabled = false, onClick }) {
       type="button"
       disabled={disabled}
       onClick={onClick}
-      className="flex w-full items-center justify-between rounded-xl px-3 py-2 text-left text-sm font-semibold text-slate-700 dark:text-slate-300 transition hover:bg-slate-800 disabled:cursor-not-allowed disabled:text-slate-600 disabled:hover:bg-transparent"
+      className="flex w-full items-center justify-between rounded-xl px-3 py-2 text-left text-sm font-semibold text-slate-700 dark:text-slate-300 transition hover:bg-slate-800 hover:text-white disabled:cursor-not-allowed disabled:text-slate-600 disabled:hover:bg-transparent"
     >
       <span>{label}</span>
       <span className="flex items-center gap-2">

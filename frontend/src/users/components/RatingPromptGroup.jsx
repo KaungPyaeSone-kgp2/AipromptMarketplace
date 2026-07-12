@@ -1,7 +1,7 @@
 import React from "react";
 import { Link } from "react-router";
 
-export default function RatingPromptGroups({ ratings, mode }) {
+export default function RatingPromptGroups({ ratings, mode, onClear }) {
   if (!ratings || ratings.length === 0) return null;
 
   return (
@@ -17,9 +17,16 @@ export default function RatingPromptGroups({ ratings, mode }) {
                 {item.promptTitle || "Prompt"}
               </Link>
             </h3>
-            <span className="badge-pill bg-yellow-500/15 text-yellow-300 px-3 py-1 rounded-full text-xs font-bold">
-              ★ {item.rating}
-            </span>
+            <div className="flex items-center gap-2">
+              <span className="badge-pill bg-amber-500/15 text-amber-600 dark:text-amber-400 px-3 py-1 rounded-full text-xs font-bold">
+                ★ {item.rating}
+              </span>
+              {onClear && (
+                <button onClick={() => onClear(item.id)} className="text-slate-400 hover:text-rose-500 transition-colors" title="Clear">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4"><line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" /></svg>
+                </button>
+              )}
+            </div>
           </div>
 
           <div className="mt-4 p-4 rounded-xl bg-slate-200/50 dark:bg-slate-800/50 border border-slate-400/50 dark:border-slate-700/50">

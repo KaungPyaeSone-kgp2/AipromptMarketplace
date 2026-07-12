@@ -53,3 +53,24 @@ export async function fetchReports(userId) {
   if (!res.ok) throw new Error("Failed to fetch reports");
   return await res.json();
 }
+
+/**
+ * Clear a report from the user's view.
+ */
+export async function clearReportApi(reportId, targetType, isReceived, currentStatus) {
+  const res = await fetch(`${getApiBaseUrl()}/reports/clearReport.php`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+      report_id: reportId,
+      target_type: targetType,
+      is_received: isReceived,
+      current_status: currentStatus
+    }),
+  });
+  
+  if (!res.ok) throw new Error("Failed to clear report");
+  return await res.json();
+}

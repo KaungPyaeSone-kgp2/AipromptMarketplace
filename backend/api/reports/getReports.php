@@ -41,7 +41,7 @@ try {
         SELECT pr.*, p.title as prompt_title, 'prompt' as target_type
         FROM prompt_reports pr
         LEFT JOIN prompts p ON pr.prompt_id = p.id
-        WHERE pr.reporter_id = ?
+        WHERE pr.reporter_id = ? AND (pr.cleared_status_reporter IS NULL OR pr.cleared_status_reporter != pr.status)
     ");
     $stmt->execute([$userId]);
     $submittedReports = array_merge($submittedReports, $stmt->fetchAll(PDO::FETCH_ASSOC));
@@ -51,7 +51,7 @@ try {
         SELECT ur.*, u.user_name as reported_username, 'user' as target_type
         FROM user_reports ur
         LEFT JOIN users u ON ur.reported_user_id = u.id
-        WHERE ur.reporter_id = ?
+        WHERE ur.reporter_id = ? AND (ur.cleared_status_reporter IS NULL OR ur.cleared_status_reporter != ur.status)
     ");
     $stmt->execute([$userId]);
     $submittedReports = array_merge($submittedReports, $stmt->fetchAll(PDO::FETCH_ASSOC));
@@ -61,7 +61,7 @@ try {
         SELECT br.*, r.review_text as review_text, 'comment' as target_type
         FROM bad_review_reports br
         LEFT JOIN reviews r ON br.review_id = r.id
-        WHERE br.reporter_id = ?
+        WHERE br.reporter_id = ? AND (br.cleared_status_reporter IS NULL OR br.cleared_status_reporter != br.status)
     ");
     $stmt->execute([$userId]);
     $submittedReports = array_merge($submittedReports, $stmt->fetchAll(PDO::FETCH_ASSOC));
@@ -84,7 +84,7 @@ try {
         SELECT pr.*, p.title as prompt_title, 'prompt' as target_type
         FROM prompt_reports pr
         JOIN prompts p ON pr.prompt_id = p.id
-        WHERE p.creator_id = ?
+        WHERE p.creator_id = ? AND (pr.cleared_status_reported IS NULL OR pr.cleared_status_reported != pr.status)
     ");
     $stmt->execute([$userId]);
     $receivedReports = array_merge($receivedReports, $stmt->fetchAll(PDO::FETCH_ASSOC));
@@ -93,7 +93,7 @@ try {
     $stmt = $pdo->prepare("
         SELECT ur.*, 'user' as target_type
         FROM user_reports ur
-        WHERE ur.reported_user_id = ?
+        WHERE ur.reported_user_id = ? AND (ur.cleared_status_reported IS NULL OR ur.cleared_status_reported != ur.status)
     ");
     $stmt->execute([$userId]);
     $receivedReports = array_merge($receivedReports, $stmt->fetchAll(PDO::FETCH_ASSOC));
@@ -103,7 +103,7 @@ try {
         SELECT br.*, r.review_text as review_text, 'comment' as target_type
         FROM bad_review_reports br
         JOIN reviews r ON br.review_id = r.id
-        WHERE r.user_id = ?
+        WHERE r.user_id = ? AND (br.cleared_status_reported IS NULL OR br.cleared_status_reported != br.status)
     ");
     $stmt->execute([$userId]);
     $receivedReports = array_merge($receivedReports, $stmt->fetchAll(PDO::FETCH_ASSOC));

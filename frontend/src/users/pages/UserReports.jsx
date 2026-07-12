@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
-import { fetchReports } from "../services/reportService.js";
+import { fetchReports, clearReportApi } from "../services/reportService.js";
 import { getCurrentUserId } from "../services/currentUser.js";
 
-const ReportCard = ({ report, isReceived }) => {
+const ReportCard = ({ report, isReceived, onClear }) => {
   const formatTimeAgo = (dateStr) => {
     if (!dateStr) return "";
     const date = new Date(dateStr);
@@ -34,13 +34,20 @@ const ReportCard = ({ report, isReceived }) => {
         <h3 className="text-base font-bold text-slate-900 dark:text-white">
           {getTargetLabel()}
         </h3>
-        <span className={`badge-pill px-3 py-1 rounded-full text-xs font-bold ${report.status === 'pending' ? 'bg-amber-500/15 text-amber-300' :
-          report.status === 'resolved' ? 'bg-emerald-500/15 text-emerald-300' :
-            report.status === 'rejected' ? 'bg-rose-500/15 text-rose-700 dark:text-rose-300' :
-              'bg-blue-500/15 text-blue-300'
-          }`}>
-          {report.status}
-        </span>
+        <div className="flex items-center gap-2">
+          <span className={`badge-pill px-3 py-1 rounded-full text-xs font-bold ${report.status === 'pending' ? 'bg-amber-500/15 text-amber-300' :
+            report.status === 'resolved' ? 'bg-emerald-500/15 text-emerald-300' :
+              report.status === 'rejected' ? 'bg-rose-500/15 text-rose-700 dark:text-rose-300' :
+                'bg-blue-500/15 text-blue-300'
+            }`}>
+            {report.status}
+          </span>
+          {onClear && (
+            <button onClick={() => onClear(report.id, report.target_type, report.status)} className="text-slate-400 hover:text-rose-500 transition-colors" title="Clear">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4"><line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" /></svg>
+            </button>
+          )}
+        </div>
       </div>
 
       <div className="mt-4 p-4 rounded-xl bg-slate-200/50 dark:bg-slate-800/50 border border-slate-400/50 dark:border-slate-700/50">
@@ -103,6 +110,31 @@ export default function UserReports() {
     };
   }, [loadData]);
 
+  const clearReport = async (id, targetType, status, isReceived) => {
+    try {
+      await clearReportApi(id, targetType, isReceived, status);
+      setReports(prev => ({
+        submitted: prev.submitted.filter(r => isReceived ? true : r.id !== id),
+        received: prev.received.filter(r => isReceived ? r.id !== id : true)
+      }));
+    } catch (err) {
+      console.error("Failed to clear report:", err);
+    }
+  };
+
+  const clearAllReports = async () => {
+    try {
+      const isReceived = activeTab === "received";
+      await Promise.all(currentList.map(r => clearReportApi(r.id, r.target_type, isReceived, r.status)));
+      setReports(prev => ({
+        ...prev,
+        [activeTab]: []
+      }));
+    } catch (err) {
+      console.error("Failed to clear all reports:", err);
+    }
+  };
+
   const currentList = activeTab === "submitted" ? reports.submitted : reports.received;
 
   return (
@@ -116,25 +148,33 @@ export default function UserReports() {
         </p>
       </div>
 
-      <div className="flex gap-2">
-        <button
-          onClick={() => setActiveTab("submitted")}
-          className={`rounded-full px-4 py-1.5 text-sm font-bold transition-all ${activeTab === "submitted"
-            ? "bg-violet-600 text-slate-900 dark:text-white"
-            : "bg-slate-200 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-700 hover:text-white"
-            }`}
-        >
-          Submitted ({reports.submitted.length})
-        </button>
-        <button
-          onClick={() => setActiveTab("received")}
-          className={`rounded-full px-4 py-1.5 text-sm font-bold transition-all ${activeTab === "received"
-            ? "bg-violet-600 text-slate-900 dark:text-white"
-            : "bg-slate-200 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-700 hover:text-white"
-            }`}
-        >
-          Against Me ({reports.received.length})
-        </button>
+      <div className="flex gap-2 justify-between items-center">
+        <div className="flex gap-2">
+          <button
+            onClick={() => setActiveTab("submitted")}
+            className={`rounded-full px-4 py-1.5 text-sm font-bold transition-all ${activeTab === "submitted"
+              ? "bg-violet-600 text-slate-900 dark:text-white"
+              : "bg-slate-200 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-700 hover:text-white"
+              }`}
+          >
+            Submitted ({reports.submitted.length})
+          </button>
+          <button
+            onClick={() => setActiveTab("received")}
+            className={`rounded-full px-4 py-1.5 text-sm font-bold transition-all ${activeTab === "received"
+              ? "bg-violet-600 text-slate-900 dark:text-white"
+              : "bg-slate-200 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-700 hover:text-white"
+              }`}
+          >
+            Against Me ({reports.received.length})
+          </button>
+        </div>
+
+        {currentList.length > 0 && (
+          <button onClick={clearAllReports} className="text-xs font-bold text-rose-500 hover:text-rose-600 transition-colors">
+            Clear All
+          </button>
+        )}
       </div>
 
       {loading ? (
@@ -144,7 +184,7 @@ export default function UserReports() {
       ) : currentList.length > 0 ? (
         <div className="space-y-6">
           {currentList.map(report => (
-            <ReportCard key={`${report.target_type}-${report.id}`} report={report} isReceived={activeTab === 'received'} />
+            <ReportCard key={`${report.target_type}-${report.id}`} report={report} isReceived={activeTab === 'received'} onClear={(id, targetType, status) => clearReport(id, targetType, status, activeTab === 'received')} />
           ))}
         </div>
       ) : (

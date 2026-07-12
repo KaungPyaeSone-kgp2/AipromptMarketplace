@@ -109,3 +109,17 @@ export async function deletePromptReview(reviewId) {
     review_id: Number(reviewId),
   });
 }
+
+export async function clearCreatorReview(reviewId) {
+  return apiPost("reviews/clearReview.php", {
+    creator_id: Number(getCurrentUserId()),
+    review_id: Number(reviewId),
+  });
+}
+
+export async function clearBuyerReview(reviewId) {
+  return apiPost("reviews/clearReview.php", {
+    user_id: Number(getCurrentUserId()),
+    review_id: Number(reviewId),
+  });
+}

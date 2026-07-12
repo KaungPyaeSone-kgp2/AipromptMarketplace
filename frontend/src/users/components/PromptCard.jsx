@@ -123,16 +123,16 @@ export default function PromptCard({
           <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/5 to-black/80 opacity-0 transition-opacity duration-300 group-hover:opacity-100 pointer-events-none" />
 
           {/* ── Default labels (fade out on hover) ── */}
-          <div className="absolute left-3 top-3 text-xs font-black text-slate-900 dark:text-white drop-shadow transition-opacity duration-200 group-hover:opacity-0 pointer-events-none">
+          <div className="absolute left-3 top-3 text-xs font-black text-white drop-shadow-md transition-opacity duration-200 group-hover:opacity-0 pointer-events-none">
             {prompt.model || "AI"}
           </div>
 
-          <div className="absolute right-3 top-3 text-xs font-black text-slate-900 dark:text-white drop-shadow transition-opacity duration-200 group-hover:opacity-0 pointer-events-none">
+          <div className="absolute right-3 top-3 text-xs font-black text-white drop-shadow-md transition-opacity duration-200 group-hover:opacity-0 pointer-events-none">
             {ratingLabel} ★
           </div>
 
           <div className="absolute inset-x-0 bottom-0 flex items-end justify-between gap-3 p-3 transition-opacity duration-200 group-hover:opacity-0 pointer-events-none">
-            <h3 className="line-clamp-2 text-base font-black leading-tight text-slate-900 dark:text-white drop-shadow">
+            <h3 className="line-clamp-2 text-base font-black leading-tight text-white drop-shadow-md">
               {prompt.title}
             </h3>
           </div>
@@ -291,7 +291,7 @@ export default function PromptCard({
           {prompt.title}
         </h3>
         {typeof prompt.rating === "number" && prompt.rating > 0 && (
-          <span className="badge-pill bg-yellow-500/15 text-yellow-300">
+          <span className="badge-pill bg-amber-500/15 text-amber-600 dark:text-amber-400 px-2 py-1 rounded-full text-xs font-bold">
             ★ {ratingLabel}
           </span>
         )}
