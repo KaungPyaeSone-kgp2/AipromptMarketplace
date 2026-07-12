@@ -10,7 +10,7 @@ function Badge({ count, variant = "violet" }) {
 
   return (
     <span
-      className={`absolute -right-1 -top-1 flex h-4 min-w-[16px] items-center justify-center rounded-full px-0.5 text-[10px] font-bold text-white ${colors}`}
+      className={`absolute -right-1 -top-1 flex h-4 min-w-[16px] items-center justify-center rounded-full px-0.5 text-[10px] font-bold text-slate-900 dark:text-white ${colors}`}
     >
       {count > 99 ? "99+" : count}
     </span>
@@ -29,7 +29,7 @@ export default function NavIconButton({
       type="button"
       onClick={onClick}
       aria-label={label}
-      className="relative flex h-9 w-9 items-center justify-center rounded-xl text-slate-400 transition hover:bg-slate-800/80 hover:text-white"
+      className="relative flex h-9 w-9 items-center justify-center rounded-xl text-slate-600 dark:text-slate-400 transition hover:bg-slate-800/80 hover:text-white"
     >
       {children}
       <Badge count={badge} variant={badgeVariant} />

@@ -11,7 +11,7 @@ export default function PromptGrid({
   if (loading) {
     return (
       <div className="glass-panel flex min-h-[280px] items-center justify-center p-8">
-        <p className="text-sm text-slate-400">Loading prompts...</p>
+        <p className="text-sm text-slate-600 dark:text-slate-400">Loading prompts...</p>
       </div>
     );
   }
@@ -19,7 +19,7 @@ export default function PromptGrid({
   if (error) {
     return (
       <div className="glass-panel flex min-h-[280px] items-center justify-center p-8">
-        <p className="text-sm text-rose-300">{error}</p>
+        <p className="text-sm text-rose-700 dark:text-rose-300">{error}</p>
       </div>
     );
   }
@@ -29,7 +29,7 @@ export default function PromptGrid({
 
     return (
       <div className="glass-panel flex min-h-[280px] flex-col items-center justify-center gap-3 p-8 text-center">
-        <p className="text-sm font-semibold text-slate-300">
+        <p className="text-sm font-semibold text-slate-700 dark:text-slate-300">
           {trimmedSearch
             ? `No prompts match "${trimmedSearch}".`
             : "No prompts match the current filters."}

@@ -101,23 +101,23 @@ function DatePickerField({ label, value, onChange }) {
           }
           setOpen((prev) => !prev);
         }}
-        className="mt-2 flex w-full items-center justify-between rounded-lg border border-slate-700 bg-[#070814] px-3 py-2 text-left text-sm font-bold text-violet-300 outline-none transition hover:border-violet-300 focus:border-violet-300"
+        className="mt-2 flex w-full items-center justify-between rounded-lg border border-slate-400 dark:border-slate-700 bg-[#070814] px-3 py-2 text-left text-sm font-bold text-violet-700 dark:text-violet-300 outline-none transition hover:border-violet-300 focus:border-violet-300"
       >
         <span>{formatPickerDate(value, label)}</span>
         <span className="text-xs text-slate-500">Calendar</span>
       </button>
 
       {open && (
-        <div className="absolute right-0 top-full z-50 mt-2 w-72 rounded-xl border border-slate-700 bg-[#070814] p-3 shadow-2xl">
+        <div className="absolute right-0 top-full z-50 mt-2 w-72 rounded-xl border border-slate-400 dark:border-slate-700 bg-[#070814] p-3 shadow-2xl">
           <div className="flex items-center justify-between">
             <button
               type="button"
               onClick={() => setVisibleMonth(new Date(year, month - 1, 1))}
-              className="rounded-lg px-3 py-1 text-sm font-black text-violet-300 transition hover:bg-violet-300 hover:text-slate-950"
+              className="rounded-lg px-3 py-1 text-sm font-black text-violet-700 dark:text-violet-300 transition hover:bg-violet-300 hover:text-slate-950"
             >
               Prev
             </button>
-            <p className="text-sm font-black text-violet-300">
+            <p className="text-sm font-black text-violet-700 dark:text-violet-300">
               {visibleMonth.toLocaleDateString(undefined, {
                 month: "long",
                 year: "numeric",
@@ -126,7 +126,7 @@ function DatePickerField({ label, value, onChange }) {
             <button
               type="button"
               onClick={() => setVisibleMonth(new Date(year, month + 1, 1))}
-              className="rounded-lg px-3 py-1 text-sm font-black text-violet-300 transition hover:bg-violet-300 hover:text-slate-950"
+              className="rounded-lg px-3 py-1 text-sm font-black text-violet-700 dark:text-violet-300 transition hover:bg-violet-300 hover:text-slate-950"
             >
               Next
             </button>
@@ -156,7 +156,7 @@ function DatePickerField({ label, value, onChange }) {
                   }}
                   className={`aspect-square rounded-lg text-sm font-black transition ${selected
                     ? "bg-violet-300 text-slate-950"
-                    : "text-slate-300 hover:bg-violet-300 hover:text-slate-950"
+                    : "text-slate-700 dark:text-slate-300 hover:bg-violet-300 hover:text-slate-950"
                     }`}
                 >
                   {day}
@@ -186,27 +186,27 @@ function MonthPickerField({ value, onChange }) {
           }
           setOpen((prev) => !prev);
         }}
-        className="mt-2 flex w-full items-center justify-between rounded-lg border border-slate-700 bg-[#070814] px-3 py-2 text-left text-sm font-bold text-violet-300 outline-none transition hover:border-violet-300 focus:border-violet-300"
+        className="mt-2 flex w-full items-center justify-between rounded-lg border border-slate-400 dark:border-slate-700 bg-[#070814] px-3 py-2 text-left text-sm font-bold text-violet-700 dark:text-violet-300 outline-none transition hover:border-violet-300 focus:border-violet-300"
       >
         <span>{value || "Select month"}</span>
         <span className="text-xs text-slate-500">Calendar</span>
       </button>
 
       {open && (
-        <div className="absolute right-0 top-full z-50 mt-2 w-72 rounded-xl border border-slate-700 bg-[#070814] p-3 shadow-2xl">
+        <div className="absolute right-0 top-full z-50 mt-2 w-72 rounded-xl border border-slate-400 dark:border-slate-700 bg-[#070814] p-3 shadow-2xl">
           <div className="flex items-center justify-between">
             <button
               type="button"
               onClick={() => setVisibleYear((current) => current - 1)}
-              className="rounded-lg px-3 py-1 text-sm font-black text-violet-300 transition hover:bg-violet-300 hover:text-slate-950"
+              className="rounded-lg px-3 py-1 text-sm font-black text-violet-700 dark:text-violet-300 transition hover:bg-violet-300 hover:text-slate-950"
             >
               Prev
             </button>
-            <p className="text-sm font-black text-violet-300">{visibleYear}</p>
+            <p className="text-sm font-black text-violet-700 dark:text-violet-300">{visibleYear}</p>
             <button
               type="button"
               onClick={() => setVisibleYear((current) => current + 1)}
-              className="rounded-lg px-3 py-1 text-sm font-black text-violet-300 transition hover:bg-violet-300 hover:text-slate-950"
+              className="rounded-lg px-3 py-1 text-sm font-black text-violet-700 dark:text-violet-300 transition hover:bg-violet-300 hover:text-slate-950"
             >
               Next
             </button>
@@ -227,7 +227,7 @@ function MonthPickerField({ value, onChange }) {
                   }}
                   className={`rounded-lg px-3 py-2 text-sm font-black transition ${selected
                     ? "bg-violet-300 text-slate-950"
-                    : "text-slate-300 hover:bg-violet-300 hover:text-slate-950"
+                    : "text-slate-700 dark:text-slate-300 hover:bg-violet-300 hover:text-slate-950"
                     }`}
                 >
                   {new Date(visibleYear, index, 1).toLocaleDateString(undefined, {
@@ -358,25 +358,25 @@ export default function PurchasedPrompt() {
     <div className="space-y-6 fade-in">
       <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
         <div>
-          <p className="text-xs font-black uppercase tracking-widest text-violet-300">
+          <p className="text-xs font-black uppercase tracking-widest text-violet-700 dark:text-violet-300">
             Library
           </p>
-          <h1 className="mt-1 text-lg font-black text-white">
+          <h1 className="mt-1 text-lg font-black text-slate-900 dark:text-white">
             Purchase History
           </h1>
         </div>
         <div className="flex gap-3 text-center">
           <div className="rounded-xl bg-violet-500/10 px-4 py-3">
-            <p className="text-xl font-black text-violet-300">
+            <p className="text-xl font-black text-violet-700 dark:text-violet-300">
               {purchases.length}
             </p>
-            <p className="text-[10px] font-bold uppercase tracking-wider text-slate-400">
+            <p className="text-[10px] font-bold uppercase tracking-wider text-slate-600 dark:text-slate-400">
               Purchases
             </p>
           </div>
           <div className="rounded-xl bg-cyan-500/10 px-4 py-3">
             <p className="text-xl font-black text-cyan-300">{totals.items}</p>
-            <p className="text-[10px] font-bold uppercase tracking-wider text-slate-400">
+            <p className="text-[10px] font-bold uppercase tracking-wider text-slate-600 dark:text-slate-400">
               Items
             </p>
           </div>
@@ -384,14 +384,14 @@ export default function PurchasedPrompt() {
       </div>
 
       <div className="flex items-center justify-between gap-4">
-        <p className="text-xs font-black uppercase tracking-widest text-violet-300">
+        <p className="text-xs font-black uppercase tracking-widest text-violet-700 dark:text-violet-300">
           Purchase List
         </p>
         <div ref={filterRef} className="relative">
           <button
             type="button"
             onClick={() => setFilterOpen((prev) => !prev)}
-            className="inline-flex min-w-[220px] items-center justify-between gap-3 rounded-xl bg-slate-900/80 px-4 py-2 text-sm font-black text-violet-300 transition hover:bg-slate-800"
+            className="inline-flex min-w-[220px] items-center justify-between gap-3 rounded-xl bg-slate-100/80 dark:bg-slate-900/80 px-4 py-2 text-sm font-black text-violet-700 dark:text-violet-300 transition hover:bg-slate-800"
           >
             <span>Filter</span>
             <span className="truncate text-xs font-bold text-cyan-300">
@@ -400,14 +400,14 @@ export default function PurchasedPrompt() {
           </button>
 
           {filterOpen && (
-            <div className="absolute right-0 top-full z-40 mt-2 w-72 rounded-xl border border-slate-700 bg-slate-900 p-3 shadow-2xl">
+            <div className="absolute right-0 top-full z-40 mt-2 w-72 rounded-xl border border-slate-400 dark:border-slate-700 bg-slate-100 dark:bg-slate-900 p-3 shadow-2xl">
               <label className="block text-[10px] font-black uppercase tracking-widest text-slate-500">
                 Filter
               </label>
               <select
                 value={filterMode}
                 onChange={(event) => setFilterMode(event.target.value)}
-                className="mt-2 w-full rounded-lg border border-slate-700 bg-slate-950 px-3 py-2 text-sm font-bold text-violet-300 outline-none transition focus:border-violet-400"
+                className="mt-2 w-full rounded-lg border border-slate-400 dark:border-slate-700 bg-slate-50 dark:bg-slate-950 px-3 py-2 text-sm font-bold text-violet-700 dark:text-violet-300 outline-none transition focus:border-violet-400"
               >
                 {FILTER_MODES.map((mode) => (
                   <option key={mode.value} value={mode.value}>
@@ -421,7 +421,7 @@ export default function PurchasedPrompt() {
               </p>
 
               {filterMode === "period" && (
-                <div className="mt-2 overflow-hidden rounded-lg border border-slate-800">
+                <div className="mt-2 overflow-hidden rounded-lg border border-slate-300 dark:border-slate-800">
                   {PERIOD_FILTERS.map((filter) => (
                     <button
                       key={filter.value}
@@ -432,7 +432,7 @@ export default function PurchasedPrompt() {
                       }}
                       className={`block w-full px-3 py-2.5 text-left text-sm font-bold transition ${period === filter.value
                         ? "bg-cyan-400 text-slate-950"
-                        : "text-slate-300 hover:bg-slate-800"
+                        : "text-slate-700 dark:text-slate-300 hover:bg-slate-800"
                         }`}
                     >
                       {filter.label}
@@ -476,15 +476,15 @@ export default function PurchasedPrompt() {
       </div>
 
       <section className="surface overflow-hidden">
-        <div className="border-b border-slate-800 px-5 py-4">
-          <h2 className="text-base font-black text-white">Purchase List</h2>
+        <div className="border-b border-slate-300 dark:border-slate-800 px-5 py-4">
+          <h2 className="text-base font-black text-slate-900 dark:text-white">Purchase List</h2>
           <p className="mt-1 text-sm text-slate-500">
             Select a purchase row to view its purchased prompt items.
           </p>
         </div>
 
         {loadingPurchases ? (
-          <div className="p-10 text-center text-sm text-slate-400">
+          <div className="p-10 text-center text-sm text-slate-600 dark:text-slate-400">
             Loading purchases...
           </div>
         ) : purchases.length > 0 ? (
@@ -511,26 +511,26 @@ export default function PurchasedPrompt() {
                         : "hover:bg-slate-900/70"
                         }`}
                     >
-                      <td className="px-5 py-4 font-black text-white">
+                      <td className="px-5 py-4 font-black text-slate-900 dark:text-white">
                         {index + 1}
                       </td>
-                      <td className="px-5 py-4 text-slate-300">
+                      <td className="px-5 py-4 text-slate-700 dark:text-slate-300">
                         {formatDate(purchase.purchasedAt)}
                         <span className="ml-2 text-xs text-slate-500">
                           {formatTime(purchase.purchasedAt)}
                         </span>
                       </td>
-                      <td className="px-5 py-4 text-slate-300">
+                      <td className="px-5 py-4 text-slate-700 dark:text-slate-300">
                         {purchase.itemCount}
                       </td>
-                      <td className="px-5 py-4 font-bold text-violet-300">
+                      <td className="px-5 py-4 font-bold text-violet-700 dark:text-violet-300">
                         {purchase.totalCoinPaid.toLocaleString()} coins
                       </td>
                       <td className="px-5 py-4">
                         <button
                           type="button"
                           onClick={() => handleSelectPurchase(purchase)}
-                          className="rounded-xl w-[150px] h-[50px] bg-violet-600 px-4 py-2 text-xs font-black text-white transition hover:bg-violet-500"
+                          className="rounded-xl w-[150px] h-[50px] bg-violet-600 px-4 py-2 text-xs font-black text-slate-900 dark:text-white transition hover:bg-violet-500"
                         >
                           {selected ? "Hide" : "Purchase Items"}
                         </button>
@@ -542,7 +542,7 @@ export default function PurchasedPrompt() {
             </table>
           </div>
         ) : (
-          <div className="p-10 text-center text-sm text-slate-400">
+          <div className="p-10 text-center text-sm text-slate-600 dark:text-slate-400">
             No purchases found for this filter.
           </div>
         )}
@@ -550,7 +550,7 @@ export default function PurchasedPrompt() {
 
       <section className="space-y-4">
         <div>
-          <h2 className="text-base font-black text-white">Purchase Items</h2>
+          <h2 className="text-base font-black text-slate-900 dark:text-white">Purchase Items</h2>
           <p className="mt-1 text-sm text-slate-500">
             {selectedPurchase
               ? "Showing prompts from the selected purchase."
@@ -559,11 +559,11 @@ export default function PurchasedPrompt() {
         </div>
 
         {!selectedPurchase ? (
-          <div className="glass-panel p-10 text-center text-sm text-slate-400">
+          <div className="glass-panel p-10 text-center text-sm text-slate-600 dark:text-slate-400">
             Select a purchase to show its prompt items.
           </div>
         ) : loadingItems ? (
-          <div className="glass-panel p-10 text-center text-sm text-slate-400">
+          <div className="glass-panel p-10 text-center text-sm text-slate-600 dark:text-slate-400">
             Loading purchase items...
           </div>
         ) : purchaseItems.length > 0 ? (
@@ -580,7 +580,7 @@ export default function PurchasedPrompt() {
             ))}
           </div>
         ) : (
-          <div className="glass-panel p-10 text-center text-sm text-slate-400">
+          <div className="glass-panel p-10 text-center text-sm text-slate-600 dark:text-slate-400">
             No prompt items found for this purchase.
           </div>
         )}
@@ -589,16 +589,16 @@ export default function PurchasedPrompt() {
       {/* Detail Modal for Purchased Prompt */}
       {selectedPromptItem && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4" onClick={() => setSelectedPromptItem(null)}>
-          <div className="w-full max-w-3xl overflow-hidden rounded-2xl border border-slate-700 bg-slate-900 shadow-2xl" onClick={e => e.stopPropagation()}>
-            <div className="flex items-center justify-between border-b border-slate-800 p-5">
+          <div className="w-full max-w-3xl overflow-hidden rounded-2xl border border-slate-400 dark:border-slate-700 bg-slate-100 dark:bg-slate-900 shadow-2xl" onClick={e => e.stopPropagation()}>
+            <div className="flex items-center justify-between border-b border-slate-300 dark:border-slate-800 p-5">
               <div>
-                <h3 className="text-lg font-black text-white">View Full Prompt Content</h3>
-                <p className="text-xs text-slate-400 mt-1">View your purchased full prompt content.</p>
+                <h3 className="text-lg font-black text-slate-900 dark:text-white">View Full Prompt Content</h3>
+                <p className="text-xs text-slate-600 dark:text-slate-400 mt-1">View your purchased full prompt content.</p>
               </div>
               <button
                 type="button"
                 onClick={() => setSelectedPromptItem(null)}
-                className="rounded-lg p-2 text-slate-400 hover:bg-slate-800 hover:text-white transition"
+                className="rounded-lg p-2 text-slate-600 dark:text-slate-400 hover:bg-slate-800 hover:text-white transition"
               >
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-5 w-5">
                   <line x1="18" y1="6" x2="6" y2="18"></line>
@@ -608,7 +608,7 @@ export default function PurchasedPrompt() {
             </div>
             <div className="grid gap-6 p-6 md:grid-cols-[200px_1fr]">
               <div>
-                <div className="aspect-square w-full overflow-hidden rounded-xl border border-slate-800 bg-slate-950">
+                <div className="aspect-square w-full overflow-hidden rounded-xl border border-slate-300 dark:border-slate-800 bg-slate-50 dark:bg-slate-950">
                   {selectedPromptItem.imageUrl ? (
                     <img
                       src={selectedPromptItem.imageUrl}
@@ -623,21 +623,21 @@ export default function PurchasedPrompt() {
                   )}
                 </div>
                 <div className="mt-4">
-                  <p className="text-xs font-black uppercase tracking-widest text-violet-300">
+                  <p className="text-xs font-black uppercase tracking-widest text-violet-700 dark:text-violet-300">
                     {selectedPromptItem.model || "AI"}
                   </p>
-                  <h4 className="mt-1 text-base font-bold text-white">
+                  <h4 className="mt-1 text-base font-bold text-slate-900 dark:text-white">
                     {selectedPromptItem.title}
                   </h4>
                 </div>
               </div>
               <div className="space-y-4">
                 <div>
-                  <h4 className="text-sm font-bold text-slate-300">Full Prompt Content</h4>
+                  <h4 className="text-sm font-bold text-slate-700 dark:text-slate-300">Full Prompt Content</h4>
                   <p className="text-xs text-slate-500 mt-1">Copy and paste this into the AI model.</p>
                 </div>
                 <div
-                  className="rounded-xl border border-slate-700 bg-slate-950 p-4 font-mono text-sm leading-relaxed text-slate-300 whitespace-pre-wrap break-words max-h-64 overflow-y-auto"
+                  className="rounded-xl border border-slate-400 dark:border-slate-700 bg-slate-50 dark:bg-slate-950 p-4 font-mono text-sm leading-relaxed text-slate-700 dark:text-slate-300 whitespace-pre-wrap break-words max-h-64 overflow-y-auto"
                   dangerouslySetInnerHTML={(() => {
                     let text = selectedPromptItem.promptText || "No content provided.";
                     let escapedText = text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
@@ -651,7 +651,7 @@ export default function PurchasedPrompt() {
                         .replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
                       const regex = new RegExp(`\\[?${safeName}\\]?`, 'gi');
                       escapedText = escapedText.replace(regex, (match) => {
-                        return `<span class="rounded text-white" style="background-color: ${v.color || '#8b5cf6'}; padding: 0.1rem 0.25rem;">${match}</span>`;
+                        return `<span class="rounded text-slate-900 dark:text-white" style="background-color: ${v.color || '#8b5cf6'}; padding: 0.1rem 0.25rem;">${match}</span>`;
                       });
                     });
                     return { __html: escapedText };
@@ -664,7 +664,7 @@ export default function PurchasedPrompt() {
                       navigator.clipboard.writeText(selectedPromptItem.promptText || "");
                       showToast("Copied to clipboard!", "success");
                     }}
-                    className="rounded-xl bg-violet-600 px-5 py-2.5 text-sm font-bold text-white transition hover:bg-violet-500 flex items-center gap-2"
+                    className="rounded-xl bg-violet-600 px-5 py-2.5 text-sm font-bold text-slate-900 dark:text-white transition hover:bg-violet-500 flex items-center gap-2"
                   >
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4">
                       <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>

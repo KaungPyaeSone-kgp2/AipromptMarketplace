@@ -94,7 +94,7 @@ export default function HomeFilters({
   return (
     <header className="flex min-h-12 items-start justify-between gap-4">
       <div className="min-w-0">
-        <h1 className="text-4xl font-black text-violet-400">Home</h1>
+        <h1 className="text-4xl font-black text-violet-600 dark:text-violet-400">Home</h1>
         {/* <p className="mt-1 text-xs font-semibold text-slate-500">
           {loading
             ? "Loading prompts..."
@@ -122,8 +122,8 @@ export default function HomeFilters({
             Filter
           </span>
           <span
-            className={`flex h-5 min-w-5 items-center justify-center rounded-full px-1.5 text-[10px] font-black text-white transition ${
-              selectedCount > 0 ? "bg-violet-600" : "bg-slate-700"
+            className={`flex h-5 min-w-5 items-center justify-center rounded-full px-1.5 text-[10px] font-black text-slate-900 dark:text-white transition ${
+              selectedCount > 0 ? "bg-violet-600" : "bg-slate-300 dark:bg-slate-700"
             }`}
           >
             {selectedCount}
@@ -135,7 +135,7 @@ export default function HomeFilters({
           <div className="surface-strong absolute right-0 top-full z-20 mt-3 w-[min(340px,calc(100vw-3rem))] space-y-4 p-5">
             <div className="flex items-center justify-between gap-3">
               <div>
-                <p className="text-xs font-black uppercase tracking-widest text-violet-300">
+                <p className="text-xs font-black uppercase tracking-widest text-violet-700 dark:text-violet-300">
                   Home filters
                 </p>
                 <p className="mt-1 text-xs text-slate-500">
@@ -147,7 +147,7 @@ export default function HomeFilters({
                   <button
                     type="button"
                     onClick={onClearAll}
-                    className="rounded-xl bg-slate-800 px-3 py-2 text-xs font-bold text-slate-300 transition hover:bg-slate-700"
+                    className="rounded-xl bg-slate-200 dark:bg-slate-800 px-3 py-2 text-xs font-bold text-slate-700 dark:text-slate-300 transition hover:bg-slate-700"
                   >
                     Clear
                   </button>

@@ -4,7 +4,12 @@
 
 @layer base {
   :root {
-    --color-background: #000000;
+    --color-background: #ffffff;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --color-background: #000000;
+    }
   }
   
   /* Fix vertical line artifacts on rounded inputs by completely removing the default transparent outline */

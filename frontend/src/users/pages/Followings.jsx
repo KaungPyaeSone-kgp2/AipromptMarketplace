@@ -43,8 +43,8 @@ export default function Followings() {
   return (
     <div className="space-y-6 fade-in">
       <div>
-        <h1 className="text-4xl font-black text-violet-400">Following</h1>
-        <p className="mt-1 text-sm text-slate-400">
+        <h1 className="text-4xl font-black text-violet-600 dark:text-violet-400">Following</h1>
+        <p className="mt-1 text-sm text-slate-600 dark:text-slate-400">
           Prompt posts from creators you follow.
         </p>
       </div>
@@ -55,8 +55,8 @@ export default function Followings() {
             type="button"
             onClick={() => setTab("feed")}
             className={`rounded-full px-4 py-2 text-sm font-bold transition ${tab === "feed"
-              ? "bg-violet-600 text-white"
-              : "bg-slate-900/80 text-slate-400 hover:bg-slate-800"
+              ? "bg-violet-600 text-slate-900 dark:text-white"
+              : "bg-slate-100/80 dark:bg-slate-900/80 text-slate-600 dark:text-slate-400 hover:bg-slate-800"
               }`}
           >
             Following feed
@@ -65,8 +65,8 @@ export default function Followings() {
             type="button"
             onClick={() => setTab("my-posts")}
             className={`rounded-full px-4 py-2 text-sm font-bold transition ${tab === "my-posts"
-              ? "bg-violet-600 text-white"
-              : "bg-slate-900/80 text-slate-400 hover:bg-slate-800"
+              ? "bg-violet-600 text-slate-900 dark:text-white"
+              : "bg-slate-100/80 dark:bg-slate-900/80 text-slate-600 dark:text-slate-400 hover:bg-slate-800"
               }`}
           >
             Created prompts
@@ -75,7 +75,7 @@ export default function Followings() {
       )}
 
       {loading ? (
-        <div className="glass-panel p-10 text-center text-sm text-slate-400">
+        <div className="glass-panel p-10 text-center text-sm text-slate-600 dark:text-slate-400">
           Loading...
         </div>
       ) : tab === "my-posts" && isCreatorMode ? (
@@ -90,7 +90,7 @@ export default function Followings() {
             ))}
           </div>
         ) : (
-          <div className="glass-panel p-10 text-center text-sm text-slate-400">
+          <div className="glass-panel p-10 text-center text-sm text-slate-600 dark:text-slate-400">
             You have not posted any prompts yet.
           </div>
         )
@@ -108,7 +108,7 @@ export default function Followings() {
           ))}
         </div>
       ) : (
-        <div className="glass-panel p-10 text-center text-sm text-slate-400">
+        <div className="glass-panel p-10 text-center text-sm text-slate-600 dark:text-slate-400">
           Follow creators to see their prompt posts here.
         </div>
       )}

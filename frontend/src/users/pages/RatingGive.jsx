@@ -33,20 +33,20 @@ export default function RatingGive() {
   return (
     <div className="space-y-5">
       <div>
-        <h1 className="text-4xl font-black text-violet-400">Rating</h1>
-        <p className="mt-1 text-sm text-slate-400">
+        <h1 className="text-4xl font-black text-violet-600 dark:text-violet-400">Rating</h1>
+        <p className="mt-1 text-sm text-slate-600 dark:text-slate-400">
           Prompt posts you reviewed. Click a prompt to show your review comment.
         </p>
       </div>
 
       {loading ? (
-        <div className="glass-panel p-10 text-center text-sm text-slate-400">
+        <div className="glass-panel p-10 text-center text-sm text-slate-600 dark:text-slate-400">
           Loading ratings...
         </div>
       ) : ratings.length > 0 ? (
         <RatingPromptGroups ratings={ratings} mode="buyer" />
       ) : (
-        <div className="glass-panel p-10 text-center text-sm text-slate-400">
+        <div className="glass-panel p-10 text-center text-sm text-slate-600 dark:text-slate-400">
           You have not rated any prompts yet.
         </div>
       )}

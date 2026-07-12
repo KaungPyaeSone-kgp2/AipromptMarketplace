@@ -311,7 +311,7 @@ export default function PromptDetail() {
 
   if (loading) {
     return (
-      <div className="glass-panel p-10 text-center text-sm text-slate-400">
+      <div className="glass-panel p-10 text-center text-sm text-slate-600 dark:text-slate-400">
         Loading prompt detail...
       </div>
     );
@@ -320,8 +320,8 @@ export default function PromptDetail() {
   if (!prompt) {
     return (
       <div className="glass-panel p-10 text-center">
-        <p className="text-sm text-slate-400">Prompt not found.</p>
-        <Link to="/" className="mt-4 inline-block text-sm font-bold text-violet-300">
+        <p className="text-sm text-slate-600 dark:text-slate-400">Prompt not found.</p>
+        <Link to="/" className="mt-4 inline-block text-sm font-bold text-violet-700 dark:text-violet-300">
           Back to Home
         </Link>
       </div>
@@ -348,12 +348,12 @@ export default function PromptDetail() {
         <section className="surface-strong p-5">
           <div className="flex flex-wrap items-end justify-between gap-3 border-b border-slate-700/70 pb-4">
             <div>
-              <h2 className="text-lg font-black text-white">Reviews</h2>
-              <p className="mt-1 text-sm text-slate-400">
+              <h2 className="text-lg font-black text-slate-900 dark:text-white">Reviews</h2>
+              <p className="mt-1 text-sm text-slate-600 dark:text-slate-400">
                 {reviewCount.toLocaleString()} review{reviewCount === 1 ? "" : "s"} for this prompt
               </p>
             </div>
-            <div className="text-sm font-black text-white">
+            <div className="text-sm font-black text-slate-900 dark:text-white">
               {rating.toFixed(1).replace(".0", "")} <Stars value={rating} />
             </div>
           </div>
@@ -361,11 +361,11 @@ export default function PromptDetail() {
           {String(prompt.creatorId) !== currentUserId && (
             <form
               onSubmit={handleSubmitComment}
-              className="mt-5 rounded-xl border border-slate-800 bg-slate-950/50 p-4"
+              className="mt-5 rounded-xl border border-slate-300 dark:border-slate-800 bg-slate-950/50 p-4"
             >
               <div className="flex flex-wrap items-center justify-between gap-3">
                 <div>
-                  <h3 className="text-sm font-black text-white">Add Comment</h3>
+                  <h3 className="text-sm font-black text-slate-900 dark:text-white">Add Comment</h3>
                   <p className="mt-1 text-xs text-slate-500">
                     Share your rating and review for this prompt.
                   </p>
@@ -394,11 +394,11 @@ export default function PromptDetail() {
                 onKeyDown={handleCommentKeyDown}
                 rows={4}
                 placeholder="Write your review comment..."
-                className="mt-4 w-full resize-none rounded-xl border border-slate-700 bg-slate-900 px-4 py-3 text-sm text-slate-200 outline-none transition placeholder:text-slate-500 focus:border-violet-500 focus:ring-4 focus:ring-violet-500/10"
+                className="mt-4 w-full resize-none rounded-xl border border-slate-400 dark:border-slate-700 bg-slate-100 dark:bg-slate-900 px-4 py-3 text-sm text-slate-800 dark:text-slate-200 outline-none transition placeholder:text-slate-500 focus:border-violet-500 focus:ring-4 focus:ring-violet-500/10"
               />
 
               {commentError && (
-                <p className="mt-2 text-xs font-semibold text-rose-300">
+                <p className="mt-2 text-xs font-semibold text-rose-700 dark:text-rose-300">
                   {commentError}
                 </p>
               )}
@@ -407,7 +407,7 @@ export default function PromptDetail() {
                 <button
                   type="submit"
                   disabled={commentSubmitting}
-                  className="h-10 rounded-xl bg-violet-600 px-5 text-sm font-black text-white transition hover:bg-violet-500 disabled:cursor-not-allowed disabled:opacity-60"
+                  className="h-10 rounded-xl bg-violet-600 px-5 text-sm font-black text-slate-900 dark:text-white transition hover:bg-violet-500 disabled:cursor-not-allowed disabled:opacity-60"
                 >
                   {commentSubmitting ? "Submitting..." : "Submit Comment"}
                 </button>
@@ -417,14 +417,14 @@ export default function PromptDetail() {
 
           <div className="mt-5 space-y-4">
             {reviewSummary.reviews.length === 0 ? (
-              <p className="rounded-xl border border-slate-800 bg-slate-950/50 p-5 text-sm text-slate-500">
+              <p className="rounded-xl border border-slate-300 dark:border-slate-800 bg-slate-950/50 p-5 text-sm text-slate-500">
                 No reviews yet.
               </p>
             ) : (
               reviewSummary.reviews.map((review) => (
                 <article
                   key={review.id}
-                  className="rounded-xl border border-slate-800 bg-slate-950/50 p-4"
+                  className="rounded-xl border border-slate-300 dark:border-slate-800 bg-slate-950/50 p-4"
                 >
                   <div className="flex items-start gap-3">
                     <Link
@@ -442,7 +442,7 @@ export default function PromptDetail() {
                         <div className="flex flex-wrap items-center gap-2">
                           <Link
                             to={getAccountPath(review.userId, review.reviewerIsCreator)}
-                            className="font-bold text-white transition hover:text-violet-300"
+                            className="font-bold text-slate-900 dark:text-white transition hover:text-violet-300"
                           >
                             {review.reviewerName}
                           </Link>
@@ -455,7 +455,7 @@ export default function PromptDetail() {
                             type="button"
                             onClick={() => handleDeleteReview(review.id)}
                             disabled={deletingReviewId === review.id}
-                            className="inline-flex items-center gap-1.5 rounded-lg px-2 py-1 text-xs font-bold text-rose-300 transition hover:bg-rose-500/10 hover:text-rose-200 disabled:cursor-not-allowed disabled:opacity-60"
+                            className="inline-flex items-center gap-1.5 rounded-lg px-2 py-1 text-xs font-bold text-rose-700 dark:text-rose-300 transition hover:bg-rose-500/10 hover:text-rose-200 disabled:cursor-not-allowed disabled:opacity-60"
                           >
                             <TrashIcon />
                             <span>{deletingReviewId === review.id ? "Deleting..." : "Delete"}</span>
@@ -469,7 +469,7 @@ export default function PromptDetail() {
                           {formatDate(review.createdAt)}
                         </p>
                       )}
-                      <p className="mt-3 text-sm leading-6 text-slate-300">
+                      <p className="mt-3 text-sm leading-6 text-slate-700 dark:text-slate-300">
                         {review.comment || "No review comment."}
                       </p>
                     </div>
@@ -485,10 +485,10 @@ export default function PromptDetail() {
         <section className="surface-strong p-6">
           <div className="flex items-start justify-between gap-4">
             <div>
-              <p className="text-xs font-black uppercase tracking-widest text-violet-300">
+              <p className="text-xs font-black uppercase tracking-widest text-violet-700 dark:text-violet-300">
                 {prompt.model}
               </p>
-              <h1 className="mt-3 text-3xl font-black leading-tight text-white">
+              <h1 className="mt-3 text-3xl font-black leading-tight text-slate-900 dark:text-white">
                 {prompt.title}
               </h1>
             </div>
@@ -497,7 +497,7 @@ export default function PromptDetail() {
                 <button
                   type="button"
                   onClick={handleToggleWishlist}
-                  className="flex h-10 w-10 items-center justify-center rounded-full bg-slate-900/80 text-white shadow-lg ring-1 ring-white/10 backdrop-blur-sm transition-all duration-200 hover:scale-110 hover:bg-rose-500 hover:text-white hover:ring-rose-400/30"
+                  className="flex h-10 w-10 items-center justify-center rounded-full bg-slate-100/80 dark:bg-slate-900/80 text-slate-900 dark:text-white shadow-lg ring-1 ring-white/10 backdrop-blur-sm transition-all duration-200 hover:scale-110 hover:bg-rose-500 hover:text-white hover:ring-rose-400/30"
                   aria-label={inWishlist ? "Remove from wishlist" : "Add to wishlist"}
                   title={inWishlist ? "Remove from wishlist" : "Add to wishlist"}
                 >
@@ -510,11 +510,11 @@ export default function PromptDetail() {
             </div>
           </div>
 
-          <div className="mt-4 flex flex-wrap items-center gap-3 text-sm text-slate-300">
+          <div className="mt-4 flex flex-wrap items-center gap-3 text-sm text-slate-700 dark:text-slate-300">
             {prompt.creatorId && (
               <Link
                 to={`/user/profile/${prompt.creatorId}`}
-                className="inline-flex items-center gap-2 rounded-xl pr-2 font-bold text-violet-200 transition hover:bg-slate-800/70 hover:text-white"
+                className="inline-flex items-center gap-2 rounded-xl pr-2 font-bold text-violet-800 dark:text-violet-200 transition hover:bg-slate-800/70 hover:text-white"
               >
                 <img
                   src={prompt.creatorAvatarUrl}
@@ -530,19 +530,19 @@ export default function PromptDetail() {
 
           <div className="mt-6 grid grid-cols-2 gap-3 border-t border-slate-700/70 pt-5 text-sm">
             <div>
-              <p className="font-black text-white">
+              <p className="font-black text-slate-900 dark:text-white">
                 {(prompt.wishlistCount ?? 0).toLocaleString()}
               </p>
               <p className="text-slate-500">Wishlist</p>
             </div>
             <div>
-              <p className="font-black text-white">
+              <p className="font-black text-slate-900 dark:text-white">
                 {rating.toFixed(1).replace(".0", "")}
               </p>
               <p className="text-slate-500">Average rating</p>
             </div>
             <div>
-              <p className="font-black text-white">
+              <p className="font-black text-slate-900 dark:text-white">
                 {reviewCount.toLocaleString()}
               </p>
               <p className="text-slate-500">Review count</p>
@@ -551,15 +551,15 @@ export default function PromptDetail() {
 
           <div className="mt-5 border-t border-slate-700/70 pt-5">
             <h3 className="text-sm font-bold uppercase tracking-widest text-slate-500 mb-2">Description</h3>
-            <p className="text-sm leading-6 text-slate-300">
+            <p className="text-sm leading-6 text-slate-700 dark:text-slate-300">
               {prompt.description || "No description available."}
             </p>
           </div>
 
 
-          <div className="mt-5 rounded-xl bg-slate-950/50 p-4 border border-slate-800">
+          <div className="mt-5 rounded-xl bg-slate-950/50 p-4 border border-slate-300 dark:border-slate-800">
             <h3 className="text-sm font-bold uppercase tracking-widest text-slate-500 mb-2">Full Prompt</h3>
-            <p className="text-sm leading-6 text-slate-200 font-mono whitespace-pre-wrap break-words">
+            <p className="text-sm leading-6 text-slate-800 dark:text-slate-200 font-mono whitespace-pre-wrap break-words">
               {renderHighlightedPromptText()}
             </p>
           </div>

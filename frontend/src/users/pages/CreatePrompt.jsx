@@ -79,13 +79,13 @@ const CustomSelect = ({ options, value, onChange, disabled, name, id }) => {
         className="flex w-full items-center justify-between rounded-2xl border border-violet-500/50 bg-violet-900/10 px-4 py-3 text-sm font-medium text-violet-100 focus:border-violet-500 focus:outline-none focus:ring-1 focus:ring-violet-500 disabled:cursor-not-allowed disabled:opacity-70 transition-colors hover:border-violet-500"
       >
         <span>{selectedOption?.label}</span>
-        <svg xmlns="http://www.w3.org/2000/svg" className={`h-4 w-4 text-violet-400 transition-transform ${isOpen ? "rotate-180" : ""}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <svg xmlns="http://www.w3.org/2000/svg" className={`h-4 w-4 text-violet-600 dark:text-violet-400 transition-transform ${isOpen ? "rotate-180" : ""}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
         </svg>
       </button>
 
       {isOpen && (
-        <div className="absolute z-50 mt-2 max-h-60 w-full overflow-y-auto rounded-2xl border border-slate-700 bg-slate-800 p-1 shadow-xl app-scrollbar">
+        <div className="absolute z-50 mt-2 max-h-60 w-full overflow-y-auto rounded-2xl border border-slate-400 dark:border-slate-700 bg-slate-200 dark:bg-slate-800 p-1 shadow-xl app-scrollbar">
           {options.map((opt, index) => (
             <button
               key={opt.value}
@@ -96,10 +96,10 @@ const CustomSelect = ({ options, value, onChange, disabled, name, id }) => {
               }}
               onMouseEnter={() => setFocusedIndex(index)}
               className={`w-full rounded-xl px-4 py-2.5 text-left text-sm transition-colors ${value === opt.value
-                ? "bg-violet-600 text-white font-bold"
+                ? "bg-violet-600 text-slate-900 dark:text-white font-bold"
                 : focusedIndex === index
-                  ? "bg-slate-700 text-white"
-                  : "text-slate-300 hover:bg-slate-700 hover:text-white"
+                  ? "bg-slate-300 dark:bg-slate-700 text-slate-900 dark:text-white"
+                  : "text-slate-700 dark:text-slate-300 hover:bg-slate-700 hover:text-white"
                 }`}
             >
               {opt.label}
@@ -363,28 +363,28 @@ export default function CreatePrompt() {
   return (
     <div className="mx-auto max-w-3xl space-y-6">
       <div>
-        <h1 className="mt-1 text-2xl font-black text-violet-400">
+        <h1 className="mt-1 text-2xl font-black text-violet-600 dark:text-violet-400">
           {isEditMode ? "Edit Prompt" : "Create Prompt"}
         </h1>
       </div>
 
       {error && (
-        <div className="rounded-xl border border-rose-500/20 bg-rose-500/10 p-4 text-sm font-bold text-rose-400">
+        <div className="rounded-xl border border-rose-500/20 bg-rose-500/10 p-4 text-sm font-bold text-rose-600 dark:text-rose-400">
           {error}
         </div>
       )}
 
       <form onSubmit={handleSubmit} className="glass-panel space-y-6 p-6 sm:p-8">
         <div className="space-y-3">
-          <label className="block text-sm font-bold text-slate-300">
-            Thumbnail Image {!isEditMode && <span className="text-rose-400">*</span>}
+          <label className="block text-sm font-bold text-slate-700 dark:text-slate-300">
+            Thumbnail Image {!isEditMode && <span className="text-rose-600 dark:text-rose-400">*</span>}
           </label>
           <div className="flex items-center gap-6">
             <button
               type="button"
               onClick={() => fileInputRef.current?.click()}
               disabled={isEditMode}
-              className="relative flex h-32 w-32 shrink-0 flex-col items-center justify-center overflow-hidden rounded-xl border-2 border-dashed border-slate-700 bg-slate-800/50 transition hover:border-violet-500 hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-70"
+              className="relative flex h-32 w-32 shrink-0 flex-col items-center justify-center overflow-hidden rounded-xl border-2 border-dashed border-slate-400 dark:border-slate-700 bg-slate-200/50 dark:bg-slate-800/50 transition hover:border-violet-500 hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-70"
             >
               {previewImage ? (
                 <img src={previewImage} alt="Thumbnail preview" className="h-full w-full object-cover" />
@@ -392,7 +392,7 @@ export default function CreatePrompt() {
                 <span className="text-xs font-bold text-slate-500">Upload</span>
               )}
             </button>
-            <div className="text-sm text-slate-400">
+            <div className="text-sm text-slate-600 dark:text-slate-400">
               <p>Recommended size: 800x800px</p>
             </div>
             <input
@@ -407,8 +407,8 @@ export default function CreatePrompt() {
 
         <div className="grid gap-6 sm:grid-cols-2">
           <div className="space-y-2 sm:col-span-2">
-            <label htmlFor="title" className="block text-sm font-bold text-slate-300">
-              Prompt Title <span className="text-rose-400">*</span>
+            <label htmlFor="title" className="block text-sm font-bold text-slate-700 dark:text-slate-300">
+              Prompt Title <span className="text-rose-600 dark:text-rose-400">*</span>
             </label>
             <input
               type="text"
@@ -417,14 +417,14 @@ export default function CreatePrompt() {
               required
               value={formData.title}
               onChange={handleChange}
-              className="w-full rounded-xl border border-slate-700 bg-slate-900/50 px-4 py-3 text-sm font-medium text-white placeholder-slate-500 focus:border-violet-500 focus:outline-none focus:ring-1 focus:ring-violet-500 transition-colors"
+              className="w-full rounded-xl border border-slate-400 dark:border-slate-700 bg-slate-100/50 dark:bg-slate-900/50 px-4 py-3 text-sm font-medium text-slate-900 dark:text-white placeholder-slate-500 focus:border-violet-500 focus:outline-none focus:ring-1 focus:ring-violet-500 transition-colors"
               placeholder="e.g., Cinematic Sci-Fi Cityscape"
             />
           </div>
 
           <div className="space-y-2">
-            <label htmlFor="categoryId" className="block text-sm font-bold text-slate-300">
-              Category <span className="text-rose-400">*</span>
+            <label htmlFor="categoryId" className="block text-sm font-bold text-slate-700 dark:text-slate-300">
+              Category <span className="text-rose-600 dark:text-rose-400">*</span>
             </label>
             <CustomSelect
               id="categoryId"
@@ -436,8 +436,8 @@ export default function CreatePrompt() {
           </div>
 
           <div className="space-y-2">
-            <label htmlFor="modelType" className="block text-sm font-bold text-slate-300">
-              Model Type <span className="text-rose-400">*</span>
+            <label htmlFor="modelType" className="block text-sm font-bold text-slate-700 dark:text-slate-300">
+              Model Type <span className="text-rose-600 dark:text-rose-400">*</span>
             </label>
             <CustomSelect
               id="modelType"
@@ -450,8 +450,8 @@ export default function CreatePrompt() {
         </div>
 
         <div className="space-y-2">
-          <label htmlFor="description" className="block text-sm font-bold text-slate-300">
-            Description <span className="text-rose-400">*</span>
+          <label htmlFor="description" className="block text-sm font-bold text-slate-700 dark:text-slate-300">
+            Description <span className="text-rose-600 dark:text-rose-400">*</span>
           </label>
           <textarea
             id="description"
@@ -461,30 +461,30 @@ export default function CreatePrompt() {
             rows={3}
             value={formData.description}
             onChange={handleChange}
-            className="w-full resize-none overflow-hidden rounded-xl border border-slate-700 bg-slate-900/50 px-4 py-3 text-sm font-medium text-white placeholder-slate-500 focus:border-violet-500 focus:outline-none focus:ring-1 focus:ring-violet-500 transition-colors"
+            className="w-full resize-none overflow-hidden rounded-xl border border-slate-400 dark:border-slate-700 bg-slate-100/50 dark:bg-slate-900/50 px-4 py-3 text-sm font-medium text-slate-900 dark:text-white placeholder-slate-500 focus:border-violet-500 focus:outline-none focus:ring-1 focus:ring-violet-500 transition-colors"
             placeholder="Briefly describe what this prompt does..."
           />
         </div>
 
         <div className="space-y-3 pt-4">
           <div className="flex items-center justify-between">
-            <label className="block text-sm font-bold text-slate-300">
+            <label className="block text-sm font-bold text-slate-700 dark:text-slate-300">
               Prompt Variables (Highlights)
             </label>
             <button
               type="button"
               onClick={addVariable}
-              className="text-xs font-bold text-violet-400 transition hover:text-violet-300"
+              className="text-xs font-bold text-violet-600 dark:text-violet-400 transition hover:text-violet-300"
             >
               + Add Variable
             </button>
           </div>
           <p className="text-xs text-slate-500">
-            Define variables like <span className="font-mono text-slate-300">[subject]</span>. Use these exact bracket tags in your prompt content below.
+            Define variables like <span className="font-mono text-slate-700 dark:text-slate-300">[subject]</span>. Use these exact bracket tags in your prompt content below.
           </p>
 
           {variables.length > 0 && (
-            <div className="space-y-3 rounded-xl border border-slate-700/50 bg-slate-900/30 p-4">
+            <div className="space-y-3 rounded-xl border border-slate-400/50 dark:border-slate-700/50 bg-slate-900/30 p-4">
               {variables.map((variable, index) => (
                 <div key={index} className="flex items-center gap-3">
                   <input
@@ -492,20 +492,20 @@ export default function CreatePrompt() {
                     value={variable.name}
                     readOnly
                     // onChange={(event) => updateVariable(index, "name", event.target.value)}
-                    className="w-1/2 rounded-lg border border-slate-700 bg-slate-800 px-3 py-2 text-sm text-slate-400 focus:outline-none cursor-not-allowed"
+                    className="w-1/2 rounded-lg border border-slate-400 dark:border-slate-700 bg-slate-200 dark:bg-slate-800 px-3 py-2 text-sm text-slate-600 dark:text-slate-400 focus:outline-none cursor-not-allowed"
                     placeholder="Variable name (select text first)"
                   />
                   <input
                     type="color"
                     value={variable.color}
                     onChange={(event) => updateVariable(index, "color", event.target.value)}
-                    className="h-9 w-9 cursor-pointer rounded border border-slate-700 bg-transparent p-1"
+                    className="h-9 w-9 cursor-pointer rounded border border-slate-400 dark:border-slate-700 bg-transparent p-1"
                     title="Choose highlight color"
                   />
                   <button
                     type="button"
                     onClick={() => removeVariable(index)}
-                    className="p-2 text-rose-400 transition hover:text-rose-300"
+                    className="p-2 text-rose-600 dark:text-rose-400 transition hover:text-rose-300"
                     title="Remove Variable"
                   >
                     Remove
@@ -517,10 +517,10 @@ export default function CreatePrompt() {
         </div>
 
         <div className="space-y-2">
-          <label htmlFor="content" className="block text-sm font-bold text-slate-300">
-            Full Prompt Content <span className="text-rose-400">*</span>
+          <label htmlFor="content" className="block text-sm font-bold text-slate-700 dark:text-slate-300">
+            Full Prompt Content <span className="text-rose-600 dark:text-rose-400">*</span>
           </label>
-          <div className="group relative w-full overflow-hidden rounded-xl border border-slate-700 bg-slate-900/50 focus-within:border-violet-500 focus-within:ring-1 focus-within:ring-violet-500">
+          <div className="group relative w-full overflow-hidden rounded-xl border border-slate-400 dark:border-slate-700 bg-slate-100/50 dark:bg-slate-900/50 focus-within:border-violet-500 focus-within:ring-1 focus-within:ring-violet-500">
             <div
               ref={backdropRef}
               className="pointer-events-none absolute inset-0 overflow-hidden whitespace-pre-wrap break-words px-4 py-3 font-mono text-sm font-medium text-transparent"
@@ -536,16 +536,16 @@ export default function CreatePrompt() {
               value={formData.content}
               onChange={handleChange}
               onScroll={handleScroll}
-              className="relative z-10 m-0 w-full resize-none overflow-hidden border-none bg-transparent px-4 py-3 font-mono text-sm font-medium text-white placeholder-slate-500 focus:border-transparent focus:outline-none focus:ring-0"
+              className="relative z-10 m-0 w-full resize-none overflow-hidden border-none bg-transparent px-4 py-3 font-mono text-sm font-medium text-slate-900 dark:text-white placeholder-slate-500 focus:border-transparent focus:outline-none focus:ring-0"
               placeholder="Enter the exact prompt here... Use [brackets] for variables."
             />
           </div>
         </div>
 
         {/* ── Visibility Selector ── */}
-        <div className="space-y-3 border-t border-slate-800 pt-5">
-          <label className="block text-sm font-bold text-slate-300">
-            Post Visibility <span className="text-rose-400">*</span>
+        <div className="space-y-3 border-t border-slate-300 dark:border-slate-800 pt-5">
+          <label className="block text-sm font-bold text-slate-700 dark:text-slate-300">
+            Post Visibility <span className="text-rose-600 dark:text-rose-400">*</span>
           </label>
           <p className="text-xs text-slate-500">
             Choose who can see this prompt post.
@@ -561,7 +561,7 @@ export default function CreatePrompt() {
                   : option.color === "sky"
                     ? "border-sky-500 ring-1 ring-sky-500/30"
                     : "border-amber-500 ring-1 ring-amber-500/30"
-                : "border-slate-700 hover:border-slate-600";
+                : "border-slate-400 dark:border-slate-700 hover:border-slate-600";
 
               const iconColor = isSelected
                 ? option.color === "emerald"
@@ -577,7 +577,7 @@ export default function CreatePrompt() {
                   : option.color === "sky"
                     ? "bg-sky-500/10"
                     : "bg-amber-500/10"
-                : "bg-slate-900/50";
+                : "bg-slate-100/50 dark:bg-slate-900/50";
 
               return (
                 <button
@@ -591,7 +591,7 @@ export default function CreatePrompt() {
                   <div className={`${iconColor} transition-colors`}>
                     <IconComponent />
                   </div>
-                  <span className={`text-sm font-bold ${isSelected ? "text-white" : "text-slate-400"
+                  <span className={`text-sm font-bold ${isSelected ? "text-slate-900 dark:text-white" : "text-slate-600 dark:text-slate-400"
                     }`}>
                     {option.label}
                   </span>
@@ -604,19 +604,19 @@ export default function CreatePrompt() {
           </div>
         </div>
 
-        <div className="flex items-center justify-end gap-3 border-t border-slate-800 pt-4">
+        <div className="flex items-center justify-end gap-3 border-t border-slate-300 dark:border-slate-800 pt-4">
           <button
             type="button"
             onClick={() => navigate("/user/created-prompts")}
             disabled={loading}
-            className="rounded-xl bg-slate-800 px-5 py-2.5 text-sm font-bold text-slate-300 transition hover:bg-slate-700 disabled:opacity-50"
+            className="rounded-xl bg-slate-200 dark:bg-slate-800 px-5 py-2.5 text-sm font-bold text-slate-700 dark:text-slate-300 transition hover:bg-slate-700 disabled:opacity-50"
           >
             Cancel
           </button>
           <button
             type="submit"
             disabled={loading}
-            className="rounded-xl bg-violet-600 px-5 py-2.5 text-sm font-bold text-white transition hover:bg-violet-500 disabled:opacity-50"
+            className="rounded-xl bg-violet-600 px-5 py-2.5 text-sm font-bold text-slate-900 dark:text-white transition hover:bg-violet-500 disabled:opacity-50"
           >
             {loading ? (isEditMode ? "Updating..." : "Creating...") : (isEditMode ? "Confirm & Update" : "Confirm & Create")}
           </button>

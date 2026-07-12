@@ -141,7 +141,7 @@ export default function Navbar({
     >
       <Link to="/user" className="flex shrink-0 items-center gap-3">
         <img src={dreamKeyLogo} alt="DreamKey Logo" className="w-9 h-9 rounded-lg object-cover shadow-lg" />
-        <span className="text-lg font-black tracking-tight text-white">
+        <span className="text-lg font-black tracking-tight text-slate-900 dark:text-white">
           Dream Key
         </span>
       </Link>
@@ -161,9 +161,9 @@ export default function Navbar({
           </NavIconButton>
 
           {showWishlistDropdown && (
-            <div className="absolute right-0 top-full mt-2 w-[300px] max-h-96 overflow-y-auto overflow-x-hidden rounded-xl bg-slate-900 border border-slate-700 p-3 shadow-2xl">
-              <div className="flex items-center justify-between border-b border-slate-800 pb-2 mb-2">
-                <h3 className="text-sm font-black text-white">Wishlist</h3>
+            <div className="absolute right-0 top-full mt-2 w-[300px] max-h-96 overflow-y-auto overflow-x-hidden rounded-xl bg-slate-100 dark:bg-slate-900 border border-slate-400 dark:border-slate-700 p-3 shadow-2xl">
+              <div className="flex items-center justify-between border-b border-slate-300 dark:border-slate-800 pb-2 mb-2">
+                <h3 className="text-sm font-black text-slate-900 dark:text-white">Wishlist</h3>
               </div>
               {(!wishlist || wishlist.length === 0) ? (
                 <p className="text-sm text-slate-500 py-4 text-center">Your wishlist is empty.</p>
@@ -176,7 +176,7 @@ export default function Navbar({
                       onClick={() => setShowWishlistDropdown(false)}
                       className="flex items-center gap-3 p-2 rounded-xl transition-all duration-300 hover:bg-slate-800"
                     >
-                      <div className="h-10 w-10 shrink-0 overflow-hidden rounded-lg bg-slate-800">
+                      <div className="h-10 w-10 shrink-0 overflow-hidden rounded-lg bg-slate-200 dark:bg-slate-800">
                         {item.imageUrl ? (
                           <img src={item.imageUrl} alt={item.title} className="h-full w-full object-cover" />
                         ) : (
@@ -184,8 +184,8 @@ export default function Navbar({
                         )}
                       </div>
                       <div className="min-w-0 flex-1">
-                        <p className="text-sm font-bold text-white truncate">{item.title}</p>
-                        <p className="text-xs text-slate-400 truncate">{item.model}</p>
+                        <p className="text-sm font-bold text-slate-900 dark:text-white truncate">{item.title}</p>
+                        <p className="text-xs text-slate-600 dark:text-slate-400 truncate">{item.model}</p>
                       </div>
                     </Link>
                   ))}
@@ -201,13 +201,13 @@ export default function Navbar({
           </NavIconButton>
 
           {showNotiDropdown && (
-            <div className="absolute right-0 top-full mt-2 w-[350px] max-h-96 overflow-y-auto overflow-x-hidden rounded-xl bg-slate-900 border border-slate-700 p-3 shadow-2xl">
-              <div className="flex items-center justify-between border-b border-slate-800 pb-2 mb-2">
-                <h3 className="text-sm font-black text-white">Notifications</h3>
+            <div className="absolute right-0 top-full mt-2 w-[350px] max-h-96 overflow-y-auto overflow-x-hidden rounded-xl bg-slate-100 dark:bg-slate-900 border border-slate-400 dark:border-slate-700 p-3 shadow-2xl">
+              <div className="flex items-center justify-between border-b border-slate-300 dark:border-slate-800 pb-2 mb-2">
+                <h3 className="text-sm font-black text-slate-900 dark:text-white">Notifications</h3>
                 {notifications.length > 0 && (
                   <button
                     onClick={handleClearAll}
-                    className="text-xs font-bold text-violet-400 hover:text-violet-300"
+                    className="text-xs font-bold text-violet-600 dark:text-violet-400 hover:text-violet-300"
                   >
                     Clear All
                   </button>
@@ -229,11 +229,11 @@ export default function Navbar({
                   >
                     <div className="flex items-center justify-between gap-2">
                       <div className="flex items-center gap-2 min-w-0">
-                        <p className="text-sm font-bold text-violet-300 truncate">{noti.title}</p>
+                        <p className="text-sm font-bold text-violet-700 dark:text-violet-300 truncate">{noti.title}</p>
                       </div>
                       <span className="shrink-0 text-[10px] font-medium text-slate-500">{formatTimeAgo(noti.created_at)}</span>
                     </div>
-                    <p className="mt-1 text-xs text-slate-400 leading-relaxed pointer-events-none">{noti.message}</p>
+                    <p className="mt-1 text-xs text-slate-600 dark:text-slate-400 leading-relaxed pointer-events-none">{noti.message}</p>
                   </div>
                 ))}
               </div>
@@ -245,8 +245,8 @@ export default function Navbar({
           <ProfileMenu user={user} onSignOut={onSignOut} />
         ) : (
           <div className="flex items-center gap-3">
-            <Link to="/login" className="text-sm font-bold text-slate-300 hover:text-white transition">Login</Link>
-            <Link to="/register" className="rounded-xl bg-violet-600 px-4 py-2 text-sm font-bold text-white transition hover:bg-violet-500">Sign Up</Link>
+            <Link to="/login" className="text-sm font-bold text-slate-700 dark:text-slate-300 hover:text-white transition">Login</Link>
+            <Link to="/register" className="rounded-xl bg-violet-600 px-4 py-2 text-sm font-bold text-slate-900 dark:text-white transition hover:bg-violet-500">Sign Up</Link>
           </div>
         )}
       </div>

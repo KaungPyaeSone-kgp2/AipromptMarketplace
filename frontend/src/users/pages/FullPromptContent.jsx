@@ -31,7 +31,7 @@ export default function FullPromptContent() {
   if (loading) {
     return (
       <div className="flex min-h-[50vh] items-center justify-center">
-        <div className="text-sm font-bold text-slate-400">Loading full content...</div>
+        <div className="text-sm font-bold text-slate-600 dark:text-slate-400">Loading full content...</div>
       </div>
     );
   }
@@ -39,10 +39,10 @@ export default function FullPromptContent() {
   if (!prompt) {
     return (
       <div className="flex min-h-[50vh] flex-col items-center justify-center space-y-4">
-        <p className="text-sm text-slate-400">Prompt not found.</p>
+        <p className="text-sm text-slate-600 dark:text-slate-400">Prompt not found.</p>
         <button
           onClick={() => navigate(-1)}
-          className="text-sm font-bold text-violet-400 hover:text-violet-300"
+          className="text-sm font-bold text-violet-600 dark:text-violet-400 hover:text-violet-300"
         >
           Go Back
         </button>
@@ -56,12 +56,12 @@ export default function FullPromptContent() {
         <div>
           <button
             onClick={() => navigate(-1)}
-            className="mb-4 text-xs font-bold uppercase tracking-widest text-violet-400 hover:text-violet-300"
+            className="mb-4 text-xs font-bold uppercase tracking-widest text-violet-600 dark:text-violet-400 hover:text-violet-300"
           >
             &larr; Back to Details
           </button>
-          <h1 className="text-3xl font-black text-white">{prompt.title}</h1>
-          <p className="mt-2 text-sm text-slate-400">Full Prompt Content</p>
+          <h1 className="text-3xl font-black text-slate-900 dark:text-white">{prompt.title}</h1>
+          <p className="mt-2 text-sm text-slate-600 dark:text-slate-400">Full Prompt Content</p>
         </div>
       </div>
 
@@ -77,7 +77,7 @@ export default function FullPromptContent() {
               navigator.clipboard.writeText(prompt.promptText || "");
               showToast("Copied to clipboard!", "success");
             }}
-            className="flex items-center gap-2 rounded-lg bg-violet-600/20 px-3 py-1.5 text-xs font-bold text-violet-300 transition hover:bg-violet-600/40"
+            className="flex items-center gap-2 rounded-lg bg-violet-600/20 px-3 py-1.5 text-xs font-bold text-violet-700 dark:text-violet-300 transition hover:bg-violet-600/40"
           >
             <svg
               viewBox="0 0 24 24"
@@ -96,7 +96,7 @@ export default function FullPromptContent() {
         </div>
 
         <div
-          className="p-6 font-mono text-sm leading-loose text-slate-300 whitespace-pre-wrap break-words md:p-10"
+          className="p-6 font-mono text-sm leading-loose text-slate-700 dark:text-slate-300 whitespace-pre-wrap break-words md:p-10"
           dangerouslySetInnerHTML={(() => {
             let text = prompt.promptText || "No content provided.";
             let escapedText = text
@@ -114,7 +114,7 @@ export default function FullPromptContent() {
                 .replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
               const regex = new RegExp(`\\[?${safeName}\\]?`, "gi");
               escapedText = escapedText.replace(regex, (match) => {
-                return `<span class="rounded font-bold text-white shadow-sm" style="background-color: ${v.color || '#8b5cf6'}; padding: 0.1rem 0.4rem;">${match}</span>`;
+                return `<span class="rounded font-bold text-slate-900 dark:text-white shadow-sm" style="background-color: ${v.color || '#8b5cf6'}; padding: 0.1rem 0.4rem;">${match}</span>`;
               });
             });
             return { __html: escapedText };

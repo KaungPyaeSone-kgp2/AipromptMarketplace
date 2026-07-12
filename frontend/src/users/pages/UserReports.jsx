@@ -29,37 +29,37 @@ const ReportCard = ({ report, isReceived }) => {
   };
 
   return (
-    <div className="surface overflow-hidden p-5 transition hover:-translate-y-0.5 hover:border-violet-400/40 rounded-2xl border border-slate-700/50 bg-slate-900/80">
+    <div className="surface overflow-hidden p-5 transition hover:-translate-y-0.5 hover:border-violet-400/40 rounded-2xl border border-slate-400/50 dark:border-slate-700/50 bg-slate-100/80 dark:bg-slate-900/80">
       <div className="flex items-start justify-between gap-3">
-        <h3 className="text-base font-bold text-white">
+        <h3 className="text-base font-bold text-slate-900 dark:text-white">
           {getTargetLabel()}
         </h3>
         <span className={`badge-pill px-3 py-1 rounded-full text-xs font-bold ${report.status === 'pending' ? 'bg-amber-500/15 text-amber-300' :
           report.status === 'resolved' ? 'bg-emerald-500/15 text-emerald-300' :
-            report.status === 'rejected' ? 'bg-rose-500/15 text-rose-300' :
+            report.status === 'rejected' ? 'bg-rose-500/15 text-rose-700 dark:text-rose-300' :
               'bg-blue-500/15 text-blue-300'
           }`}>
           {report.status}
         </span>
       </div>
 
-      <div className="mt-4 p-4 rounded-xl bg-slate-800/50 border border-slate-700/50">
+      <div className="mt-4 p-4 rounded-xl bg-slate-200/50 dark:bg-slate-800/50 border border-slate-400/50 dark:border-slate-700/50">
         <div className="flex items-center justify-between mb-3">
           <div className="flex items-center gap-3">
-            <div className="flex h-8 w-8 items-center justify-center rounded-full bg-violet-500/20 text-violet-300 ring-2 ring-violet-500/30">
+            <div className="flex h-8 w-8 items-center justify-center rounded-full bg-violet-500/20 text-violet-700 dark:text-violet-300 ring-2 ring-violet-500/50 dark:ring-violet-500/30">
               <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
             </div>
             <div>
-              <p className="text-sm font-bold text-violet-200">
+              <p className="text-sm font-bold text-violet-800 dark:text-violet-200">
                 {report.target_type.charAt(0).toUpperCase() + report.target_type.slice(1)} Report
               </p>
-              <p className="text-xs text-slate-400">{formatTimeAgo(report.created_at)}</p>
+              <p className="text-xs text-slate-600 dark:text-slate-400">{formatTimeAgo(report.created_at)}</p>
             </div>
           </div>
         </div>
-        <p className="text-sm text-slate-300 mb-2"><span className="font-bold text-slate-400">Reason:</span> {report.reason.replace("_", " ")}</p>
+        <p className="text-sm text-slate-700 dark:text-slate-300 mb-2"><span className="font-bold text-slate-600 dark:text-slate-400">Reason:</span> {report.reason.replace("_", " ")}</p>
         {report.report_description && (
-          <p className="text-sm text-slate-300 italic">"{report.report_description}"</p>
+          <p className="text-sm text-slate-700 dark:text-slate-300 italic">"{report.report_description}"</p>
         )}
       </div>
     </div>
@@ -108,10 +108,10 @@ export default function UserReports() {
   return (
     <div className="space-y-5">
       <div>
-        <h1 className="text-4xl font-black text-violet-400">
+        <h1 className="text-4xl font-black text-violet-600 dark:text-violet-400">
           Reports
         </h1>
-        <p className="mt-1 text-sm text-slate-400">
+        <p className="mt-1 text-sm text-slate-600 dark:text-slate-400">
           Manage and track the status of your submitted reports and reports against your account.
         </p>
       </div>
@@ -120,8 +120,8 @@ export default function UserReports() {
         <button
           onClick={() => setActiveTab("submitted")}
           className={`rounded-full px-4 py-1.5 text-sm font-bold transition-all ${activeTab === "submitted"
-            ? "bg-violet-600 text-white"
-            : "bg-slate-800 text-slate-400 hover:bg-slate-700 hover:text-white"
+            ? "bg-violet-600 text-slate-900 dark:text-white"
+            : "bg-slate-200 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-700 hover:text-white"
             }`}
         >
           Submitted ({reports.submitted.length})
@@ -129,8 +129,8 @@ export default function UserReports() {
         <button
           onClick={() => setActiveTab("received")}
           className={`rounded-full px-4 py-1.5 text-sm font-bold transition-all ${activeTab === "received"
-            ? "bg-violet-600 text-white"
-            : "bg-slate-800 text-slate-400 hover:bg-slate-700 hover:text-white"
+            ? "bg-violet-600 text-slate-900 dark:text-white"
+            : "bg-slate-200 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-700 hover:text-white"
             }`}
         >
           Against Me ({reports.received.length})
@@ -138,7 +138,7 @@ export default function UserReports() {
       </div>
 
       {loading ? (
-        <div className="glass-panel p-10 text-center text-sm text-slate-400">
+        <div className="glass-panel p-10 text-center text-sm text-slate-600 dark:text-slate-400">
           Loading reports...
         </div>
       ) : currentList.length > 0 ? (
@@ -148,7 +148,7 @@ export default function UserReports() {
           ))}
         </div>
       ) : (
-        <div className="glass-panel p-10 text-center text-sm text-slate-400">
+        <div className="glass-panel p-10 text-center text-sm text-slate-600 dark:text-slate-400">
           No reports found in this section.
         </div>
       )}

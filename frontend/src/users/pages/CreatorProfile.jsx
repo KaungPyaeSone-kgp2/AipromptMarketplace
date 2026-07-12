@@ -43,13 +43,13 @@ function ConnectionListModal({
         if (e.target === e.currentTarget) onClose();
       }}
     >
-      <div className="w-full max-w-md rounded-2xl border border-slate-700 bg-[#070814] shadow-2xl">
-        <div className="flex items-center justify-between border-b border-slate-800 px-5 py-4">
-          <h2 className="text-base font-black text-violet-300">{title}</h2>
+      <div className="w-full max-w-md rounded-2xl border border-slate-400 dark:border-slate-700 bg-[#070814] shadow-2xl">
+        <div className="flex items-center justify-between border-b border-slate-300 dark:border-slate-800 px-5 py-4">
+          <h2 className="text-base font-black text-violet-700 dark:text-violet-300">{title}</h2>
           <button
             type="button"
             onClick={onClose}
-            className="rounded-lg px-3 py-1 text-sm font-black text-slate-400 transition hover:bg-violet-300 hover:text-slate-950"
+            className="rounded-lg px-3 py-1 text-sm font-black text-slate-600 dark:text-slate-400 transition hover:bg-violet-300 hover:text-slate-950"
           >
             Close
           </button>
@@ -57,7 +57,7 @@ function ConnectionListModal({
 
         <div className="max-h-[60vh] overflow-y-auto p-3">
           {loading ? (
-            <div className="p-8 text-center text-sm text-slate-400">
+            <div className="p-8 text-center text-sm text-slate-600 dark:text-slate-400">
               Loading accounts...
             </div>
           ) : accounts.length > 0 ? (
@@ -67,7 +67,7 @@ function ConnectionListModal({
                   type="button"
                   key={account.id}
                   onClick={() => onOpenAccount(account)}
-                  className="group flex w-full items-center gap-3 rounded-xl p-3 text-left text-slate-300 transition hover:bg-violet-500/20 hover:text-violet-300 hover:ring-1 hover:ring-violet-500/35"
+                  className="group flex w-full items-center gap-3 rounded-xl p-3 text-left text-slate-700 dark:text-slate-300 transition hover:bg-violet-500/20 hover:text-violet-300 hover:ring-1 hover:ring-violet-500/35"
                 >
                   <img
                     src={account.avatarUrl}
@@ -76,7 +76,7 @@ function ConnectionListModal({
                   />
                   <div className="min-w-0 flex-1">
                     <p className="truncate text-sm font-black">{account.name}</p>
-                    <p className="text-xs text-slate-400 transition group-hover:text-violet-200/80">
+                    <p className="text-xs text-slate-600 dark:text-slate-400 transition group-hover:text-violet-200/80">
                       {account.isCreator
                         ? `${account.postedPromptCount.toLocaleString()} prompt posts`
                         : `${account.followingCount.toLocaleString()} following`}
@@ -86,7 +86,7 @@ function ConnectionListModal({
               ))}
             </div>
           ) : (
-            <div className="p-8 text-center text-sm text-slate-400">
+            <div className="p-8 text-center text-sm text-slate-600 dark:text-slate-400">
               No accounts found.
             </div>
           )}
@@ -249,7 +249,7 @@ export default function CreatorProfile() {
 
   if (loading) {
     return (
-      <div className="glass-panel p-10 text-center text-sm text-slate-400">
+      <div className="glass-panel p-10 text-center text-sm text-slate-600 dark:text-slate-400">
         Loading creator profile...
       </div>
     );
@@ -258,8 +258,8 @@ export default function CreatorProfile() {
   if (!creator) {
     return (
       <div className="glass-panel p-10 text-center">
-        <p className="text-sm text-slate-400">Creator not found.</p>
-        <Link to="/" className="mt-4 inline-block text-sm font-bold text-violet-300">
+        <p className="text-sm text-slate-600 dark:text-slate-400">Creator not found.</p>
+        <Link to="/" className="mt-4 inline-block text-sm font-bold text-violet-700 dark:text-violet-300">
           Back to Home
         </Link>
       </div>
@@ -277,10 +277,10 @@ export default function CreatorProfile() {
               <img
                 src={creator.avatarUrl}
                 alt={creator.name}
-                className="h-24 w-24 rounded-full border-4 border-slate-950 object-cover ring-4 ring-violet-500/30"
+                className="h-24 w-24 rounded-full border-4 border-slate-950 object-cover ring-4 ring-violet-500/50 dark:ring-violet-500/30"
               />
               <div className="pb-1">
-                <h1 className="text-2xl font-black text-white">
+                <h1 className="text-2xl font-black text-slate-900 dark:text-white">
                   {creator.name}
                 </h1>
               </div>
@@ -293,7 +293,7 @@ export default function CreatorProfile() {
                   onClick={handleToggleFollow}
                   disabled={followLoading}
                   className={`h-10 rounded-xl px-5 text-sm font-black transition ${isFollowing
-                    ? "bg-slate-800 text-slate-200 hover:bg-slate-700"
+                    ? "bg-slate-200 dark:bg-slate-800 text-slate-800 dark:text-slate-200 hover:bg-slate-700"
                     : "bg-white text-slate-950 hover:bg-violet-100"
                     }`}
                 >
@@ -307,7 +307,7 @@ export default function CreatorProfile() {
             )}
           </div>
 
-          <p className="mt-5 max-w-4xl text-sm leading-6 text-slate-300">
+          <p className="mt-5 max-w-4xl text-sm leading-6 text-slate-700 dark:text-slate-300">
             {creator.description}
           </p>
 
@@ -317,30 +317,30 @@ export default function CreatorProfile() {
               onClick={() => handleOpenConnections("following")}
               className="rounded-lg text-left transition hover:text-violet-300"
             >
-              <span className="font-black text-white">
+              <span className="font-black text-slate-900 dark:text-white">
                 {creator.followingCount.toLocaleString()}
               </span>
-              <span className="ml-1 text-slate-400">Following</span>
+              <span className="ml-1 text-slate-600 dark:text-slate-400">Following</span>
             </button>
             <button
               type="button"
               onClick={() => handleOpenConnections("followers")}
               className="rounded-lg text-left transition hover:text-violet-300"
             >
-              <span className="font-black text-white">
+              <span className="font-black text-slate-900 dark:text-white">
                 {creator.followersCount.toLocaleString()}
               </span>
-              <span className="ml-1 text-slate-400">Followers</span>
+              <span className="ml-1 text-slate-600 dark:text-slate-400">Followers</span>
             </button>
             <div>
-              <span className="font-black text-white">
+              <span className="font-black text-slate-900 dark:text-white">
                 {creator.postedPromptCount.toLocaleString()}
               </span>
-              <span className="ml-1 text-slate-400">Prompt posts</span>
+              <span className="ml-1 text-slate-600 dark:text-slate-400">Prompt posts</span>
             </div>
             <div>
-              <span className="text-slate-400">Joined: </span>
-              <span className="font-black text-white">
+              <span className="text-slate-600 dark:text-slate-400">Joined: </span>
+              <span className="font-black text-slate-900 dark:text-white">
                 {formatJoinedDate(creator.joinedAt)}
               </span>
             </div>

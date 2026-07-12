@@ -3,6 +3,7 @@ import forms from '@tailwindcss/forms';
 import containerQueries from '@tailwindcss/container-queries';
 
 export default {
+  darkMode: 'class',
   content: [
     "./index.html",
     "./frontend/src/**/*.{js,jsx,ts,tsx}",

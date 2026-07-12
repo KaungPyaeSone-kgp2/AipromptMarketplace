@@ -127,19 +127,19 @@ function ReportModal({ onClose, targetType, targetId, list }) {
       className="fixed inset-0 z-[99999] flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm"
       onMouseDown={handleBackdropClick}
     >
-      <div className="w-full max-w-md overflow-hidden rounded-2xl border border-slate-700/80 bg-[#0c1024] shadow-2xl">
+      <div className="w-full max-w-md overflow-hidden rounded-2xl border border-slate-400/80 dark:border-slate-700/80 bg-[#0c1024] shadow-2xl">
         {submitted ? (
           <div className="flex flex-col items-center gap-2 px-4 py-8 text-center">
             <span className="text-4xl">✅</span>
-            <p className="mt-2 text-lg font-black text-white">Report Submitted</p>
-            <p className="text-sm text-slate-400">
+            <p className="mt-2 text-lg font-black text-slate-900 dark:text-white">Report Submitted</p>
+            <p className="text-sm text-slate-600 dark:text-slate-400">
               Thanks for helping keep the community safe.
             </p>
           </div>
         ) : (
           <form onSubmit={handleSubmit} className="flex flex-col">
             {/* Header */}
-            <div className="flex items-center justify-between border-b border-slate-800 px-5 py-4">
+            <div className="flex items-center justify-between border-b border-slate-300 dark:border-slate-800 px-5 py-4">
               <div className="flex items-center gap-2">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -149,13 +149,13 @@ function ReportModal({ onClose, targetType, targetId, list }) {
                   strokeWidth={2}
                   strokeLinecap="round"
                   strokeLinejoin="round"
-                  className="h-5 w-5 text-rose-400"
+                  className="h-5 w-5 text-rose-600 dark:text-rose-400"
                   aria-hidden="true"
                 >
                   <path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z" />
                   <line x1="4" y1="22" x2="4" y2="15" />
                 </svg>
-                <h3 className="text-base font-black text-white">Submit a Report</h3>
+                <h3 className="text-base font-black text-slate-900 dark:text-white">Submit a Report</h3>
               </div>
               <button
                 type="button"
@@ -180,10 +180,10 @@ function ReportModal({ onClose, targetType, targetId, list }) {
             <div className="flex flex-col gap-4 p-5 max-h-[70vh] overflow-y-auto custom-scrollbar">
               {/* Reason */}
               <div className="flex flex-col gap-2">
-                <label className="text-xs font-bold uppercase tracking-wider text-slate-400">
+                <label className="text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-slate-400">
                   Reason for reporting
                 </label>
-                <div className="rounded-xl border border-slate-700/80 bg-slate-800/20 p-2">
+                <div className="rounded-xl border border-slate-400/80 dark:border-slate-700/80 bg-slate-800/20 p-2">
                   <ul className="flex flex-col gap-1 max-h-40 overflow-y-auto custom-scrollbar">
                     {list.map((reason) => (
                       <li key={reason.value}>
@@ -192,8 +192,8 @@ function ReportModal({ onClose, targetType, targetId, list }) {
                           onClick={() => setSelected(reason)}
                           className={`flex w-full items-center gap-2.5 rounded-xl px-3 py-2.5 text-left text-sm transition ${
                             selected?.value === reason.value
-                              ? "bg-rose-500/20 font-bold text-rose-300"
-                              : "text-slate-300 hover:bg-slate-800/70 hover:text-white"
+                              ? "bg-rose-500/20 font-bold text-rose-700 dark:text-rose-300"
+                              : "text-slate-700 dark:text-slate-300 hover:bg-slate-800/70 hover:text-white"
                           }`}
                         >
                           <span
@@ -214,14 +214,14 @@ function ReportModal({ onClose, targetType, targetId, list }) {
               {/* Description (Only show if "Other" is selected) */}
               {selected?.value === "other" && (
                 <div className="flex flex-col gap-2">
-                  <label className="text-xs font-bold uppercase tracking-wider text-slate-400">
+                  <label className="text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-slate-400">
                     Description (Optional)
                   </label>
                   <textarea
                     value={description}
                     onChange={(e) => setDescription(e.target.value)}
                     placeholder="Provide more details about the issue..."
-                    className="w-full resize-none rounded-xl border border-slate-700 bg-slate-800/50 px-3 py-3 text-sm text-slate-200 outline-none transition focus:border-rose-500 focus:ring-1 focus:ring-rose-500"
+                    className="w-full resize-none rounded-xl border border-slate-400 dark:border-slate-700 bg-slate-200/50 dark:bg-slate-800/50 px-3 py-3 text-sm text-slate-800 dark:text-slate-200 outline-none transition focus:border-rose-500 focus:ring-1 focus:ring-rose-500"
                     rows={4}
                   />
                 </div>
@@ -229,7 +229,7 @@ function ReportModal({ onClose, targetType, targetId, list }) {
 
               {/* Image Evidence */}
               <div className="flex flex-col gap-2">
-                <label className="text-xs font-bold uppercase tracking-wider text-slate-400">
+                <label className="text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-slate-400">
                   Evidence Image (Optional)
                 </label>
                 <div className="relative flex items-center gap-3 group/evidence">
@@ -244,7 +244,7 @@ function ReportModal({ onClose, targetType, targetId, list }) {
                         setImageEvidence(null);
                       }
                     }}
-                    className="block w-full text-sm text-slate-400 file:mr-4 file:rounded-full file:border-0 file:bg-rose-500/10 file:px-4 file:py-2 file:text-sm file:font-semibold file:text-rose-400 hover:file:bg-rose-500/20"
+                    className="block w-full text-sm text-slate-600 dark:text-slate-400 file:mr-4 file:rounded-full file:border-0 file:bg-rose-500/10 file:px-4 file:py-2 file:text-sm file:font-semibold file:text-rose-400 hover:file:bg-rose-500/20"
                   />
                   {imageEvidence && (
                     <button
@@ -253,7 +253,7 @@ function ReportModal({ onClose, targetType, targetId, list }) {
                         setImageEvidence(null);
                         if (fileInputRef.current) fileInputRef.current.value = "";
                       }}
-                      className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-slate-800 text-slate-400 transition hover:bg-rose-500/20 hover:text-rose-400"
+                      className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-slate-200 dark:bg-slate-800 text-slate-600 dark:text-slate-400 transition hover:bg-rose-500/20 hover:text-rose-400"
                       title="Remove image"
                     >
                       <svg
@@ -274,13 +274,13 @@ function ReportModal({ onClose, targetType, targetId, list }) {
                   {/* Hover image preview tooltip */}
                   {imageEvidence && (
                     <div className="pointer-events-none absolute bottom-full left-1/2 z-50 mb-3 -translate-x-1/2 opacity-0 transition-opacity duration-200 group-hover/evidence:opacity-100">
-                      <div className="overflow-hidden rounded-xl border border-slate-600/80 bg-slate-900 p-1.5 shadow-2xl shadow-black/40">
+                      <div className="overflow-hidden rounded-xl border border-slate-600/80 bg-slate-100 dark:bg-slate-900 p-1.5 shadow-2xl shadow-black/40">
                         <img
                           src={previewUrl}
                           alt="Evidence preview"
                           className="block max-h-[200px] max-w-[200px] rounded-lg object-contain"
                         />
-                        <p className="mt-1 truncate text-center text-[10px] font-medium text-slate-400" style={{ maxWidth: 200 }}>
+                        <p className="mt-1 truncate text-center text-[10px] font-medium text-slate-600 dark:text-slate-400" style={{ maxWidth: 200 }}>
                           {imageEvidence.name}
                         </p>
                       </div>
@@ -295,18 +295,18 @@ function ReportModal({ onClose, targetType, targetId, list }) {
             {/* Error message */}
             {error && (
               <div className="px-5 pb-2">
-                <p className="rounded-lg bg-rose-500/10 p-2.5 text-xs font-semibold text-rose-400">
+                <p className="rounded-lg bg-rose-500/10 p-2.5 text-xs font-semibold text-rose-600 dark:text-rose-400">
                   {error}
                 </p>
               </div>
             )}
 
             {/* Submit */}
-            <div className="border-t border-slate-800 bg-slate-900/50 px-5 py-4">
+            <div className="border-t border-slate-300 dark:border-slate-800 bg-slate-100/50 dark:bg-slate-900/50 px-5 py-4">
               <button
                 type="submit"
                 disabled={!selected || submitting}
-                className="flex w-full items-center justify-center rounded-xl bg-rose-600 px-4 py-3 text-sm font-black text-white transition hover:bg-rose-500 disabled:cursor-not-allowed disabled:opacity-50"
+                className="flex w-full items-center justify-center rounded-xl bg-rose-600 px-4 py-3 text-sm font-black text-slate-900 dark:text-white transition hover:bg-rose-500 disabled:cursor-not-allowed disabled:opacity-50"
               >
                 {submitting ? (
                   <span className="flex items-center gap-2">

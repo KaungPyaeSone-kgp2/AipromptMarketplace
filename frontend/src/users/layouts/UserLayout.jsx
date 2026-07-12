@@ -17,6 +17,7 @@ import { RATINGS_UPDATED_EVENT } from "../services/reviewService.js";
 import { fetchReports } from "../services/reportService.js";
 import { getCurrentUserId } from "../services/currentUser.js";
 import { useSocket } from "../context/SocketContext.jsx";
+import { ThemeProvider } from "../context/ThemeContext.jsx";
 
 export default function UserLayout() {
   const location = useLocation();
@@ -313,35 +314,37 @@ export default function UserLayout() {
   };
 
   return (
-    <div className="app-shell min-h-screen text-slate-100">
-      <Navbar
-        user={user}
-        notificationCount={notificationCount}
-        onNotificationChange={(delta) => {
-          if (typeof delta === "number") {
-            setNotificationCount((prev) => Math.max(0, prev + delta));
-          } else {
-            refreshNotificationCount();
-          }
-        }}
-        searchQuery={searchQuery}
-        onSearchChange={handleSearchChange}
-        onSignOut={handleSignOut}
-      />
-
-      <div className="flex items-start">
-        <Sidebar
-          buyerRatingCount={buyerRatingCount}
-          creatorRatingCount={creatorRatingCount}
-          reportCount={reportCount}
+    <ThemeProvider>
+      <div className="app-shell min-h-screen text-slate-100">
+        <Navbar
+          user={user}
+          notificationCount={notificationCount}
+          onNotificationChange={(delta) => {
+            if (typeof delta === "number") {
+              setNotificationCount((prev) => Math.max(0, prev + delta));
+            } else {
+              refreshNotificationCount();
+            }
+          }}
+          searchQuery={searchQuery}
+          onSearchChange={handleSearchChange}
+          onSignOut={handleSignOut}
         />
 
-        <main className="app-scrollbar min-w-0 flex-1 overflow-y-auto p-6">
-          <Outlet context={{ searchQuery, reloadCurrentUser }} />
-        </main>
+        <div className="flex items-start">
+          <Sidebar
+            buyerRatingCount={buyerRatingCount}
+            creatorRatingCount={creatorRatingCount}
+            reportCount={reportCount}
+          />
+
+          <main className="app-scrollbar min-w-0 flex-1 overflow-y-auto p-6">
+            <Outlet context={{ searchQuery, reloadCurrentUser }} />
+          </main>
+        </div>
+
+
       </div>
-
-
-    </div>
+    </ThemeProvider>
   );
 }

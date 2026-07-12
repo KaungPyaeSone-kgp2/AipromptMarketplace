@@ -119,13 +119,13 @@ function CropModal({ imageUrl, onCancel, onApply }) {
 
   return (
     <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/65 p-4">
-      <div className="w-full max-w-md overflow-hidden rounded-2xl border border-slate-700 bg-[#070814] shadow-2xl">
-        <div className="flex items-center justify-between border-b border-slate-800 px-5 py-4">
-          <h2 className="text-base font-black text-violet-300">Crop Profile Photo</h2>
+      <div className="w-full max-w-md overflow-hidden rounded-2xl border border-slate-400 dark:border-slate-700 bg-[#070814] shadow-2xl">
+        <div className="flex items-center justify-between border-b border-slate-300 dark:border-slate-800 px-5 py-4">
+          <h2 className="text-base font-black text-violet-700 dark:text-violet-300">Crop Profile Photo</h2>
           <button
             type="button"
             onClick={onCancel}
-            className="flex h-8 w-8 items-center justify-center rounded-full text-slate-400 transition hover:bg-violet-500/20 hover:text-violet-300"
+            className="flex h-8 w-8 items-center justify-center rounded-full text-slate-600 dark:text-slate-400 transition hover:bg-violet-500/20 hover:text-violet-300"
           >
             x
           </button>
@@ -135,7 +135,7 @@ function CropModal({ imageUrl, onCancel, onApply }) {
           <div className="flex justify-center">
             <canvas
               ref={canvasRef}
-              className={`rounded-full ring-4 ring-violet-500/35 ${isDragging ? "cursor-grabbing" : "cursor-grab"}`}
+              className={`rounded-full ring-4 ring-violet-500/60 dark:ring-violet-500/35 ${isDragging ? "cursor-grabbing" : "cursor-grab"}`}
               onMouseDown={handleMouseDown}
               onMouseMove={handleMouseMove}
               onMouseUp={handleMouseUpOrLeave}
@@ -143,7 +143,7 @@ function CropModal({ imageUrl, onCancel, onApply }) {
             />
           </div>
 
-          <label className="mt-5 block text-sm font-black text-slate-300">
+          <label className="mt-5 block text-sm font-black text-slate-700 dark:text-slate-300">
             Zoom
           </label>
           <input
@@ -157,18 +157,18 @@ function CropModal({ imageUrl, onCancel, onApply }) {
           />
         </div>
 
-        <div className="flex justify-end gap-3 border-t border-slate-800 px-5 py-4">
+        <div className="flex justify-end gap-3 border-t border-slate-300 dark:border-slate-800 px-5 py-4">
           <button
             type="button"
             onClick={onCancel}
-            className="rounded-xl bg-slate-800 px-4 py-2 text-sm font-bold text-slate-300 transition hover:bg-slate-700"
+            className="rounded-xl bg-slate-200 dark:bg-slate-800 px-4 py-2 text-sm font-bold text-slate-700 dark:text-slate-300 transition hover:bg-slate-700"
           >
             Cancel
           </button>
           <button
             type="button"
             onClick={handleApply}
-            className="rounded-xl bg-violet-600 px-4 py-2 text-sm font-black text-white transition hover:bg-violet-500"
+            className="rounded-xl bg-violet-600 px-4 py-2 text-sm font-black text-slate-900 dark:text-white transition hover:bg-violet-500"
           >
             Apply Crop
           </button>
@@ -260,8 +260,8 @@ export default function ProfileSettings() {
       )}
 
       <div>
-        <h1 className="text-4xl font-black text-violet-400">Profile Setting</h1>
-        <p className="mt-1 text-sm text-slate-400">
+        <h1 className="text-4xl font-black text-violet-600 dark:text-violet-400">Profile Setting</h1>
+        <p className="mt-1 text-sm text-slate-600 dark:text-slate-400">
           Manage your personal information and profile details.
         </p>
       </div>
@@ -269,12 +269,12 @@ export default function ProfileSettings() {
       <form onSubmit={handleSave} className="surface-strong p-6">
         <div className="grid gap-8 lg:grid-cols-[220px_minmax(0,1fr)]">
           <aside>
-            <p className="text-sm font-black text-white">Profile Picture</p>
+            <p className="text-sm font-black text-slate-900 dark:text-white">Profile Picture</p>
             <div className="mt-5 flex flex-col items-center">
               <img
                 src={avatarPreview}
                 alt={user?.displayName ?? "Profile"}
-                className="h-32 w-32 rounded-full object-cover ring-4 ring-violet-500/35"
+                className="h-32 w-32 rounded-full object-cover ring-4 ring-violet-500/60 dark:ring-violet-500/35"
               />
               {/* <p className="mt-4 text-center text-xs leading-5 text-slate-500">
                 JPG, GIF, PNG or WEBP. Max size of 5MB.
@@ -282,7 +282,7 @@ export default function ProfileSettings() {
               <button
                 type="button"
                 onClick={() => fileInputRef.current?.click()}
-                className="mt-4 rounded-xl border border-violet-500/60 px-5 py-2 text-sm font-black text-violet-300 transition hover:bg-violet-500/20"
+                className="mt-4 rounded-xl border border-violet-500/60 px-5 py-2 text-sm font-black text-violet-700 dark:text-violet-300 transition hover:bg-violet-500/20"
               >
                 Upload Photo
               </button>
@@ -298,31 +298,31 @@ export default function ProfileSettings() {
 
           <div className="space-y-5">
             <label className="block">
-              <span className="text-sm font-black text-slate-300">Name</span>
+              <span className="text-sm font-black text-slate-700 dark:text-slate-300">Name</span>
               <input
                 value={name}
                 readOnly
-                className="mt-2 h-11 w-full rounded-xl border border-slate-700 bg-slate-950 px-4 text-sm text-slate-400 outline-none cursor-not-allowed opacity-70"
+                className="mt-2 h-11 w-full rounded-xl border border-slate-400 dark:border-slate-700 bg-slate-50 dark:bg-slate-950 px-4 text-sm text-slate-600 dark:text-slate-400 outline-none cursor-not-allowed opacity-70"
               />
             </label>
 
             <label className="block">
-              <span className="text-sm font-black text-slate-300">Email Address</span>
+              <span className="text-sm font-black text-slate-700 dark:text-slate-300">Email Address</span>
               <input
                 type="email"
                 value={email}
                 readOnly
-                className="mt-2 h-11 w-full rounded-xl border border-slate-700 bg-slate-950 px-4 text-sm text-slate-400 outline-none cursor-not-allowed opacity-70"
+                className="mt-2 h-11 w-full rounded-xl border border-slate-400 dark:border-slate-700 bg-slate-50 dark:bg-slate-950 px-4 text-sm text-slate-600 dark:text-slate-400 outline-none cursor-not-allowed opacity-70"
               />
             </label>
 
             <label className="block">
-              <span className="text-sm font-black text-slate-300">Bio</span>
+              <span className="text-sm font-black text-slate-700 dark:text-slate-300">Bio</span>
               <textarea
                 value={bio}
                 onChange={(event) => setBio(event.target.value)}
                 rows={5}
-                className="mt-2 w-full resize-none rounded-xl border border-slate-700 bg-slate-950 px-4 py-3 text-sm text-slate-200 outline-none transition placeholder:text-slate-500 focus:border-violet-500 focus:ring-4 focus:ring-violet-500/10"
+                className="mt-2 w-full resize-none rounded-xl border border-slate-400 dark:border-slate-700 bg-slate-50 dark:bg-slate-950 px-4 py-3 text-sm text-slate-800 dark:text-slate-200 outline-none transition placeholder:text-slate-500 focus:border-violet-500 focus:ring-4 focus:ring-violet-500/10"
                 placeholder="Write something about yourself..."
               />
             </label>
@@ -337,7 +337,7 @@ export default function ProfileSettings() {
               <button
                 type="submit"
                 disabled={saving}
-                className="rounded-xl bg-violet-600 px-6 py-3 text-sm font-black text-white shadow-lg transition hover:bg-violet-500 disabled:cursor-not-allowed disabled:opacity-60"
+                className="rounded-xl bg-violet-600 px-6 py-3 text-sm font-black text-slate-900 dark:text-white shadow-lg transition hover:bg-violet-500 disabled:cursor-not-allowed disabled:opacity-60"
               >
                 {saving ? "Saving..." : "Save Changes"}
               </button>

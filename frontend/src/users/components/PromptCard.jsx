@@ -10,20 +10,20 @@ function VisibilityBadge({ visibility }) {
   
   if (normVis === "draft") {
     return (
-      <div className="flex items-center gap-1.5 rounded-md bg-slate-800/90 px-2 py-1 text-[10px] font-bold text-slate-300 ring-1 ring-slate-600/50 backdrop-blur-md">
+      <div className="flex items-center gap-1.5 rounded-md bg-slate-800/90 px-2 py-1 text-[10px] font-bold text-slate-700 dark:text-slate-300 ring-1 ring-slate-600/50 backdrop-blur-md">
         <DraftIcon className="h-3 w-3" /> Draft
       </div>
     );
   }
   if (normVis === "followers only" || normVis === "only follower" || normVis === "only followers") {
     return (
-      <div className="flex items-center gap-1.5 rounded-md bg-blue-500/90 px-2 py-1 text-[10px] font-bold text-white ring-1 ring-blue-500/30 backdrop-blur-md">
+      <div className="flex items-center gap-1.5 rounded-md bg-blue-500/90 px-2 py-1 text-[10px] font-bold text-slate-900 dark:text-white ring-1 ring-blue-500/30 backdrop-blur-md">
         <FollowersIcon className="h-3 w-3" /> Followers Only
       </div>
     );
   }
   return (
-    <div className="flex items-center gap-1.5 rounded-md bg-emerald-500/90 px-2 py-1 text-[10px] font-bold text-white ring-1 ring-emerald-500/30 backdrop-blur-md">
+    <div className="flex items-center gap-1.5 rounded-md bg-emerald-500/90 px-2 py-1 text-[10px] font-bold text-slate-900 dark:text-white ring-1 ring-emerald-500/30 backdrop-blur-md">
       <GlobeIcon className="h-3 w-3" /> Public
     </div>
   );
@@ -99,7 +99,7 @@ export default function PromptCard({
      ═══════════════════════════════════════════════════════ */
   if (variant === "grid" || isMarketplace) {
     return (
-      <article className="prompt-card group relative overflow-hidden rounded-2xl border border-slate-700/50 bg-slate-900/80">
+      <article className="prompt-card group relative overflow-hidden rounded-2xl border border-slate-400/50 dark:border-slate-700/50 bg-slate-100/80 dark:bg-slate-900/80">
         <div className="relative flex aspect-[4/3] items-center justify-center overflow-hidden bg-slate-950/60">
           {/* ── Main image ── */}
           {prompt.imageUrl ? (
@@ -123,16 +123,16 @@ export default function PromptCard({
           <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/5 to-black/80 opacity-0 transition-opacity duration-300 group-hover:opacity-100 pointer-events-none" />
 
           {/* ── Default labels (fade out on hover) ── */}
-          <div className="absolute left-3 top-3 text-xs font-black text-white drop-shadow transition-opacity duration-200 group-hover:opacity-0 pointer-events-none">
+          <div className="absolute left-3 top-3 text-xs font-black text-slate-900 dark:text-white drop-shadow transition-opacity duration-200 group-hover:opacity-0 pointer-events-none">
             {prompt.model || "AI"}
           </div>
 
-          <div className="absolute right-3 top-3 text-xs font-black text-white drop-shadow transition-opacity duration-200 group-hover:opacity-0 pointer-events-none">
+          <div className="absolute right-3 top-3 text-xs font-black text-slate-900 dark:text-white drop-shadow transition-opacity duration-200 group-hover:opacity-0 pointer-events-none">
             {ratingLabel} ★
           </div>
 
           <div className="absolute inset-x-0 bottom-0 flex items-end justify-between gap-3 p-3 transition-opacity duration-200 group-hover:opacity-0 pointer-events-none">
-            <h3 className="line-clamp-2 text-base font-black leading-tight text-white drop-shadow">
+            <h3 className="line-clamp-2 text-base font-black leading-tight text-slate-900 dark:text-white drop-shadow">
               {prompt.title}
             </h3>
           </div>
@@ -155,7 +155,7 @@ export default function PromptCard({
                 title={
                   inWishlist ? "Remove from wishlist" : "Add to wishlist"
                 }
-                className="flex h-9 w-9 items-center justify-center rounded-full bg-slate-900/80 text-white shadow-lg ring-1 ring-white/10 backdrop-blur-sm transition-all duration-200 hover:scale-110 hover:bg-rose-500 hover:text-white hover:ring-rose-400/30"
+                className="flex h-9 w-9 items-center justify-center rounded-full bg-slate-100/80 dark:bg-slate-900/80 text-slate-900 dark:text-white shadow-lg ring-1 ring-white/10 backdrop-blur-sm transition-all duration-200 hover:scale-110 hover:bg-rose-500 hover:text-white hover:ring-rose-400/30"
               >
                 <HeartIcon filled={inWishlist} className="h-4 w-4" />
               </button>
@@ -166,7 +166,7 @@ export default function PromptCard({
               aria-label="View details"
               title="View details"
               onClick={(e) => e.stopPropagation()}
-              className="flex h-9 w-9 items-center justify-center rounded-full bg-slate-900/80 text-white shadow-lg ring-1 ring-white/10 backdrop-blur-sm transition-all duration-200 hover:scale-110 hover:bg-violet-500 hover:ring-violet-400/30"
+              className="flex h-9 w-9 items-center justify-center rounded-full bg-slate-100/80 dark:bg-slate-900/80 text-slate-900 dark:text-white shadow-lg ring-1 ring-white/10 backdrop-blur-sm transition-all duration-200 hover:scale-110 hover:bg-violet-500 hover:ring-violet-400/30"
             >
               <ExternalLinkIcon />
             </Link>
@@ -176,7 +176,7 @@ export default function PromptCard({
               ════════════════════════════════════════════════ */}
           <div className="prompt-card__info absolute inset-x-0 bottom-0 flex items-end justify-between gap-3 p-4 opacity-0 group-hover:opacity-100 translate-y-4 group-hover:translate-y-0 transition-all duration-300">
             <div className="min-w-0 flex-1">
-              <h3 className="line-clamp-1 text-sm font-bold leading-tight text-white drop-shadow-lg">
+              <h3 className="line-clamp-1 text-sm font-bold leading-tight text-slate-900 dark:text-white drop-shadow-lg">
                 {prompt.title}
               </h3>
               <p className="mt-0.5 text-xs font-medium text-slate-300/80">
@@ -193,7 +193,7 @@ export default function PromptCard({
               <button
                 type="button"
                 onClick={(e) => { e.stopPropagation(); onActionClick(prompt); }}
-                className="shrink-0 rounded-xl bg-violet-600 px-3 py-2 text-[11px] font-black text-white shadow-lg transition hover:bg-violet-500"
+                className="shrink-0 rounded-xl bg-violet-600 px-3 py-2 text-[11px] font-black text-slate-900 dark:text-white shadow-lg transition hover:bg-violet-500"
               >
                 {actionLabel}
               </button>
@@ -201,7 +201,7 @@ export default function PromptCard({
               <Link
                 to={actionLink}
                 onClick={(e) => e.stopPropagation()}
-                className="shrink-0 rounded-xl bg-violet-600 px-3 py-2 text-[11px] font-black text-white shadow-lg transition hover:bg-violet-500"
+                className="shrink-0 rounded-xl bg-violet-600 px-3 py-2 text-[11px] font-black text-slate-900 dark:text-white shadow-lg transition hover:bg-violet-500"
               >
                 {actionLabel}
               </Link>
@@ -234,16 +234,16 @@ export default function PromptCard({
       <div className="absolute inset-0 bg-gradient-to-b from-black/45 via-transparent to-black/70" />
 
       <div className="absolute left-3 top-3 flex flex-col items-start gap-2 drop-shadow">
-        <span className="text-xs font-black text-white">{prompt.model || "AI"}</span>
+        <span className="text-xs font-black text-slate-900 dark:text-white">{prompt.model || "AI"}</span>
         {showVisibilityBadge && <VisibilityBadge visibility={prompt.visibility} />}
       </div>
 
-      <div className="absolute right-3 top-3 text-xs font-black text-white drop-shadow">
+      <div className="absolute right-3 top-3 text-xs font-black text-slate-900 dark:text-white drop-shadow">
         {ratingLabel} *
       </div>
 
       <div className="absolute inset-x-0 bottom-0 flex items-end justify-between gap-3 p-3">
-        <h3 className="line-clamp-2 text-base font-black leading-tight text-white drop-shadow">
+        <h3 className="line-clamp-2 text-base font-black leading-tight text-slate-900 dark:text-white drop-shadow">
           {prompt.title}
         </h3>
       </div>
@@ -261,9 +261,9 @@ export default function PromptCard({
           <img
             src={prompt.creatorAvatarUrl}
             alt={prompt.creatorName ?? prompt.creator}
-            className="h-8 w-8 shrink-0 rounded-full object-cover ring-2 ring-violet-500/30"
+            className="h-8 w-8 shrink-0 rounded-full object-cover ring-2 ring-violet-500/50 dark:ring-violet-500/30"
           />
-          <span className="truncate text-xs font-bold text-violet-200">
+          <span className="truncate text-xs font-bold text-violet-800 dark:text-violet-200">
             {prompt.creatorName ?? prompt.creator}
           </span>
         </Link>
@@ -272,9 +272,9 @@ export default function PromptCard({
           <img
             src={prompt.creatorAvatarUrl}
             alt={prompt.creatorName ?? prompt.creator}
-            className="h-8 w-8 rounded-full object-cover ring-2 ring-violet-500/30"
+            className="h-8 w-8 rounded-full object-cover ring-2 ring-violet-500/50 dark:ring-violet-500/30"
           />
-          <span className="text-xs font-bold text-slate-400">
+          <span className="text-xs font-bold text-slate-600 dark:text-slate-400">
             {prompt.creatorName ?? prompt.creator}
           </span>
         </>
@@ -287,7 +287,7 @@ export default function PromptCard({
       <div className="mb-4 overflow-hidden rounded-2xl">{imageBlock}</div>
 
       <div className="flex items-start justify-between gap-3">
-        <h3 className="line-clamp-1 text-base font-bold text-white">
+        <h3 className="line-clamp-1 text-base font-bold text-slate-900 dark:text-white">
           {prompt.title}
         </h3>
         {typeof prompt.rating === "number" && prompt.rating > 0 && (
@@ -297,7 +297,7 @@ export default function PromptCard({
         )}
       </div>
 
-      <p className="mt-3 line-clamp-3 text-sm leading-6 text-slate-400">
+      <p className="mt-3 line-clamp-3 text-sm leading-6 text-slate-600 dark:text-slate-400">
         {prompt.description || prompt.promptText}
       </p>
 
@@ -312,14 +312,14 @@ export default function PromptCard({
         {showVisibilityInfo && (
           <Link
             to={promptLink}
-            className="rounded-xl border border-slate-700 bg-slate-800 px-4 py-2 text-xs font-bold text-slate-300 transition hover:bg-slate-700"
+            className="rounded-xl border border-slate-400 dark:border-slate-700 bg-slate-200 dark:bg-slate-800 px-4 py-2 text-xs font-bold text-slate-700 dark:text-slate-300 transition hover:bg-slate-700"
           >
             View Post
           </Link>
         )}
         <Link
           to={actionLink}
-          className="rounded-xl bg-violet-600 px-4 py-2 text-xs font-bold text-white transition hover:bg-violet-500"
+          className="rounded-xl bg-violet-600 px-4 py-2 text-xs font-bold text-slate-900 dark:text-white transition hover:bg-violet-500"
         >
           {actionLabel}
         </Link>
