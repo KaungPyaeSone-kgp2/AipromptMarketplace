@@ -150,7 +150,7 @@ try {
         $user_role = 'user';
 
         $sql = "INSERT INTO user_login_logs(user_id) VALUES (:id)";
-            $param = [":id" => $user['id']];
+            $param = [":id" => $new_user_id];
 
             $dao->insert($sql,$param);
         
