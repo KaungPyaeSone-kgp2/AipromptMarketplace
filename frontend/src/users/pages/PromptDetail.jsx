@@ -345,33 +345,6 @@ export default function PromptDetail() {
           )}
         </div>
 
-        <section className="surface-strong p-6">
-          <h3 className="text-sm font-bold uppercase tracking-widest text-slate-500 mb-2">Description</h3>
-          <p className="text-sm leading-6 text-slate-700 dark:text-slate-300">
-            {prompt.description || "No description available."}
-          </p>
-
-          <div className="mt-6 flex items-center justify-between mb-2">
-            <h3 className="text-sm font-bold uppercase tracking-widest text-slate-500">Full Prompt</h3>
-            <button
-              onClick={() => {
-                if (prompt.promptText) {
-                  navigator.clipboard.writeText(prompt.promptText);
-                }
-              }}
-              className="p-1.5 text-slate-500 hover:text-violet-600 dark:hover:text-violet-400 transition-colors rounded-md hover:bg-slate-200 dark:hover:bg-slate-800"
-              title="Copy prompt text"
-            >
-              <CopyIcon className="h-5 w-5" />
-            </button>
-          </div>
-          <div className="rounded-xl bg-slate-100 dark:bg-slate-950/50 p-4 border border-slate-300 dark:border-slate-800">
-            <p className="text-sm leading-6 text-slate-800 dark:text-slate-200 font-mono whitespace-pre-wrap break-words">
-              {renderHighlightedPromptText()}
-            </p>
-          </div>
-        </section>
-
         <section className="surface-strong p-5">
           <div className="flex flex-wrap items-end justify-between gap-3 border-b border-slate-700/70 pb-4">
             <div>
@@ -573,6 +546,33 @@ export default function PromptDetail() {
                 {reviewCount.toLocaleString()}
               </p>
               <p className="text-slate-500">Review count</p>
+            </div>
+          </div>
+
+          <div className="mt-6 border-t border-slate-700/70 pt-6">
+            <h3 className="text-sm font-bold uppercase tracking-widest text-slate-500 mb-2">Description</h3>
+            <p className="text-sm leading-6 text-slate-700 dark:text-slate-300">
+              {prompt.description || "No description available."}
+            </p>
+
+            <div className="mt-6 flex items-center justify-between mb-2">
+              <h3 className="text-sm font-bold uppercase tracking-widest text-slate-500">Full Prompt</h3>
+              <button
+                onClick={() => {
+                  if (prompt.promptText) {
+                    navigator.clipboard.writeText(prompt.promptText);
+                  }
+                }}
+                className="p-1.5 text-slate-500 hover:text-violet-600 dark:hover:text-violet-400 transition-colors rounded-md hover:bg-slate-200 dark:hover:bg-slate-800"
+                title="Copy prompt text"
+              >
+                <CopyIcon className="h-5 w-5" />
+              </button>
+            </div>
+            <div className="rounded-xl bg-slate-100 dark:bg-slate-950/50 p-4 border border-slate-300 dark:border-slate-800">
+              <p className="text-sm leading-6 text-slate-800 dark:text-slate-200 font-mono whitespace-pre-wrap break-words">
+                {renderHighlightedPromptText()}
+              </p>
             </div>
           </div>
 
