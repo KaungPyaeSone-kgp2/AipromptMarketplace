@@ -576,7 +576,6 @@ export default function PromptDetail() {
             </div>
           </div>
 
-          </div>
         </section>
       </aside>
     </div>
