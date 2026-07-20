@@ -62,6 +62,7 @@ export default function PromptDetail() {
   const [commentError, setCommentError] = useState("");
   const [deletingReviewId, setDeletingReviewId] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [isHovered, setIsHovered] = useState(false);
 
   useEffect(() => {
     let cancelled = false;
@@ -331,19 +332,33 @@ export default function PromptDetail() {
   return (
     <div className="grid gap-8 xl:grid-cols-[minmax(0,0.95fr)_minmax(380px,0.75fr)]">
       <div className="space-y-6">
-        <div className="overflow-hidden rounded-2xl border border-slate-700/60 bg-slate-950/70">
+        <div 
+          className="relative overflow-hidden rounded-2xl border border-slate-700/60 bg-slate-950/70 aspect-[4/3] w-full"
+          onMouseEnter={() => setIsHovered(true)}
+          onMouseLeave={() => setIsHovered(false)}
+        >
           {prompt.imageUrl ? (
             <img
               src={prompt.imageUrl}
               alt={prompt.title}
-              className="w-full object-cover transition-transform duration-300 hover:scale-105"
+              className="h-full w-full object-cover transition-transform duration-300 hover:scale-105 cursor-zoom-in"
             />
           ) : (
-            <div className="flex aspect-[4/3] items-center justify-center text-sm font-semibold text-slate-500">
+            <div className="flex h-full w-full items-center justify-center text-sm font-semibold text-slate-500">
               Prompt Image
             </div>
           )}
         </div>
+
+        {isHovered && prompt?.imageUrl && (
+          <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/80 pointer-events-none p-8 backdrop-blur-sm">
+            <img 
+              src={prompt.imageUrl} 
+              alt={prompt.title} 
+              className="max-h-full max-w-full rounded-2xl object-contain shadow-2xl ring-1 ring-white/10" 
+            />
+          </div>
+        )}
 
         <section className="surface-strong p-5">
           <div className="flex flex-wrap items-end justify-between gap-3 border-b border-slate-700/70 pb-4">
