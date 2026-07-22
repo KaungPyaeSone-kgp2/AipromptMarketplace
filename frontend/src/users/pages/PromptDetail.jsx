@@ -340,7 +340,7 @@ export default function PromptDetail() {
             <img
               src={prompt.imageUrl}
               alt={prompt.title}
-              className="h-full w-full object-cover transition-transform duration-300 hover:scale-105"
+              className="h-full w-full object-cover"
               style={{ objectPosition: prompt.imageAlignment || 'center' }}
             />
           ) : (
