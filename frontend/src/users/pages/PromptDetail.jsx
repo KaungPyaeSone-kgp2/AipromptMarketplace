@@ -332,16 +332,16 @@ export default function PromptDetail() {
   return (
     <div className="grid gap-8 xl:grid-cols-[minmax(0,0.95fr)_minmax(380px,0.75fr)]">
       <div className="space-y-6">
-        <div 
-          className="relative overflow-hidden rounded-2xl border border-slate-700/60 bg-slate-950/70 aspect-[4/3] w-full"
-          onMouseEnter={() => setIsHovered(true)}
-          onMouseLeave={() => setIsHovered(false)}
+        <div
+          className="relative overflow-hidden rounded-2xl border border-slate-700/60 bg-slate-950/70 aspect-[4/3] w-full cursor-pointer"
+          onClick={() => setIsHovered(true)}
         >
           {prompt.imageUrl ? (
             <img
               src={prompt.imageUrl}
               alt={prompt.title}
-              className="h-full w-full object-cover transition-transform duration-300 hover:scale-105 cursor-zoom-in"
+              className="h-full w-full object-cover transition-transform duration-300 hover:scale-105"
+              style={{ objectPosition: prompt.imageAlignment || 'center' }}
             />
           ) : (
             <div className="flex h-full w-full items-center justify-center text-sm font-semibold text-slate-500">
@@ -351,11 +351,15 @@ export default function PromptDetail() {
         </div>
 
         {isHovered && prompt?.imageUrl && (
-          <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/80 pointer-events-none p-8 backdrop-blur-sm">
-            <img 
-              src={prompt.imageUrl} 
-              alt={prompt.title} 
-              className="max-h-full max-w-full rounded-2xl object-contain shadow-2xl ring-1 ring-white/10" 
+          <div
+            className="fixed inset-0 z-[100] flex items-center justify-center bg-black/80 p-8 backdrop-blur-sm cursor-zoom-out"
+            onClick={() => setIsHovered(false)}
+          >
+            <img
+              src={prompt.imageUrl}
+              alt={prompt.title}
+              className="max-h-full max-w-full rounded-2xl object-contain shadow-2xl ring-1 ring-white/10"
+              onClick={(e) => e.stopPropagation()}
             />
           </div>
         )}

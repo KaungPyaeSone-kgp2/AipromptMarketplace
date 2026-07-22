@@ -53,6 +53,7 @@ try {
     $permissionExpr = "p.`{$permissionColumn}`";
     $draftValue = prompt_draft_value($permissionColumn);
     $promptVariablesExpr = db_column_expr($pdo, 'prompts', 'prompt_variables', 'p.prompt_variables', "'[]'");
+    $imageAlignmentExpr = db_column_expr($pdo, 'prompts', 'image_alignment', 'p.image_alignment', "'center'");
 
     $select_query = "SELECT
     p.id AS prompt_id,
@@ -66,6 +67,7 @@ try {
     p.prompt_description,
     p.full_prompt_content,
     {$promptVariablesExpr} AS prompt_variables,
+    {$imageAlignmentExpr} AS image_alignment,
     {$permissionExpr} AS permission,
     {$permissionExpr} AS visibility,
     p.thumbnail,

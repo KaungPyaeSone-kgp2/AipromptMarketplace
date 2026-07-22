@@ -161,24 +161,18 @@ export default function CreatePrompt() {
     thumbnail: null,
     visibility: "public",
   });
+  const [imagePos, setImagePos] = useState({ x: 50, y: 50 });
+  const [isDraggingImage, setIsDraggingImage] = useState(false);
+  const dragStart = useRef({ x: 0, y: 0, startPosX: 50, startPosY: 50 });
 
   const addVariable = () => {
     let newVariableName = "";
-    // let updatedContent = formData.content;
 
     if (contentRef.current) {
       const start = contentRef.current.selectionStart;
       const end = contentRef.current.selectionEnd;
       if (start !== end) {
         newVariableName = formData.content.substring(start, end).trim();
-
-        // if (newVariableName && !newVariableName.startsWith("[") && !newVariableName.endsWith("]")) {
-        //    const before = formData.content.substring(0, start);
-        //    const after = formData.content.substring(end);
-        //    updatedContent = `${before}[${newVariableName}]${after}`;
-        // } else if (newVariableName.startsWith("[") && newVariableName.endsWith("]")) {
-        //    newVariableName = newVariableName.substring(1, newVariableName.length - 1);
-        // }
       }
     }
 
@@ -186,10 +180,6 @@ export default function CreatePrompt() {
       ...current,
       { name: newVariableName, color: VARIABLE_COLOR },
     ]);
-
-    // if (updatedContent !== formData.content) {
-    //   setFormData((prev) => ({ ...prev, content: updatedContent }));
-    // }
   };
 
   const updateVariable = (index, field, value) => {
@@ -267,6 +257,22 @@ export default function CreatePrompt() {
           thumbnail: null,
           visibility: prompt.visibility ?? "public",
         });
+
+        if (prompt.imageAlignment) {
+          const parts = prompt.imageAlignment.split(' ');
+          if (parts.length === 2 && parts[0].includes('%')) {
+            setImagePos({ x: parseFloat(parts[0]), y: parseFloat(parts[1]) });
+          } else {
+            const alignMap = {
+              top: { x: 50, y: 0 },
+              center: { x: 50, y: 50 },
+              bottom: { x: 50, y: 100 },
+              left: { x: 0, y: 50 },
+              right: { x: 100, y: 50 }
+            };
+            setImagePos(alignMap[prompt.imageAlignment] || { x: 50, y: 50 });
+          }
+        }
         setVariables(Array.isArray(prompt.promptVariables) ? prompt.promptVariables : []);
         setPreviewImage(prompt.imageUrl ?? null);
       } catch (err) {
@@ -327,6 +333,7 @@ export default function CreatePrompt() {
     submission.append("creator_id", getCurrentUserId());
     submission.append("prompt_variables", JSON.stringify(variables));
     submission.append("visibility", formData.visibility);
+    submission.append("image_alignment", `${imagePos.x}% ${imagePos.y}%`);
 
     if (isEditMode) {
       submission.append("prompt_id", promptId);
@@ -379,22 +386,71 @@ export default function CreatePrompt() {
           <label className="block text-sm font-bold text-slate-700 dark:text-slate-300">
             Thumbnail Image {!isEditMode && <span className="text-rose-600 dark:text-rose-400">*</span>}
           </label>
-          <div className="flex items-center gap-6">
-            <button
-              type="button"
-              onClick={() => fileInputRef.current?.click()}
-              disabled={isEditMode}
-              className="relative flex h-32 w-32 shrink-0 flex-col items-center justify-center overflow-hidden rounded-xl border-2 border-dashed border-slate-400 dark:border-slate-700 bg-slate-200/50 dark:bg-slate-800/50 transition hover:border-violet-500 hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-70"
-            >
-              {previewImage ? (
-                <img src={previewImage} alt="Thumbnail preview" className="h-full w-full object-cover" />
-              ) : (
-                <span className="text-xs font-bold text-slate-500">Upload</span>
-              )}
-            </button>
-            <div className="text-sm text-slate-600 dark:text-slate-400">
-              <p>Recommended size: 800x800px</p>
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:gap-6">
+            <div className="flex flex-col gap-2">
+              <div
+                className="relative overflow-hidden rounded-xl border-2 border-slate-400 dark:border-slate-700 bg-slate-200/50 dark:bg-slate-800/50 aspect-[4/3] w-64 select-none touch-none"
+                onMouseDown={(e) => {
+                  if (!previewImage) return;
+                  setIsDraggingImage(true);
+                  dragStart.current = {
+                    x: e.clientX,
+                    y: e.clientY,
+                    startPosX: imagePos.x,
+                    startPosY: imagePos.y
+                  };
+                }}
+                onMouseMove={(e) => {
+                  if (!isDraggingImage) return;
+                  const dx = e.clientX - dragStart.current.x;
+                  const dy = e.clientY - dragStart.current.y;
+                  const sensitivity = 0.5;
+                  
+                  let newX = Math.max(0, Math.min(100, dragStart.current.startPosX - dx * sensitivity));
+                  let newY = Math.max(0, Math.min(100, dragStart.current.startPosY - dy * sensitivity));
+                  
+                  setImagePos({ x: newX, y: newY });
+                }}
+                onMouseUp={() => setIsDraggingImage(false)}
+                onMouseLeave={() => setIsDraggingImage(false)}
+              >
+                {previewImage ? (
+                  <img 
+                    src={previewImage} 
+                    alt="Thumbnail preview" 
+                    draggable="false"
+                    className={`h-full w-full object-cover ${isDraggingImage ? 'cursor-grabbing' : 'cursor-grab'}`} 
+                    style={{ objectPosition: `${imagePos.x}% ${imagePos.y}%` }} 
+                  />
+                ) : (
+                  <div className="flex h-full w-full flex-col items-center justify-center">
+                    <span className="text-sm font-bold text-slate-500">No Image</span>
+                  </div>
+                )}
+                
+                {previewImage && (
+                  <div className="absolute bottom-2 left-0 right-0 flex justify-center pointer-events-none">
+                    <div className="rounded-full bg-black/60 px-3 py-1 text-[10px] font-bold text-white backdrop-blur-md">
+                      Drag to reposition
+                    </div>
+                  </div>
+                )}
+              </div>
+              
+              <button
+                type="button"
+                onClick={() => fileInputRef.current?.click()}
+                disabled={isEditMode}
+                className="rounded-lg bg-violet-600/10 px-4 py-2 text-sm font-bold text-violet-700 dark:text-violet-300 transition hover:bg-violet-600/20 disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                {previewImage ? "Change Image" : "Upload Image"}
+              </button>
+              
+              <div className="text-xs text-slate-600 dark:text-slate-400">
+                <p>Recommended aspect ratio: 4:3 (e.g. 800x600px)</p>
+              </div>
             </div>
+            
             <input
               type="file"
               accept="image/*"
