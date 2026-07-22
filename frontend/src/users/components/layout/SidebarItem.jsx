@@ -31,7 +31,7 @@ export default function SidebarItem({
             "relative flex h-11 w-11 items-center justify-center rounded-2xl transition-all duration-150",
             isActive
               ? "bg-violet-500/20 text-violet-700 dark:text-violet-300 ring-1 ring-violet-500/60 dark:ring-violet-500/35"
-              : "text-slate-600 dark:text-slate-400 hover:bg-white/10 hover:text-white",
+              : "text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800/60 hover:text-slate-900 dark:hover:text-white",
           ].join(" ")
         }
       >

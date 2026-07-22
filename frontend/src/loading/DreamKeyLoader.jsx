@@ -474,7 +474,7 @@ export function DreamKeyLoader() {
   }, []);
 
   return (
-    <div className="relative flex min-h-screen w-full items-center justify-center overflow-hidden bg-background">
+    <div className="relative flex min-h-screen w-full items-center justify-center overflow-hidden bg-black">
       <div
         className="relative"
         style={{ height: "26vh", aspectRatio: "1 / 1" }}

@@ -29,7 +29,7 @@ export default function NavIconButton({
       type="button"
       onClick={onClick}
       aria-label={label}
-      className="relative flex h-9 w-9 items-center justify-center rounded-xl text-slate-600 dark:text-slate-400 transition hover:bg-slate-800/80 hover:text-white"
+      className="relative flex h-9 w-9 items-center justify-center rounded-xl text-slate-600 dark:text-slate-400 transition hover:bg-slate-100 dark:hover:bg-slate-800/80 hover:text-slate-900 dark:hover:text-white"
     >
       {children}
       <Badge count={badge} variant={badgeVariant} />

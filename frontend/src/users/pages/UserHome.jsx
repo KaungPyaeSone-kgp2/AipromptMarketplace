@@ -25,11 +25,35 @@ export default function UserHome() {
   const [followingIds, setFollowingIds] = useState([]);
 
   const [currentPage, setCurrentPage] = useState(1);
-  const ITEMS_PER_PAGE = 10;
+
+  const [columns, setColumns] = useState(() => {
+    if (typeof window === "undefined") return 3;
+    if (window.innerWidth >= 1280) return 3;
+    if (window.innerWidth >= 640) return 2;
+    return 1;
+  });
+
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth >= 1280) {
+        setColumns(3);
+      } else if (window.innerWidth >= 640) {
+        setColumns(2);
+      } else {
+        setColumns(1);
+      }
+    };
+    handleResize();
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
+  const ROWS_PER_PAGE = 10;
+  const itemsPerPage = ROWS_PER_PAGE * columns;
 
   useEffect(() => {
     setCurrentPage(1);
-  }, [selectedModels, selectedCategories, minRating, searchQuery]);
+  }, [selectedModels, selectedCategories, minRating, searchQuery, columns]);
 
   useEffect(() => {
     let cancelled = false;
@@ -60,10 +84,10 @@ export default function UserHome() {
 
   const { prompts, loading, error } = useHomePrompts(filters);
 
-  const totalPages = Math.ceil((prompts?.length || 0) / ITEMS_PER_PAGE);
+  const totalPages = Math.ceil((prompts?.length || 0) / itemsPerPage);
   const currentPrompts = prompts?.slice(
-    (currentPage - 1) * ITEMS_PER_PAGE,
-    currentPage * ITEMS_PER_PAGE
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
   );
 
   const toggleModel = (model) => {

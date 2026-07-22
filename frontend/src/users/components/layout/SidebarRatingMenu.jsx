@@ -9,12 +9,12 @@ function MenuRow({ label, count, disabled = false, onClick }) {
       type="button"
       disabled={disabled}
       onClick={onClick}
-      className="flex w-full items-center justify-between rounded-xl px-3 py-2 text-left text-sm font-semibold text-slate-700 dark:text-slate-300 transition hover:bg-slate-800 hover:text-white disabled:cursor-not-allowed disabled:text-slate-600 disabled:hover:bg-transparent"
+      className="flex w-full items-center justify-between rounded-xl px-3 py-2 text-left text-sm font-semibold text-slate-700 dark:text-slate-300 transition hover:bg-slate-200 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white disabled:cursor-not-allowed disabled:text-slate-400 disabled:hover:bg-transparent"
     >
       <span>{label}</span>
       <span className="flex items-center gap-2">
         {count > 0 && (
-          <span className="rounded-full bg-violet-600 px-2 py-0.5 text-[10px] font-bold text-slate-900 dark:text-white">
+          <span className="rounded-full bg-violet-600 px-2 py-0.5 text-[10px] font-bold text-white">
             {count}
           </span>
         )}
@@ -56,7 +56,7 @@ export default function SidebarRatingMenu({
           "relative flex h-11 w-11 items-center justify-center rounded-2xl transition-all duration-150",
           open || isActive
             ? "bg-violet-500/20 text-violet-700 dark:text-violet-300 ring-1 ring-violet-500/60 dark:ring-violet-500/35"
-            : "text-slate-600 dark:text-slate-400 hover:bg-white/10 hover:text-white",
+            : "text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800/60 hover:text-slate-900 dark:hover:text-white",
         ].join(" ")}
         aria-label="Rating"
       >
