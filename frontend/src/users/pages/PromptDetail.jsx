@@ -330,8 +330,8 @@ export default function PromptDetail() {
   }
 
   return (
-    <div className="grid gap-8 xl:grid-cols-[minmax(0,0.95fr)_minmax(380px,0.75fr)]">
-      <div className="space-y-6">
+    <div className="grid gap-8 items-start xl:grid-cols-[minmax(0,0.95fr)_minmax(380px,0.75fr)]">
+      <div className="space-y-6 xl:self-start">
         <div
           className="relative overflow-hidden rounded-2xl border border-slate-700/60 bg-slate-950/70 aspect-[4/3] w-full cursor-pointer"
           onClick={() => setIsHovered(true)}
@@ -500,7 +500,7 @@ export default function PromptDetail() {
         </section>
       </div>
 
-      <aside className="xl:sticky xl:top-24 xl:self-start">
+      <aside className="xl:self-start">
         <section className="surface-strong p-6">
           <div className="flex items-start justify-between gap-4">
             <div>
