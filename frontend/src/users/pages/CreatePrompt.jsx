@@ -313,8 +313,8 @@ export default function CreatePrompt() {
   const handleFileChange = (event) => {
     const file = event.target.files?.[0];
     if (file) {
-      if (file.size > 1024 * 1024) {
-        showToast("Image size is over 1MB. Please upload a smaller image.", "error");
+      if (file.size > 5 * 1024 * 1024) {
+        showToast("Image size is over 5MB. Please upload a smaller image.", "error");
         event.target.value = "";
         return;
       }
