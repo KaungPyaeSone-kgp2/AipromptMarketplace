@@ -360,7 +360,7 @@ export default function ReportButton({
         onClick={() => setOpen(true)}
         title="Report"
         aria-label="Report"
-        className={`flex h-8 w-8 items-center justify-center rounded-full text-slate-500 transition hover:bg-rose-500/15 hover:text-rose-400 focus:outline-none ${className}`}
+        className={`flex h-10 w-10 items-center justify-center rounded-full bg-slate-100/80 dark:bg-slate-900/80 text-slate-900 dark:text-white shadow-lg ring-1 ring-white/10 backdrop-blur-sm transition-all duration-200 hover:scale-110 hover:bg-rose-500 hover:text-white hover:ring-rose-400/30 focus:outline-none ${className}`}
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -370,7 +370,7 @@ export default function ReportButton({
           strokeWidth={2}
           strokeLinecap="round"
           strokeLinejoin="round"
-          className="h-4 w-4"
+          className="h-5 w-5"
           aria-hidden="true"
         >
           <path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z" />

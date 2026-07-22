@@ -9,6 +9,7 @@ export default function FullPromptContent() {
   const showToast = useToast();
   const [prompt, setPrompt] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [copied, setCopied] = useState(false);
 
   useEffect(() => {
     let cancelled = false;
@@ -76,22 +77,35 @@ export default function FullPromptContent() {
             onClick={() => {
               navigator.clipboard.writeText(prompt.promptText || "");
               showToast("Copied to clipboard!", "success");
+              setCopied(true);
+              setTimeout(() => setCopied(false), 2000);
             }}
             className="flex items-center gap-2 rounded-lg bg-violet-600/20 px-3 py-1.5 text-xs font-bold text-violet-700 dark:text-violet-300 transition hover:bg-violet-600/40"
           >
-            <svg
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              className="h-4 w-4"
-            >
-              <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-              <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-            </svg>
-            Copy Content
+            {copied ? (
+              <>
+                <svg className="h-4 w-4 text-emerald-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                  <polyline points="20 6 9 17 4 12" />
+                </svg>
+                <span className="text-emerald-600 dark:text-emerald-400 font-bold">Copied</span>
+              </>
+            ) : (
+              <>
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  className="h-4 w-4"
+                >
+                  <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                  <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                </svg>
+                <span>Copy Content</span>
+              </>
+            )}
           </button>
         </div>
 
