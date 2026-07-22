@@ -49,11 +49,11 @@ COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 # Set working directory
 WORKDIR /var/www/html
 
-# Enforce Secure & SameSite=None for all PHP sessions to fix cross-domain cookies
-# (Even though they are on the same domain now, this is still good practice for security)
+# Enforce Secure & SameSite=None for all PHP sessions and increase upload limits
 RUN echo "session.cookie_samesite = None" >> /usr/local/etc/php/conf.d/session-cookies.ini && \
     echo "session.cookie_secure = 1" >> /usr/local/etc/php/conf.d/session-cookies.ini && \
-    echo "session.cookie_httponly = 1" >> /usr/local/etc/php/conf.d/session-cookies.ini
+    echo "session.cookie_httponly = 1" >> /usr/local/etc/php/conf.d/session-cookies.ini && \
+    printf "upload_max_filesize = 25M\npost_max_size = 30M\nmemory_limit = 256M\n" > /usr/local/etc/php/conf.d/uploads.ini
 
 # Copy all backend PHP files to the working directory
 # Note: we specifically copy the contents of the `backend/` folder into `/var/www/html/`

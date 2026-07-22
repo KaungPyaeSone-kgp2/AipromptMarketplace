@@ -56,7 +56,7 @@ if (isset($_FILES['thumbnail'])) {
             exit;
         }
     } else if ($_FILES['thumbnail']['error'] === UPLOAD_ERR_INI_SIZE || $_FILES['thumbnail']['error'] === UPLOAD_ERR_FORM_SIZE) {
-        echo json_encode(["success" => false, "message" => "Image size is over the limit. Please upload a smaller image."]);
+        echo json_encode(["success" => false, "message" => "Image size is over the server limit. Please upload a smaller image."]);
         exit;
     } else if ($_FILES['thumbnail']['error'] !== UPLOAD_ERR_NO_FILE) {
         echo json_encode(["success" => false, "message" => "Image upload failed with error code: " . $_FILES['thumbnail']['error']]);
@@ -66,6 +66,10 @@ if (isset($_FILES['thumbnail'])) {
         exit;
     }
 } else {
+    if (empty($_POST) && empty($_FILES) && isset($_SERVER['CONTENT_LENGTH']) && (int)$_SERVER['CONTENT_LENGTH'] > 0) {
+        echo json_encode(["success" => false, "message" => "The uploaded image file is too large for the server. Maximum size allowed is 25MB."]);
+        exit;
+    }
     echo json_encode(["success" => false, "message" => "Thumbnail image is required"]);
     exit;
 }

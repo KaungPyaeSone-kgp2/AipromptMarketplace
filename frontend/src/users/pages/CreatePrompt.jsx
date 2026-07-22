@@ -9,6 +9,7 @@ import {
 import { getCurrentUserId } from "../services/currentUser.js";
 import { GlobeIcon, FollowersIcon, DraftIcon } from "../components/Icon.jsx";
 import { useToast } from "../components/Toast.jsx";
+import { compressImage } from "../utils/imageCompressor.js";
 
 const CustomSelect = ({ options, value, onChange, disabled, name, id }) => {
   const [isOpen, setIsOpen] = useState(false);
@@ -310,16 +311,23 @@ export default function CreatePrompt() {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleFileChange = (event) => {
+  const handleFileChange = async (event) => {
     const file = event.target.files?.[0];
     if (file) {
-      if (file.size > 5 * 1024 * 1024) {
-        showToast("Image size is over 5MB. Please upload a smaller image.", "error");
+      if (file.size > 25 * 1024 * 1024) {
+        showToast("Image size is over 25MB. Please upload a smaller image.", "error");
         event.target.value = "";
         return;
       }
-      setFormData((prev) => ({ ...prev, thumbnail: file }));
-      setPreviewImage(URL.createObjectURL(file));
+      try {
+        const compressedFile = await compressImage(file);
+        setFormData((prev) => ({ ...prev, thumbnail: compressedFile }));
+        setPreviewImage(URL.createObjectURL(compressedFile));
+      } catch (err) {
+        console.error("Image compression error:", err);
+        setFormData((prev) => ({ ...prev, thumbnail: file }));
+        setPreviewImage(URL.createObjectURL(file));
+      }
     }
   };
 
