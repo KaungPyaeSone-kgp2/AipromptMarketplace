@@ -33,25 +33,36 @@ $slug = $slug . '-' . time();
 
 $thumbnailPath = "";
 
-if (isset($_FILES['thumbnail']) && $_FILES['thumbnail']['error'] === UPLOAD_ERR_OK) {
-    $fileTmpPath = $_FILES['thumbnail']['tmp_name'];
-    $fileType = $_FILES['thumbnail']['type'];
-    $safeFilename = preg_replace('/[^A-Za-z0-9.\-]/', '_', basename($_FILES['thumbnail']['name']));
-    $fileName = time() . '_' . $safeFilename;
-    $destPath = 'prompts/thumbnail/' . $fileName;
+if (isset($_FILES['thumbnail'])) {
+    if ($_FILES['thumbnail']['error'] === UPLOAD_ERR_OK) {
+        $fileTmpPath = $_FILES['thumbnail']['tmp_name'];
+        $fileType = $_FILES['thumbnail']['type'];
+        $safeFilename = preg_replace('/[^A-Za-z0-9.\-]/', '_', basename($_FILES['thumbnail']['name']));
+        $fileName = time() . '_' . $safeFilename;
+        $destPath = 'prompts/thumbnail/' . $fileName;
 
-    $supabase = new SupabaseStorage();
-    try {
-        $uploadedUrl = $supabase->upload($fileTmpPath, $destPath, $fileType);
-        if ($uploadedUrl) {
-            $thumbnailPath = $uploadedUrl;
-        } else {
-            echo json_encode(["success" => false, "message" => "Failed to upload file to Supabase"]);
+        $supabase = new SupabaseStorage();
+        try {
+            $uploadedUrl = $supabase->upload($fileTmpPath, $destPath, $fileType);
+            if ($uploadedUrl) {
+                $thumbnailPath = $uploadedUrl;
+            } else {
+                echo json_encode(["success" => false, "message" => "Failed to upload file to Supabase"]);
+                exit;
+            }
+        } catch (Exception $e) {
+            http_response_code(400);
+            echo json_encode(["success" => false, "message" => $e->getMessage()]);
             exit;
         }
-    } catch (Exception $e) {
-        http_response_code(400);
-        echo json_encode(["success" => false, "message" => $e->getMessage()]);
+    } else if ($_FILES['thumbnail']['error'] === UPLOAD_ERR_INI_SIZE || $_FILES['thumbnail']['error'] === UPLOAD_ERR_FORM_SIZE) {
+        echo json_encode(["success" => false, "message" => "Image size is over the limit. Please upload a smaller image."]);
+        exit;
+    } else if ($_FILES['thumbnail']['error'] !== UPLOAD_ERR_NO_FILE) {
+        echo json_encode(["success" => false, "message" => "Image upload failed with error code: " . $_FILES['thumbnail']['error']]);
+        exit;
+    } else {
+        echo json_encode(["success" => false, "message" => "Thumbnail image is required"]);
         exit;
     }
 } else {

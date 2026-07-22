@@ -8,6 +8,7 @@ import {
 } from "../services/promptService.js";
 import { getCurrentUserId } from "../services/currentUser.js";
 import { GlobeIcon, FollowersIcon, DraftIcon } from "../components/Icon.jsx";
+import { useToast } from "../components/Toast.jsx";
 
 const CustomSelect = ({ options, value, onChange, disabled, name, id }) => {
   const [isOpen, setIsOpen] = useState(false);
@@ -142,6 +143,7 @@ export default function CreatePrompt() {
   const navigate = useNavigate();
   const { promptId } = useParams();
   const isEditMode = Boolean(promptId);
+  const showToast = useToast();
   const fileInputRef = useRef(null);
   const backdropRef = useRef(null);
   const descriptionRef = useRef(null);
@@ -149,7 +151,6 @@ export default function CreatePrompt() {
 
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
   const [previewImage, setPreviewImage] = useState(null);
   const [variables, setVariables] = useState([]);
   const [formData, setFormData] = useState({
@@ -244,7 +245,7 @@ export default function CreatePrompt() {
         if (cancelled) return;
 
         if (!prompt) {
-          setError("Prompt not found.");
+          showToast("Prompt not found.", "error");
           return;
         }
 
@@ -278,7 +279,7 @@ export default function CreatePrompt() {
       } catch (err) {
         if (!cancelled) {
           console.error("Failed to load prompt form data", err);
-          setError(err.message || "Failed to load prompt form data");
+          showToast(err.message || "Failed to load prompt form data", "error");
         }
       }
     }
@@ -312,7 +313,11 @@ export default function CreatePrompt() {
   const handleFileChange = (event) => {
     const file = event.target.files?.[0];
     if (file) {
-      setError(null);
+      if (file.size > 1024 * 1024) {
+        showToast("Image size is over 1MB. Please upload a smaller image.", "error");
+        event.target.value = "";
+        return;
+      }
       setFormData((prev) => ({ ...prev, thumbnail: file }));
       setPreviewImage(URL.createObjectURL(file));
     }
@@ -322,12 +327,11 @@ export default function CreatePrompt() {
     event.preventDefault();
 
     if (!isEditMode && !formData.thumbnail) {
-      setError("Please select a thumbnail image.");
+      showToast("Please select a thumbnail image.", "error");
       return;
     }
 
     setLoading(true);
-    setError(null);
 
     const submission = new FormData();
     submission.append("creator_id", getCurrentUserId());
@@ -362,7 +366,7 @@ export default function CreatePrompt() {
       }
       navigate("/user/created-prompts");
     } catch (err) {
-      setError(err.message || (isEditMode ? "Failed to update prompt" : "Failed to create prompt"));
+      showToast(err.message || (isEditMode ? "Failed to update prompt" : "Failed to create prompt"), "error");
       setLoading(false);
     }
   };
@@ -374,12 +378,6 @@ export default function CreatePrompt() {
           {isEditMode ? "Edit Prompt" : "Create Prompt"}
         </h1>
       </div>
-
-      {error && (
-        <div className="rounded-xl border border-rose-500/20 bg-rose-500/10 p-4 text-sm font-bold text-rose-600 dark:text-rose-400">
-          {error}
-        </div>
-      )}
 
       <form onSubmit={handleSubmit} className="glass-panel space-y-6 p-6 sm:p-8">
         <div className="space-y-3">
