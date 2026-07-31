@@ -224,7 +224,7 @@
 
 // src/pages/Explore.jsx
 import { useState, useEffect } from "react";
-import { useSearchParams, useNavigate } from "react-router";
+import { useSearchParams, useNavigate, Link } from "react-router";
 import API_BASE from "../config/api";
 import {
   Search,
@@ -355,12 +355,12 @@ export default function Explore() {
       <nav className="fixed top-0 w-full z-50 bg-[#050505]/85 backdrop-blur-[20px] border-b border-white/5">
         <div className="max-w-[1400px] mx-auto px-6 md:px-10 h-[80px] flex items-center justify-between">
           <div className="flex items-center gap-6 flex-1">
-            <a
-              href="/"
+            <Link
+              to="/"
               className="text-[22px] font-black tracking-tight flex items-center flex-shrink-0"
             >
               Dream<span className="font-normal">Key</span>
-            </a>
+            </Link>
 
             <div className="hidden md:flex flex-col border-l border-white/10 pl-6 ml-2 flex-shrink-0">
               <h1 className="text-white font-bold text-sm leading-tight">
@@ -537,8 +537,8 @@ export default function Explore() {
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-5 lg:gap-6">
               {prompts.map((prompt) => (
-                <a
-                  href={`/prompt/${prompt.slug}`}
+                <Link
+                  to={`/prompt/${prompt.slug}`}
                   key={prompt.id}
                   className="group relative w-full aspect-[4/5] rounded-[20px] overflow-hidden bg-[#111] cursor-pointer shadow-xl border border-white/5 block"
                 >
@@ -566,7 +566,7 @@ export default function Explore() {
                       {prompt.title}
                     </h3>
                   </div>
-                </a>
+                </Link>
               ))}
             </div>
           )}

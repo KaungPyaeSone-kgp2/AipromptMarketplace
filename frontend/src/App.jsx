@@ -84,6 +84,7 @@ import VerifyOtp from "./login_register/VerifyOtp";
 import ForgotPassword from "./login_register/ForgotPassword";
 import ResetPassword from "./login_register/ResetPassword";
 import Explore from "./home/Explore";
+import PublicPromptDetail from "./home/PublicPromptDetail";
 import Faq from "./home/components/FAQ";
 import Contact from "./home/components/Contact";
 import Privacy from "./home/components/Privacy";
@@ -172,6 +173,7 @@ export default function App() {
           <Route path="/contact" element={<Contact />} />
           <Route path="/privacy" element={<Privacy />} />
           <Route path="/terms" element={<Terms />} />
+          <Route path="/prompt/:id" element={<PublicPromptDetail />} />
 
           {/* ADMIN ROUTE */}
           <Route element={<ProtectedRoute allowedRoles={["admin"]} />}>

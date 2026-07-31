@@ -7,6 +7,7 @@ import {
   Bookmark,
   ArrowRight,
 } from "lucide-react";
+import { Link } from "react-router";
 
 export default function Categories({ data = {}, isLoading }) {
   const prompts = data.prompts || [];
@@ -54,8 +55,8 @@ export default function Categories({ data = {}, isLoading }) {
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 h-auto lg:h-[600px]">
             {/* Rank #1 Prompt (Large - Spans 2 Columns) */}
             {prompt1 && (
-              <a
-                href={`/prompt/${prompt1.slug}`}
+              <Link
+                to={`/prompt/${prompt1.slug}`}
                 className="lg:col-span-2 block relative w-full h-[400px] lg:h-full rounded-[24px] overflow-hidden group border border-white/10 bg-[#0a0a0a] transition-all duration-500 hover:border-[#fca311]/50 hover:shadow-[0_0_40px_rgba(252,163,17,0.1)]"
               >
                 {/* Prompt Cover Image */}
@@ -124,15 +125,15 @@ export default function Categories({ data = {}, isLoading }) {
                     </div>
                   </div>
                 </div>
-              </a>
+              </Link>
             )}
 
             {/* Right Side Stack (Categories 2 & 3) */}
             <div className="flex flex-col gap-6 h-auto lg:h-full">
               {/* Rank #2 Prompt */}
               {prompt2 && (
-                <a
-                  href={`/prompt/${prompt2.slug}`}
+                <Link
+                  to={`/prompt/${prompt2.slug}`}
                   className="flex-1 block relative w-full h-[250px] lg:h-auto rounded-[24px] overflow-hidden group border border-white/10 bg-[#0a0a0a] transition-all duration-500 hover:border-blue-500/50 hover:shadow-[0_0_40px_rgba(59,130,246,0.1)]"
                 >
                   {/* Prompt Cover Image */}
@@ -198,13 +199,13 @@ export default function Categories({ data = {}, isLoading }) {
                       </div>
                     </div>
                   </div>
-                </a>
+                </Link>
               )}
 
               {/* Rank #3 Prompt */}
               {prompt3 && (
-                <a
-                  href={`/prompt/${prompt3.slug}`}
+                <Link
+                  to={`/prompt/${prompt3.slug}`}
                   className="flex-1 block relative w-full h-[250px] lg:h-auto rounded-[24px] overflow-hidden group border border-white/10 bg-[#0a0a0a] transition-all duration-500 hover:border-purple-500/50 hover:shadow-[0_0_40px_rgba(168,85,247,0.1)]"
                 >
                   {/* Prompt Cover Image */}
@@ -270,7 +271,7 @@ export default function Categories({ data = {}, isLoading }) {
                       </div>
                     </div>
                   </div>
-                </a>
+                </Link>
               )}
             </div>
           </div>
@@ -279,13 +280,13 @@ export default function Categories({ data = {}, isLoading }) {
 
       {/* Footer Button - Points directly to /explore page */}
       <div className="mt-16 w-full flex justify-center px-6">
-        <a
-          href="/explore?ref=categories"
+        <Link
+          to="/explore?ref=categories"
           className="inline-flex items-center gap-3 px-8 py-4 bg-transparent border-2 border-[#333] text-white font-bold text-base md:text-lg rounded-full hover:bg-white hover:text-black hover:border-white transition-all duration-300 shadow-[0_0_20px_rgba(255,255,255,0.05)] transform hover:-translate-y-1 group"
         >
           Explore All Prompts
           <ArrowRight className="w-5 h-5 transition-transform group-hover:translate-x-1" />
-        </a>
+        </Link>
       </div>
     </div>
   );

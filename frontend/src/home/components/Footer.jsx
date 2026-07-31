@@ -177,6 +177,7 @@
 
 // src/components/Footer.jsx
 import { useState, useEffect } from "react";
+import { Link } from "react-router";
 import { ChevronRight, Wand2 } from "lucide-react";
 import API_BASE from "../../config/api";
 
@@ -243,12 +244,12 @@ export default function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10 lg:gap-16 mb-16">
           {/* Brand Section */}
           <div className="flex flex-col">
-            <a
-              href="/"
+            <Link
+              to="/"
               className="text-[24px] font-black tracking-tight flex items-center mb-4 text-white"
             >
               Dream<span className="font-normal">Key</span>
-            </a>
+            </Link>
             <p className="text-[#71717a] text-sm leading-relaxed mb-6">
               A curated platform for AI prompts. Discover and share
               high-performing prompts for ChatGPT, Claude, Gemini, Midjourney
@@ -292,13 +293,13 @@ export default function Footer() {
               <ul className="flex flex-col gap-3">
                 {quickLinks.map((link, idx) => (
                   <li key={idx}>
-                    <a
-                      href={link.href}
+                    <Link
+                      to={link.href}
                       className="text-[#71717a] text-sm hover:text-[#fca311] transition-colors flex items-center gap-2"
                     >
                       <ChevronRight className="w-3 h-3" strokeWidth={3} />{" "}
                       {link.label}
-                    </a>
+                    </Link>
                   </li>
                 ))}
               </ul>
@@ -311,13 +312,13 @@ export default function Footer() {
               <ul className="flex flex-col gap-3">
                 {legalLinks.map((link, idx) => (
                   <li key={idx}>
-                    <a
-                      href={link.href}
+                    <Link
+                      to={link.href}
                       className="text-[#71717a] text-sm hover:text-white transition-colors flex items-center gap-2"
                     >
                       <ChevronRight className="w-3 h-3" strokeWidth={3} />{" "}
                       {link.label}
-                    </a>
+                    </Link>
                   </li>
                 ))}
               </ul>
@@ -333,12 +334,12 @@ export default function Footer() {
               {categories.length > 0 ? (
                 categories.slice(0, 10).map((cat, idx) => (
                   <li key={idx}>
-                    <a
-                      href={`/explore?category=${encodeURIComponent(cat)}`}
+                    <Link
+                      to={`/explore?category=${encodeURIComponent(cat)}`}
                       className="text-[#71717a] text-sm hover:text-white transition-colors flex items-center gap-2"
                     >
                       {cat}
-                    </a>
+                    </Link>
                   </li>
                 ))
               ) : (
@@ -355,12 +356,12 @@ export default function Footer() {
             <ul className="flex flex-col gap-3">
               {models.map((model, idx) => (
                 <li key={idx}>
-                  <a
-                    href={`/explore?model=${encodeURIComponent(model)}`}
+                  <Link
+                    to={`/explore?model=${encodeURIComponent(model)}`}
                     className="text-[#71717a] text-sm hover:text-white transition-colors flex items-center gap-2"
                   >
                     {model}
-                  </a>
+                  </Link>
                 </li>
               ))}
             </ul>
