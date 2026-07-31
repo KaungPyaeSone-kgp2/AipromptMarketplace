@@ -153,12 +153,14 @@ function AdminDashboardWrapper() {
   );
 }
 
+import ScrollToTop from "./components/ScrollToTop";
 import { ShopProvider } from "./users/context/ShopContext.jsx";
 
 export default function App() {
   return (
     <ShopProvider>
       <Router>
+        <ScrollToTop />
         <Routes>
           {/* PUBLIC ROUTES */}
           <Route path="/" element={<Home />} />

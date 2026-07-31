@@ -122,7 +122,6 @@
 // }
 
 import { useState, useEffect } from "react";
-import { useLocation } from "react-router";
 import API_BASE from "../config/api";
 
 import Navbar from "./components/Navbar";
@@ -138,7 +137,6 @@ import Footer from "./components/Footer";
 import "./style.css";
 
 export default function Home() {
-  const location = useLocation();
 
   const [homeData, setHomeData] = useState({ prompts: [], categories: [] });
   const [isLoading, setIsLoading] = useState(true);
@@ -148,23 +146,7 @@ export default function Home() {
   const [isNavbarVisible, setIsNavbarVisible] = useState(true);
   const [hasNavbarShadow, setHasNavbarShadow] = useState(false);
 
-  useEffect(() => {
-    if (location.hash) {
-      // If there is a hash (e.g., #ai-models), grab the ID without the '#'
-      const id = location.hash.replace("#", "");
-      const element = document.getElementById(id);
 
-      if (element) {
-        // A tiny 100ms delay ensures React has finished drawing the page before scrolling
-        setTimeout(() => {
-          element.scrollIntoView({ behavior: "smooth", block: "start" });
-        }, 100);
-      }
-    } else {
-      // If there is no hash, just scroll to the very top
-      window.scrollTo(0, 0);
-    }
-  }, [location]);
 
   useEffect(() => {
     const fetchHomeData = async () => {
