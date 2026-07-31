@@ -114,14 +114,14 @@ export async function fetchProfilePrompts(profileUserId, followingIds = []) {
 
 export async function fetchPromptById(id) {
   const all = await loadAllPrompts();
-  let found = all.find((p) => String(p.id) === String(id));
+  let found = all.find((p) => String(p.id) === String(id) || String(p.slug) === String(id));
   
   if (!found) {
     const currentUserId = getCurrentUserId();
     if (currentUserId) {
       try {
         const drafts = await fetchDraftPrompts();
-        found = drafts.find((p) => String(p.id) === String(id));
+        found = drafts.find((p) => String(p.id) === String(id) || String(p.slug) === String(id));
       } catch (err) {
         console.error("Failed to check drafts for prompt lookup:", err);
       }

@@ -299,7 +299,7 @@ export default function Explore() {
 
   useEffect(() => {
     window.scrollTo(0, 0);
-  }, []);
+  }, [searchQuery, modelFilter, categoryFilter]);
 
   useEffect(() => {
     fetchFilteredData();

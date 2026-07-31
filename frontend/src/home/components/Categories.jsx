@@ -56,7 +56,7 @@ export default function Categories({ data = {}, isLoading }) {
             {/* Rank #1 Prompt (Large - Spans 2 Columns) */}
             {prompt1 && (
               <Link
-                to={`/prompt/${prompt1.slug}`}
+                to="/register"
                 className="lg:col-span-2 block relative w-full h-[400px] lg:h-full rounded-[24px] overflow-hidden group border border-white/10 bg-[#0a0a0a] transition-all duration-500 hover:border-[#fca311]/50 hover:shadow-[0_0_40px_rgba(252,163,17,0.1)]"
               >
                 {/* Prompt Cover Image */}
@@ -133,7 +133,7 @@ export default function Categories({ data = {}, isLoading }) {
               {/* Rank #2 Prompt */}
               {prompt2 && (
                 <Link
-                  to={`/prompt/${prompt2.slug}`}
+                  to="/register"
                   className="flex-1 block relative w-full h-[250px] lg:h-auto rounded-[24px] overflow-hidden group border border-white/10 bg-[#0a0a0a] transition-all duration-500 hover:border-blue-500/50 hover:shadow-[0_0_40px_rgba(59,130,246,0.1)]"
                 >
                   {/* Prompt Cover Image */}
@@ -205,7 +205,7 @@ export default function Categories({ data = {}, isLoading }) {
               {/* Rank #3 Prompt */}
               {prompt3 && (
                 <Link
-                  to={`/prompt/${prompt3.slug}`}
+                  to="/register"
                   className="flex-1 block relative w-full h-[250px] lg:h-auto rounded-[24px] overflow-hidden group border border-white/10 bg-[#0a0a0a] transition-all duration-500 hover:border-purple-500/50 hover:shadow-[0_0_40px_rgba(168,85,247,0.1)]"
                 >
                   {/* Prompt Cover Image */}
