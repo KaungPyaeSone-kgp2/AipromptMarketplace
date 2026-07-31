@@ -13,7 +13,7 @@ export default function RatingPromptGroups({ ratings, mode, onClear }) {
         >
           <div className="flex items-start justify-between gap-3">
             <h3 className="text-base font-bold text-slate-900 dark:text-white">
-              <Link to={`/prompt/${item.promptId}`} className="hover:text-violet-400 transition-colors">
+              <Link to={`/user/prompt/${item.promptId}`} className="hover:text-violet-400 transition-colors">
                 {item.promptTitle || "Prompt"}
               </Link>
             </h3>

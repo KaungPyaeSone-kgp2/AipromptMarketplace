@@ -538,7 +538,7 @@ export default function Explore() {
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-5 lg:gap-6">
               {prompts.map((prompt) => (
                 <Link
-                  to={`/prompt/${prompt.slug}`}
+                  to="/register"
                   key={prompt.id}
                   className="group relative w-full aspect-[4/5] rounded-[20px] overflow-hidden bg-[#111] cursor-pointer shadow-xl border border-white/5 block"
                 >
