@@ -131,7 +131,7 @@ export default function HomeFilters({
         </button>
 
         {menuOpen && (
-          <div className="surface-strong absolute right-0 top-full z-50 mt-3 w-[min(340px,calc(100vw-3rem))] max-h-[calc(100vh-120px)] overflow-y-auto space-y-4 p-5 shadow-2xl rounded-2xl bg-white dark:bg-slate-900">
+          <div className="surface-strong absolute right-0 top-full z-50 mt-3 w-[min(340px,calc(100vw-3rem))] max-h-[calc(100vh-140px)] overflow-y-auto space-y-4 p-5 shadow-2xl rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800">
             <div className="flex items-center justify-between gap-3">
               <div>
                 <p className="text-xs font-black uppercase tracking-widest text-violet-700 dark:text-violet-300">

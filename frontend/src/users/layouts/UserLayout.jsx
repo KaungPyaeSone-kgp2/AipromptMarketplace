@@ -338,7 +338,7 @@ export default function UserLayout() {
             reportCount={reportCount}
           />
 
-          <main className="app-scrollbar min-w-0 flex-1 overflow-y-auto p-6">
+          <main className="app-scrollbar min-w-0 flex-1 overflow-y-auto p-6 min-h-[calc(100vh-70px)]">
             <Outlet context={{ searchQuery, reloadCurrentUser }} />
           </main>
         </div>
