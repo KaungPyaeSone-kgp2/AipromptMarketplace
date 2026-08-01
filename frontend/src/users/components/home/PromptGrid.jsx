@@ -41,12 +41,10 @@ export default function PromptGrid({
     );
   }
 
-  const isSingle = prompts.length === 1;
-
   return (
-    <div className={`grid gap-5 ${isSingle ? "grid-cols-1 w-full" : "sm:grid-cols-2 xl:grid-cols-3"}`}>
+    <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
       {prompts.map((prompt) => (
-        <PromptCard key={prompt.id} prompt={prompt} variant={variant} isSingle={isSingle} />
+        <PromptCard key={prompt.id} prompt={prompt} variant={variant} />
       ))}
     </div>
   );
