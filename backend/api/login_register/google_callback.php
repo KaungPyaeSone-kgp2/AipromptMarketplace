@@ -55,10 +55,8 @@ try {
     $client->addScope("email");
     $client->addScope("profile");
 
-    // --- ADD THESE TWO LINES TO FORCE THE ACCOUNT CHOOSER ---
-    $client->setApprovalPrompt('force');
-    $client->setPrompt('select_account'); 
-    // --------------------------------------------------------
+    // Account selection prompt without forcing re-consent every login
+    $client->setPrompt('select_account');
 
     // If accessed directly without a code, generate URL and send user to Google
     if (!isset($_GET['code'])) {
@@ -78,13 +76,23 @@ try {
     
     $client->setAccessToken($token['access_token']);
 
-    $google_oauth = new Oauth2($client);
-    $google_account_info = $google_oauth->userinfo->get();
-    
-    $oauth_id = $google_account_info->id;
-    $email = $google_account_info->email;
-    $name = $google_account_info->name;
-    $profile_image = $google_account_info->picture;
+    // Fast-path: Extract user info directly from verified ID token payload to avoid an extra network roundtrip
+    $payload = isset($token['id_token']) ? $client->verifyIdToken($token['id_token']) : false;
+
+    if ($payload && !empty($payload['sub'])) {
+        $oauth_id = $payload['sub'];
+        $email = $payload['email'] ?? '';
+        $name = $payload['name'] ?? $email;
+        $profile_image = $payload['picture'] ?? '';
+    } else {
+        $google_oauth = new Oauth2($client);
+        $google_account_info = $google_oauth->userinfo->get();
+        
+        $oauth_id = $google_account_info->id;
+        $email = $google_account_info->email;
+        $name = $google_account_info->name;
+        $profile_image = $google_account_info->picture;
+    }
 
     // 2. Initialize your BaseDAO
     $database = new Database();

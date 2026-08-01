@@ -58,7 +58,7 @@ try {
 
     // Review Reports
     $stmt = $pdo->prepare("
-        SELECT br.*, r.review_text as review_text, 'comment' as target_type
+        SELECT br.*, r.review_text as review_text, r.prompt_id as prompt_id, 'comment' as target_type
         FROM bad_review_reports br
         LEFT JOIN reviews r ON br.review_id = r.id
         WHERE br.reporter_id = ? AND (br.cleared_status_reporter IS NULL OR br.cleared_status_reporter != br.status)
@@ -100,7 +100,7 @@ try {
 
     // Review Reports (User is the author of the reported review)
     $stmt = $pdo->prepare("
-        SELECT br.*, r.review_text as review_text, 'comment' as target_type
+        SELECT br.*, r.review_text as review_text, r.prompt_id as prompt_id, 'comment' as target_type
         FROM bad_review_reports br
         JOIN reviews r ON br.review_id = r.id
         WHERE r.user_id = ? AND (br.cleared_status_reported IS NULL OR br.cleared_status_reported != br.status)

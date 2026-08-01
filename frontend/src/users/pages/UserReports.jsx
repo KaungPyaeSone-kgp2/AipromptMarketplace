@@ -1,8 +1,11 @@
 import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router";
 import { fetchReports, clearReportApi } from "../services/reportService.js";
 import { getCurrentUserId } from "../services/currentUser.js";
 
 const ReportCard = ({ report, isReceived, onClear }) => {
+  const navigate = useNavigate();
+
   const formatTimeAgo = (dateStr) => {
     if (!dateStr) return "";
     const date = new Date(dateStr);
@@ -28,8 +31,23 @@ const ReportCard = ({ report, isReceived, onClear }) => {
     }
   };
 
+  const handleCardClick = (e) => {
+    if (e.target.closest("button")) return;
+
+    if (report.target_type === "prompt" || report.target_type === "comment") {
+      const promptId = report.prompt_id || report.promptId || report.target_id;
+      if (promptId) navigate(`/user/prompt/${promptId}`);
+    } else if (report.target_type === "user") {
+      const userId = report.reported_user_id || report.target_id || report.reportedUserId;
+      if (userId) navigate(`/user/profile/${userId}`);
+    }
+  };
+
   return (
-    <div className="surface overflow-hidden p-5 transition hover:-translate-y-0.5 hover:border-violet-400/40 rounded-2xl border border-slate-400/50 dark:border-slate-700/50 bg-slate-100/80 dark:bg-slate-900/80">
+    <div
+      onClick={handleCardClick}
+      className="surface overflow-hidden p-5 transition hover:-translate-y-0.5 hover:border-violet-400/40 rounded-2xl border border-slate-400/50 dark:border-slate-700/50 bg-slate-100/80 dark:bg-slate-900/80 cursor-pointer"
+    >
       <div className="flex items-start justify-between gap-3">
         <h3 className="text-base font-bold text-slate-900 dark:text-white">
           {getTargetLabel()}
@@ -43,7 +61,14 @@ const ReportCard = ({ report, isReceived, onClear }) => {
             {report.status}
           </span>
           {onClear && (
-            <button onClick={() => onClear(report.id, report.target_type, report.status)} className="text-slate-400 hover:text-rose-500 transition-colors" title="Clear">
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                onClear(report.id, report.target_type, report.status);
+              }}
+              className="text-slate-400 hover:text-rose-500 transition-colors"
+              title="Clear"
+            >
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4"><line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" /></svg>
             </button>
           )}

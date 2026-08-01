@@ -21,18 +21,18 @@ function ConnectionListPopup({
   return (
     <div
       id="connection-list-popup"
-      className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/65 p-4"
+      className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/60 p-4 backdrop-blur-xs"
       onClick={(e) => {
         if (e.target === e.currentTarget) onClose();
       }}
     >
-      <div className="w-full max-w-md overflow-hidden rounded-2xl border border-slate-400 dark:border-slate-700 bg-[#070814] shadow-2xl">
-        <div className="flex items-center justify-between border-b border-slate-300 dark:border-slate-800 px-5 py-4">
+      <div className="w-full max-w-md overflow-hidden rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#070814] shadow-2xl transition-colors">
+        <div className="flex items-center justify-between border-b border-slate-200 dark:border-slate-800/80 px-5 py-4">
           <h2 className="text-base font-black text-violet-700 dark:text-violet-300">{title}</h2>
           <button
             type="button"
             onClick={onClose}
-            className="rounded-lg px-3 py-1 text-sm font-black text-slate-600 dark:text-slate-400 transition hover:bg-violet-300 hover:text-slate-950"
+            className="rounded-lg px-3 py-1 text-sm font-black text-slate-600 dark:text-slate-400 transition hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-slate-100"
           >
             Close
           </button>
@@ -40,8 +40,8 @@ function ConnectionListPopup({
 
         <div className="max-h-[60vh] overflow-y-auto p-3">
           {loading ? (
-            <div className="p-8 text-center text-sm text-slate-600 dark:text-slate-400">
-              Loading following list...
+            <div className="p-8 text-center text-sm text-slate-500 dark:text-slate-400">
+              Loading {title.toLowerCase()} list...
             </div>
           ) : accounts.length > 0 ? (
             <div className="space-y-2">
@@ -50,7 +50,7 @@ function ConnectionListPopup({
                   type="button"
                   key={account.id}
                   onClick={() => onOpenAccount(account)}
-                  className="group flex w-full items-center gap-3 rounded-xl p-3 text-left text-slate-700 dark:text-slate-300 transition hover:bg-violet-500/20 hover:text-violet-300 hover:ring-1 hover:ring-violet-500/35"
+                  className="group flex w-full items-center gap-3 rounded-xl p-3 text-left transition hover:bg-violet-50 dark:hover:bg-violet-500/20 hover:ring-1 hover:ring-violet-300 dark:hover:ring-violet-500/35"
                 >
                   <img
                     src={account.avatarUrl}
@@ -58,8 +58,8 @@ function ConnectionListPopup({
                     className="h-11 w-11 rounded-full object-cover ring-2 ring-violet-500/60 dark:ring-violet-500/35"
                   />
                   <div className="min-w-0 flex-1">
-                    <p className="truncate text-sm font-black">{account.name}</p>
-                    <p className="text-xs text-slate-600 dark:text-slate-400 transition group-hover:text-violet-200/80">
+                    <p className="truncate text-sm font-black text-slate-900 dark:text-slate-100 group-hover:text-violet-700 dark:group-hover:text-violet-300">{account.name}</p>
+                    <p className="text-xs text-slate-500 dark:text-slate-400 transition group-hover:text-violet-600 dark:group-hover:text-violet-200/80">
                       {account.isCreator
                         ? `${account.postedPromptCount.toLocaleString()} prompt posts`
                         : `${account.followingCount.toLocaleString()} following`}
@@ -69,7 +69,7 @@ function ConnectionListPopup({
               ))}
             </div>
           ) : (
-            <div className="p-8 text-center text-sm text-slate-600 dark:text-slate-400">
+            <div className="p-8 text-center text-sm text-slate-500 dark:text-slate-400">
               {emptyMessage}
             </div>
           )}
