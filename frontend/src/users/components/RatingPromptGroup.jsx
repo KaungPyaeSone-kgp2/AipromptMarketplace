@@ -13,7 +13,7 @@ export default function RatingPromptGroups({ ratings, mode, onClear }) {
           key={item.id} 
           onClick={(e) => {
             if (e.target.closest("button")) return;
-            if (item.promptId) navigate(`/user/prompt/${item.promptId}`);
+            if (item.promptId) navigate(`/user/prompt/${item.promptId}?reviewId=${item.id}#reviews`);
           }}
           className="surface overflow-hidden p-5 transition hover:-translate-y-0.5 hover:border-violet-400/40 rounded-2xl border border-slate-400/50 dark:border-slate-700/50 bg-slate-100/80 dark:bg-slate-900/80 cursor-pointer"
         >

@@ -106,24 +106,23 @@ export default function HomeFilters({
         <button
           type="button"
           onClick={() => setMenuOpen((prev) => !prev)}
-          className="inline-flex min-w-[138px] items-center justify-between gap-2 rounded-2xl border px-4 py-2 text-sm font-black transition"
-          style={{
-            background: menuOpen
-              ? "rgba(139, 92, 246, 0.16)"
-              : "rgba(15, 20, 44, 0.75)",
-            borderColor: menuOpen
-              ? "rgba(139, 92, 246, 0.36)"
-              : "rgba(148, 163, 184, 0.16)",
-            color: "#f8fafc",
-          }}
+          className={`inline-flex min-w-[138px] items-center justify-between gap-2 rounded-2xl border px-4 py-2 text-sm font-black transition shadow-sm ${
+            menuOpen
+              ? "bg-violet-600 text-white border-violet-600 dark:bg-violet-600 dark:border-violet-500"
+              : "bg-slate-100/90 text-slate-800 border-slate-300 hover:bg-slate-200 dark:bg-slate-900/90 dark:text-slate-100 dark:border-slate-700/60 dark:hover:bg-slate-800"
+          }`}
         >
           <span className="inline-flex items-center gap-2">
             <FilterIcon />
             Filter
           </span>
           <span
-            className={`flex h-5 min-w-5 items-center justify-center rounded-full px-1.5 text-[10px] font-black text-slate-900 dark:text-white transition ${
-              selectedCount > 0 ? "bg-violet-600" : "bg-slate-300 dark:bg-slate-700"
+            className={`flex h-5 min-w-5 items-center justify-center rounded-full px-1.5 text-[10px] font-black transition ${
+              menuOpen
+                ? "bg-white/20 text-white"
+                : selectedCount > 0
+                ? "bg-violet-600 text-white dark:bg-violet-500"
+                : "bg-slate-300 text-slate-700 dark:bg-slate-700 dark:text-slate-300"
             }`}
           >
             {selectedCount}
@@ -132,13 +131,13 @@ export default function HomeFilters({
         </button>
 
         {menuOpen && (
-          <div className="surface-strong absolute right-0 top-full z-20 mt-3 w-[min(340px,calc(100vw-3rem))] space-y-4 p-5">
+          <div className="surface-strong absolute right-0 top-full z-20 mt-3 w-[min(340px,calc(100vw-3rem))] space-y-4 p-5 shadow-xl rounded-2xl border border-slate-300 dark:border-slate-800 bg-white dark:bg-slate-900">
             <div className="flex items-center justify-between gap-3">
               <div>
                 <p className="text-xs font-black uppercase tracking-widest text-violet-700 dark:text-violet-300">
                   Home filters
                 </p>
-                <p className="mt-1 text-xs text-slate-500">
+                <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
                   {selectedCount} selected
                 </p>
               </div>
@@ -147,7 +146,7 @@ export default function HomeFilters({
                   <button
                     type="button"
                     onClick={onClearAll}
-                    className="rounded-xl bg-slate-200 dark:bg-slate-800 px-3 py-2 text-xs font-bold text-slate-700 dark:text-slate-300 transition hover:bg-slate-700"
+                    className="rounded-xl bg-slate-200 hover:bg-slate-300 dark:bg-slate-800 dark:hover:bg-slate-700 px-3 py-2 text-xs font-bold text-slate-800 dark:text-slate-200 transition"
                   >
                     Clear
                   </button>

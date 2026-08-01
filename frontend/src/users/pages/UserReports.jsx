@@ -34,9 +34,18 @@ const ReportCard = ({ report, isReceived, onClear }) => {
   const handleCardClick = (e) => {
     if (e.target.closest("button")) return;
 
-    if (report.target_type === "prompt" || report.target_type === "comment") {
+    if (report.target_type === "comment") {
+      const promptId = report.prompt_id || report.promptId;
+      const reviewId = report.review_id || report.reviewId || report.target_id;
+      if (promptId) {
+        navigate(`/user/prompt/${promptId}?reviewId=${reviewId}#reviews`);
+      } else {
+        const fallbackId = report.target_id;
+        if (fallbackId) navigate(`/user/prompt/${fallbackId}#reviews`);
+      }
+    } else if (report.target_type === "prompt") {
       const promptId = report.prompt_id || report.promptId || report.target_id;
-      if (promptId) navigate(`/user/prompt/${promptId}`);
+      if (promptId) navigate(`/user/prompt/${promptId}#reviews`);
     } else if (report.target_type === "user") {
       const userId = report.reported_user_id || report.target_id || report.reportedUserId;
       if (userId) navigate(`/user/profile/${userId}`);

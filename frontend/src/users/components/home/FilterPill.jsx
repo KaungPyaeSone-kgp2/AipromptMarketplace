@@ -8,14 +8,34 @@ export default function FilterPill({ label, selected, onClick }) {
     <button
       type="button"
       onClick={onClick}
-      className="rounded-full px-4 py-2 text-sm font-bold transition hover:-translate-y-0.5"
-      style={{
-        background: selected ? color.bg : color.bg.replace("0.16", "0.08").replace("0.12", "0.08"),
-        border: `1px solid ${selected ? color.border : color.border.replace("0.36", "0.20").replace("0.28", "0.18").replace("0.24", "0.18")}`,
-        color: selected ? color.text : "#cbd5e1",
-      }}
+      className={`rounded-full px-4 py-2 text-sm font-bold transition hover:-translate-y-0.5 border ${
+        selected
+          ? "shadow-sm border-violet-500/40"
+          : "bg-slate-100 text-slate-700 border-slate-300 dark:bg-slate-800/80 dark:text-slate-300 dark:border-slate-700/60 hover:bg-slate-200 dark:hover:bg-slate-700"
+      }`}
+      style={
+        selected
+          ? {
+              background: color.bg,
+              borderColor: color.border,
+            }
+          : undefined
+      }
     >
-      {label}
+      <span
+        style={selected ? { color: color.textLight || color.text } : undefined}
+        className={selected ? "dark:hidden" : ""}
+      >
+        {label}
+      </span>
+      {selected && (
+        <span
+          style={{ color: color.text }}
+          className="hidden dark:inline"
+        >
+          {label}
+        </span>
+      )}
     </button>
   );
 }

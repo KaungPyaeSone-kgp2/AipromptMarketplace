@@ -128,6 +128,30 @@ export default function PromptDetail() {
     };
   }, [id]);
 
+  useEffect(() => {
+    if (!loading && prompt) {
+      const hash = location.hash;
+      const params = new URLSearchParams(location.search);
+      const reviewId = params.get("reviewId");
+
+      if (hash === "#reviews" || reviewId) {
+        setTimeout(() => {
+          const targetEl = reviewId
+            ? document.getElementById(`review-${reviewId}`)
+            : document.getElementById("reviews-section");
+
+          if (targetEl) {
+            targetEl.scrollIntoView({ behavior: "smooth", block: "center" });
+            if (reviewId) {
+              targetEl.classList.add("ring-2", "ring-violet-500");
+              setTimeout(() => targetEl.classList.remove("ring-2", "ring-violet-500"), 3000);
+            }
+          }
+        }, 150);
+      }
+    }
+  }, [loading, prompt, location.hash, location.search]);
+
   const rating = reviewSummary.averageRating ?? prompt?.rating ?? 0;
   const reviewCount = reviewSummary.count ?? prompt?.reviewCount ?? 0;
   const priceLabel = Number(prompt?.price) > 0 ? `${prompt.price} coins` : "Free";
@@ -366,7 +390,7 @@ export default function PromptDetail() {
           </div>
         )}
 
-        <section className="surface-strong p-5">
+        <section id="reviews-section" className="surface-strong p-5">
           <div className="flex flex-wrap items-end justify-between gap-3 border-b border-slate-700/70 pb-4">
             <div>
               <h2 className="text-lg font-black text-slate-900 dark:text-white">Reviews</h2>
@@ -444,8 +468,9 @@ export default function PromptDetail() {
             ) : (
               reviewSummary.reviews.map((review) => (
                 <article
+                  id={`review-${review.id}`}
                   key={review.id}
-                  className="rounded-xl border border-slate-300 dark:border-slate-800 bg-slate-100 dark:bg-slate-950/50 p-4"
+                  className="rounded-xl border border-slate-300 dark:border-slate-800 bg-slate-100 dark:bg-slate-950/50 p-4 transition-all duration-300"
                 >
                   <div className="flex items-start gap-3">
                     <Link

@@ -826,28 +826,41 @@ export default function BadReviewReports() {
                 )}
               </div>
 
-              {selectedReport.status?.toLowerCase() === "reviewed" && (
-                <div className="mt-6 pt-4 border-t border-white/5 flex justify-end gap-3">
-                  <button
-                    onClick={() =>
-                      updateReportStatus(selectedReport.id, "rejected")
-                    }
-                    className="flex items-center gap-2 px-4 py-2 bg-red-500/10 hover:bg-red-500/20 text-red-400 border border-red-500/30 rounded-lg transition-colors font-medium text-sm"
+              <div className="mt-6 pt-4 border-t border-white/5 flex flex-wrap items-center justify-between gap-3">
+                {(selectedReport.prompt_id || selectedReport.promptId || selectedReport.target_id) && (
+                  <a
+                    href={`/user/prompt/${selectedReport.prompt_id || selectedReport.promptId || selectedReport.target_id}?reviewId=${selectedReport.review_id || selectedReport.reviewId || selectedReport.target_id}#reviews`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-2 px-4 py-2 bg-violet-600/20 hover:bg-violet-600/30 text-violet-300 border border-violet-500/30 rounded-lg transition-colors font-medium text-sm"
                   >
-                    <XCircle size={16} />
-                    Reject Report
-                  </button>
-                  <button
-                    onClick={() =>
-                      updateReportStatus(selectedReport.id, "resolved")
-                    }
-                    className="flex items-center gap-2 px-4 py-2 bg-green-500/10 hover:bg-green-500/20 text-green-400 border border-green-500/30 rounded-lg transition-colors font-medium text-sm"
-                  >
-                    <CheckCircle size={16} />
-                    Resolve Report
-                  </button>
-                </div>
-              )}
+                    <Eye size={16} />
+                    View in Prompt Reviews
+                  </a>
+                )}
+                {selectedReport.status?.toLowerCase() === "reviewed" && (
+                  <div className="flex items-center gap-3 ml-auto">
+                    <button
+                      onClick={() =>
+                        updateReportStatus(selectedReport.id, "rejected")
+                      }
+                      className="flex items-center gap-2 px-4 py-2 bg-red-500/10 hover:bg-red-500/20 text-red-400 border border-red-500/30 rounded-lg transition-colors font-medium text-sm"
+                    >
+                      <XCircle size={16} />
+                      Reject Report
+                    </button>
+                    <button
+                      onClick={() =>
+                        updateReportStatus(selectedReport.id, "resolved")
+                      }
+                      className="flex items-center gap-2 px-4 py-2 bg-green-500/10 hover:bg-green-500/20 text-green-400 border border-green-500/30 rounded-lg transition-colors font-medium text-sm"
+                    >
+                      <CheckCircle size={16} />
+                      Resolve Report
+                    </button>
+                  </div>
+                )}
+              </div>
             </div>
           </div>
         </div>

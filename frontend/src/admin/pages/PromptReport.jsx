@@ -798,34 +798,47 @@ export default function PromptReports() {
                 )}
               </div>
 
-              {selectedReport.status?.toLowerCase() === "reviewed" ? (
-                <div className="mt-6 pt-4 border-t border-white/5 flex justify-end gap-3">
-                  <button
-                    onClick={() =>
-                      updateReportStatus(selectedReport.id, "rejected")
-                    }
-                    className="flex items-center gap-2 px-4 py-2 bg-red-500/10 hover:bg-red-500/20 text-red-400 border border-red-500/30 rounded-lg transition-colors font-medium text-sm cursor-pointer"
+              <div className="mt-6 pt-4 border-t border-white/5 flex flex-wrap items-center justify-between gap-3">
+                {(selectedReport.prompt_id || selectedReport.promptId || selectedReport.target_id) && (
+                  <a
+                    href={`/user/prompt/${selectedReport.prompt_id || selectedReport.promptId || selectedReport.target_id}#reviews`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-2 px-4 py-2 bg-violet-600/20 hover:bg-violet-600/30 text-violet-300 border border-violet-500/30 rounded-lg transition-colors font-medium text-sm"
                   >
-                    <XCircle size={16} />
-                    Reject Report
-                  </button>
-                  <button
-                    onClick={() =>
-                      updateReportStatus(selectedReport.id, "resolved")
-                    }
-                    className="flex items-center gap-2 px-4 py-2 bg-green-500/10 hover:bg-green-500/20 text-green-400 border border-green-500/30 rounded-lg transition-colors font-medium text-sm cursor-pointer"
-                  >
-                    <CheckCircle size={16} />
-                    Resolve Report
-                  </button>
-                </div>
-              ) : (selectedReport.status?.toLowerCase() === "resolved" || selectedReport.status?.toLowerCase() === "rejected") ? (
-                <div className="mt-6 pt-4 border-t border-white/5 flex justify-center">
-                   <span className="text-gray-500 text-sm italic">
-                     Action buttons are hidden because this report has already been {selectedReport.status.toLowerCase()}.
-                   </span>
-                </div>
-              ) : null}
+                    <Eye size={16} />
+                    View Prompt Reviews
+                  </a>
+                )}
+                {selectedReport.status?.toLowerCase() === "reviewed" ? (
+                  <div className="flex items-center gap-3 ml-auto">
+                    <button
+                      onClick={() =>
+                        updateReportStatus(selectedReport.id, "rejected")
+                      }
+                      className="flex items-center gap-2 px-4 py-2 bg-red-500/10 hover:bg-red-500/20 text-red-400 border border-red-500/30 rounded-lg transition-colors font-medium text-sm cursor-pointer"
+                    >
+                      <XCircle size={16} />
+                      Reject Report
+                    </button>
+                    <button
+                      onClick={() =>
+                        updateReportStatus(selectedReport.id, "resolved")
+                      }
+                      className="flex items-center gap-2 px-4 py-2 bg-green-500/10 hover:bg-green-500/20 text-green-400 border border-green-500/30 rounded-lg transition-colors font-medium text-sm cursor-pointer"
+                    >
+                      <CheckCircle size={16} />
+                      Resolve Report
+                    </button>
+                  </div>
+                ) : (selectedReport.status?.toLowerCase() === "resolved" || selectedReport.status?.toLowerCase() === "rejected") ? (
+                  <div className="flex items-center ml-auto">
+                    <span className="text-gray-500 text-sm italic">
+                      Action buttons are hidden because this report has already been {selectedReport.status.toLowerCase()}.
+                    </span>
+                  </div>
+                ) : null}
+              </div>
             </div>
           </div>
         </div>

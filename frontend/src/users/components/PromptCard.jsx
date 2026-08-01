@@ -76,6 +76,7 @@ export default function PromptCard({
   actionTo = null,
   showVisibilityInfo = false,
   showVisibilityBadge = false,
+  isSingle = false,
   children
 }) {
   const { isInWishlist, toggleWishlist } = useShop();
@@ -99,8 +100,8 @@ export default function PromptCard({
      ═══════════════════════════════════════════════════════ */
   if (variant === "grid" || isMarketplace) {
     return (
-      <article className="prompt-card group relative overflow-hidden rounded-2xl border border-slate-400/50 dark:border-slate-700/50 bg-slate-100/80 dark:bg-slate-900/80">
-        <div className="relative flex aspect-[4/3] items-center justify-center overflow-hidden bg-slate-950/60">
+      <article className={`prompt-card group relative overflow-hidden rounded-2xl border border-slate-400/50 dark:border-slate-700/50 bg-slate-100/80 dark:bg-slate-900/80 ${isSingle ? 'w-full' : ''}`}>
+        <div className={`relative flex items-center justify-center overflow-hidden bg-slate-950/60 ${isSingle ? 'aspect-[16/9] sm:aspect-[21/9] max-h-[460px] w-full' : 'aspect-[4/3]'}`}>
           {/* ── Main image ── */}
           {prompt.imageUrl ? (
             <img
