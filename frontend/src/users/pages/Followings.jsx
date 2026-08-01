@@ -69,7 +69,7 @@ export default function Followings() {
               : "bg-slate-100/80 dark:bg-slate-900/80 text-slate-600 dark:text-slate-400 hover:bg-slate-800"
               }`}
           >
-            Created prompts
+            Shared prompts
           </button>
         </div>
       )}

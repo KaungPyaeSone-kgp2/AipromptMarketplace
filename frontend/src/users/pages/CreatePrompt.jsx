@@ -163,6 +163,7 @@ export default function CreatePrompt() {
     thumbnail: null,
     visibility: "public",
   });
+  const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [imagePos, setImagePos] = useState({ x: 50, y: 50 });
   const [isDraggingImage, setIsDraggingImage] = useState(false);
   const dragStart = useRef({ x: 0, y: 0, startPosX: 50, startPosY: 50 });
@@ -331,7 +332,7 @@ export default function CreatePrompt() {
     }
   };
 
-  const handleSubmit = async (event) => {
+  const handleSubmit = (event) => {
     event.preventDefault();
 
     if (!isEditMode && !formData.thumbnail) {
@@ -339,6 +340,15 @@ export default function CreatePrompt() {
       return;
     }
 
+    if (isEditMode) {
+      setShowConfirmModal(true);
+    } else {
+      executeSubmit();
+    }
+  };
+
+  const executeSubmit = async () => {
+    setShowConfirmModal(false);
     setLoading(true);
 
     const submission = new FormData();
@@ -374,7 +384,7 @@ export default function CreatePrompt() {
       }
       navigate("/user/created-prompts");
     } catch (err) {
-      showToast(err.message || (isEditMode ? "Failed to update prompt" : "Failed to create prompt"), "error");
+      showToast(err.message || (isEditMode ? "Failed to update prompt" : "Failed to share prompt"), "error");
       setLoading(false);
     }
   };
@@ -383,7 +393,7 @@ export default function CreatePrompt() {
     <div className="mx-auto max-w-3xl space-y-6">
       <div>
         <h1 className="mt-1 text-2xl font-black text-violet-600 dark:text-violet-400">
-          {isEditMode ? "Edit Prompt" : "Create Prompt"}
+          {isEditMode ? "Edit Prompt" : "Share Prompt"}
         </h1>
       </div>
 
@@ -680,10 +690,64 @@ export default function CreatePrompt() {
             disabled={loading}
             className="rounded-xl bg-violet-600 px-5 py-2.5 text-sm font-bold text-slate-900 dark:text-white transition hover:bg-violet-500 disabled:opacity-50"
           >
-            {loading ? (isEditMode ? "Updating..." : "Creating...") : (isEditMode ? "Confirm & Update" : "Confirm & Create")}
+            {loading ? (isEditMode ? "Updating..." : "Sharing...") : (isEditMode ? "Confirm & Update" : "Share Prompt")}
           </button>
         </div>
       </form>
+
+      {showConfirmModal && (
+        <div
+          className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/65 p-4 backdrop-blur-sm fade-in"
+          onClick={(e) => {
+            if (e.target === e.currentTarget) setShowConfirmModal(false);
+          }}
+        >
+          <div className="w-full max-w-md overflow-hidden rounded-2xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 p-6 shadow-2xl space-y-5 text-center">
+            <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-violet-100 dark:bg-violet-900/40 text-violet-600 dark:text-violet-400 ring-8 ring-violet-500/10">
+              <svg
+                className="h-7 w-7"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                strokeWidth="2"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
+                />
+              </svg>
+            </div>
+
+            <div className="space-y-2">
+              <h3 className="text-xl font-black text-slate-900 dark:text-white">
+                Confirm Edit
+              </h3>
+              <p className="text-sm leading-relaxed text-slate-600 dark:text-slate-300 font-medium">
+                Are you sure you want to edit this prompt?
+              </p>
+            </div>
+
+            <div className="flex items-center justify-center gap-3 pt-2">
+              <button
+                type="button"
+                onClick={() => setShowConfirmModal(false)}
+                className="flex-1 rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-100 dark:bg-slate-800 py-2.5 text-sm font-bold text-slate-700 dark:text-slate-300 transition hover:bg-slate-200 dark:hover:bg-slate-700"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={executeSubmit}
+                disabled={loading}
+                className="flex-1 rounded-xl bg-violet-600 py-2.5 text-sm font-bold text-white transition hover:bg-violet-500 disabled:opacity-50"
+              >
+                {loading ? "Updating..." : "Confirm"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

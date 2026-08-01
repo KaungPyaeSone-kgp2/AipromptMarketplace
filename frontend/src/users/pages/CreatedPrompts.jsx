@@ -45,11 +45,11 @@ export default function CreatedPrompts() {
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 className="mt-1 text-4xl font-black text-violet-600 dark:text-violet-400">
-            Created Prompts
+            Shared Prompts
           </h1>
 
           <p className="mt-2 text-sm text-slate-600 dark:text-slate-400">
-            Manage your prompts and track their performance.
+            Manage your shared prompts and track their performance.
           </p>
         </div>
 
@@ -57,7 +57,7 @@ export default function CreatedPrompts() {
           to="/user/createpost"
           className="rounded-xl bg-violet-600 px-4 py-2 text-sm font-bold text-slate-900 dark:text-white transition hover:bg-violet-500"
         >
-          Create Prompt
+          Share Prompt
         </Link>
       </div>
 

@@ -21,7 +21,7 @@ export default function Sidebar({
       className="sticky top-16 z-50 flex h-[calc(100vh-4rem)] w-16 shrink-0 flex-col items-center gap-2 overflow-visible border-r border-gray-200 dark:border-slate-700/30 px-2 py-4 bg-white/90 dark:bg-[#080d1c]/95 transition-colors duration-200"
     >
       <SidebarItem to="/user" end icon={<HomeIcon />} label="Home" />
-      <SidebarItem to="/user/created-prompts" icon={<MagicIcon />} label="Created Prompts" />
+      <SidebarItem to="/user/created-prompts" icon={<MagicIcon />} label="Shared Prompts" />
 
 
       {/* <SidebarItem

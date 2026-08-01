@@ -284,7 +284,7 @@ export async function createPrompt(formData) {
   const data = await response.json();
 
   if (!response.ok || data?.success === false) {
-    throw new Error(data?.message ?? "Failed to create prompt");
+    throw new Error(data?.message ?? "Failed to share prompt");
   }
 
   clearPromptCache();
