@@ -111,13 +111,13 @@ try {
     }
     
     $prompt_description = $_POST['prompt_description'] ?? null;
-    if ($prompt_description !== null && $prompt_description !== "") {
+    if ($prompt_description !== null) {
         $setClauses[] = "prompt_description = :prompt_description";
         $updateParams[":prompt_description"] = $prompt_description;
     }
     
     $full_prompt_content = $_POST['full_prompt_content'] ?? null;
-    if ($full_prompt_content !== null && $full_prompt_content !== "") {
+    if ($full_prompt_content !== null) {
         $setClauses[] = "full_prompt_content = :full_prompt_content";
         $updateParams[":full_prompt_content"] = $full_prompt_content;
     }
@@ -137,6 +137,12 @@ try {
     if ($thumbnailPath !== null) {
         $setClauses[] = "thumbnail = :thumbnail";
         $updateParams[":thumbnail"] = $thumbnailPath;
+    }
+
+    $image_alignment = $_POST['image_alignment'] ?? null;
+    if ($image_alignment !== null && db_has_column($pdo, 'prompts', 'image_alignment')) {
+        $setClauses[] = "image_alignment = :image_alignment";
+        $updateParams[":image_alignment"] = $image_alignment;
     }
 
     $permissionColumn = prompt_permission_column($pdo);

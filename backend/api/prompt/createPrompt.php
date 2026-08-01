@@ -98,6 +98,13 @@ try {
         $params[':prompt_variables'] = $prompt_variables;
     }
 
+    $image_alignment = $_POST['image_alignment'] ?? null;
+    if ($image_alignment !== null && db_has_column($pdo, 'prompts', 'image_alignment')) {
+        $columns[] = 'image_alignment';
+        $placeholders[] = ':image_alignment';
+        $params[':image_alignment'] = $image_alignment;
+    }
+
     $permissionColumn = prompt_permission_column($pdo);
     if ($permissionColumn) {
         $columns[] = "`{$permissionColumn}`";

@@ -254,7 +254,7 @@ export default function CreatePrompt() {
         setFormData({
           title: prompt.title ?? "",
           description: prompt.description ?? "",
-          content: prompt.promptText ?? "",
+          content: prompt.promptText ?? prompt.full_prompt_content ?? prompt.prompt_text ?? "",
           categoryId: prompt.categoryId ?? prompt.category_id ?? "",
           modelType: prompt.modelType ?? prompt.model_type ?? prompt.model ?? MODEL_TYPES[0],
           thumbnail: null,

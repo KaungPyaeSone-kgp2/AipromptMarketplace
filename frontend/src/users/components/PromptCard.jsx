@@ -107,6 +107,7 @@ export default function PromptCard({
               src={prompt.imageUrl}
               alt={prompt.title}
               className="h-full w-full object-cover transition-transform duration-500 ease-out group-hover:scale-110 select-none"
+              style={{ objectPosition: prompt.imageAlignment || '50% 50%' }}
               loading="lazy"
               draggable="false"
             />
@@ -222,6 +223,7 @@ export default function PromptCard({
           src={prompt.imageUrl}
           alt={prompt.title}
           className="h-full w-full object-cover transition duration-300 group-hover:scale-110 select-none"
+          style={{ objectPosition: prompt.imageAlignment || '50% 50%' }}
           loading="lazy"
           draggable="false"
         />

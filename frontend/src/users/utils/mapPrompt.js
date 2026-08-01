@@ -68,6 +68,7 @@ export function mapPromptFromApi(row) {
     promptText: row.full_prompt_content ?? row.prompt_text ?? "",
     promptVariables: row.prompt_variables ? (typeof row.prompt_variables === 'string' ? JSON.parse(row.prompt_variables) : row.prompt_variables) : [],
     visibility: normalizeVisibility(row.visibility ?? row.permission),
+    imageAlignment: row.image_alignment ?? "50% 50%",
   };
 }
 
