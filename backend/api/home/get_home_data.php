@@ -74,12 +74,12 @@ try {
             thumbnail, 
             model_type, 
             permission, 
-            save_count, 
+            (SELECT COUNT(*) FROM wishlists w WHERE w.prompt_id = prompts.id) AS save_count, 
             review_count, 
             average_rating
         FROM prompts 
         WHERE permission = 'Public' AND is_banned = 0
-        ORDER BY save_count DESC, average_rating DESC
+        ORDER BY (SELECT COUNT(*) FROM wishlists w WHERE w.prompt_id = prompts.id) DESC, average_rating DESC
     ";
     
     $rawPrompts = $baseDAO->select($promptSql, []);

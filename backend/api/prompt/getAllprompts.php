@@ -37,7 +37,7 @@ try {
 
     $promptVariablesExpr = db_column_expr($pdo, 'prompts', 'prompt_variables', 'p.prompt_variables', "'[]'");
     $imageAlignmentExpr = db_column_expr($pdo, 'prompts', 'image_alignment', 'p.image_alignment', "'center'");
-    $wishListExpr = db_column_expr($pdo, 'prompts', 'save_count', 'p.save_count', '(SELECT COUNT(*) FROM wishlists w WHERE w.prompt_id = p.id)');
+    $wishListExpr = "(SELECT COUNT(*) FROM wishlists w WHERE w.prompt_id = p.id)";
     $reviewCountExpr = db_column_expr($pdo, 'prompts', 'review_count', 'p.review_count', '(SELECT COUNT(*) FROM reviews r WHERE r.prompt_id = p.id AND (r.is_banned IS NULL OR r.is_banned = 0))');
 
     $select_query = "SELECT

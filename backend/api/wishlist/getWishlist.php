@@ -26,7 +26,7 @@ try {
         exit;
     }
 
-    $wishListExpr = db_column_expr($pdo, 'prompts', 'save_count', 'p.save_count', '(SELECT COUNT(*) FROM wishlists wc WHERE wc.prompt_id = p.id)');
+    $wishListExpr = "(SELECT COUNT(*) FROM wishlists wc WHERE wc.prompt_id = p.id)";
     $reviewCountExpr = db_column_expr($pdo, 'prompts', 'review_count', 'p.review_count', '(SELECT COUNT(*) FROM reviews rc WHERE rc.prompt_id = p.id AND (rc.is_banned IS NULL OR rc.is_banned = 0))');
 
     $permissionColumn = prompt_permission_column($pdo);

@@ -107,16 +107,17 @@ export default function PromptDetail() {
     window.addEventListener(PROMPTS_UPDATED_EVENT, loadPromptDetail);
 
     const handleWishlistUpdated = (e) => {
-      const { promptId, added } = e.detail;
-      if (String(promptId) === String(id)) {
-        setPrompt((currentPrompt) => {
-          if (!currentPrompt) return currentPrompt;
+      const { promptId, added } = e.detail || {};
+      setPrompt((currentPrompt) => {
+        if (!currentPrompt) return currentPrompt;
+        if (String(promptId) === String(id) || String(promptId) === String(currentPrompt.id)) {
           return {
             ...currentPrompt,
             wishlistCount: Math.max(0, (currentPrompt.wishlistCount ?? 0) + (added ? 1 : -1))
           };
-        });
-      }
+        }
+        return currentPrompt;
+      });
     };
     window.addEventListener(WISHLIST_UPDATED_EVENT, handleWishlistUpdated);
 

@@ -71,6 +71,11 @@ try {
         $pdo->commit();
     }
 
+    $cacheFile = __DIR__ . "/../../cache/home-data.json";
+    if (file_exists($cacheFile)) {
+        @unlink($cacheFile);
+    }
+
     echo json_encode(["success" => true, "message" => "Added to wishlist successfully"]);
 } catch (Exception $e) {
     if (isset($pdo) && $pdo->inTransaction()) {

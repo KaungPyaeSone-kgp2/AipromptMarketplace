@@ -13,6 +13,20 @@ function notifyPromptsUpdated() {
   }
 }
 
+if (typeof window !== "undefined") {
+  window.addEventListener("wishlist_updated", (e) => {
+    const { promptId, added } = e.detail || {};
+    if (promptId && cachedPrompts) {
+      const target = cachedPrompts.find((p) => String(p.id) === String(promptId));
+      if (target) {
+        const currentCount = target.wishlistCount ?? 0;
+        const newCount = Math.max(0, currentCount + (added ? 1 : -1));
+        updatePromptInCache(promptId, { wishlistCount: newCount });
+      }
+    }
+  });
+}
+
 let loadPromptsPromise = null;
 
 async function loadAllPrompts() {
